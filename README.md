@@ -10,6 +10,7 @@
 <a name="project"></a>
 ## Project
 
+<a name="project-overview"></a>
 ### Overview
 
 The goal of this project is to discover, as a whole, the software platform that you have chosen
@@ -19,7 +20,8 @@ To do this, you must implement a software suite that functions similar to that o
 [IFTTT](https://ifttt.com/) and/or [Zapier](https://zapier.com/).
 
 This software suite will be broken into three parts:
-- An **application server** to implement all the features listed below *(see Features)*
+- An **application server** to implement all the features listed below
+  *(see [Features](#project-features))*
 - A **web client** to use the application from your browser by querying the **application server**
 - A **mobile client** to use the application from your phone by querying the **application server**
 
@@ -34,6 +36,7 @@ OneDrive, X (formerly Twitter), etc).
   - **Action:** An issue is created on a Git (GitHub) repository
   - **REAction:** A message is sent on Microsoft Teams
 
+<a name="project-features"></a>
 ### Features
 
 The application will offer the following functionalities:
@@ -45,7 +48,7 @@ The application will offer the following functionalities:
   - type **Action**
   - type **REAction**
 - The authenticated user composes **AREA** by interconnecting an **Action** to a **REAction**
-  previously configured *(see Overview)*
+  previously configured *(see [Overview](#project-overview))*
 - The application triggers **AREA** automatically thanks to **hooks**
 
 <a name="installation"></a>
