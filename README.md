@@ -1,4 +1,5 @@
 <img src="/assets/md/hi.png" width=300 align="right" alt="Screenshot of the app's homepage."/>
+<img src="/assets/md/AREA_1024.png" width=72 alt="Logo of the application"/>
 
 # DEV-500 ‒ `AREA`
 ###### An <img src="https://newsroom.ionis-group.com/wp-content/uploads/2023/09/epitech-2023-logo-m.png" alt="Epitech" height=18/> project
