@@ -1,4 +1,4 @@
-<img src="/assets/md/AREA_1024.png" width=72 alt="Logo of the application"/>
+<img src="/md/assets/AREA_1024.png" width=72 alt="Logo of the application"/>
 
 # DEV-500 ‒ `AREA` ‒ How to contribute
 
