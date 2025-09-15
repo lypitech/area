@@ -1,0 +1,6 @@
+# .gitignore for Area project
+
+# IDE related folders
+.idea
+.vscode
+
