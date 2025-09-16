@@ -38,5 +38,3 @@ jobs:
       run: |
         cd source.wiki
         git push --mirror ${{ env.MIRROR_WIKI_URL }}
-      env:
-        GIT_SSH_COMMAND: 'ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no'
