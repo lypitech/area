@@ -5,19 +5,20 @@ on:
     branches:
       - main
 
+env:
+  MIRROR_URL: git@github.com:EpitechPGE3-2025/G-DEV-500-REN-5-1-area-5.git
+
 jobs:
   sync:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Push to Epitech repository
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git remote add epitech https://x-access-token:${{ secrets.EPITECH_REPOSITORY_TOKEN }}@github.com/EpitechPGE3-2025/G-DEV-500-REN-5-1-area-5.git
-          git push --mirror --force epitech
+        uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url:
+            ${{ env.MIRROR_URL }}
+          ssh_private_key:
+            ${{ secrets.SSH_PRIVATE_KEY }}
