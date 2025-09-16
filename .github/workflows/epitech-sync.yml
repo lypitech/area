@@ -1,4 +1,4 @@
-name: Epitech Repository Synchronizationn
+name: Epitech Repository Synchronization
 
 on:
   push:
