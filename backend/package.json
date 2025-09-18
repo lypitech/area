@@ -1,8 +1,8 @@
 {
-  "name": "backend",
+  "name": "area-backend",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "The backend part of the projet AREA",
+  "author": "Timéo TREGAROT, Arthur DRAHY, Pierre MARGUERIE",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
