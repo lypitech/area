@@ -38,6 +38,7 @@ dependencies:
   dio: ^5.9.0
   json_serializable: ^6.11.1
   flutter_riverpod: ^3.0.0
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -50,7 +51,7 @@ flutter:
   generate: true
 
   assets:
-    - assets/images/AREA_1024.png
+    - assets/image/AREA_1024.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
