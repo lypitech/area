@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import {INestApplication, Logger} from '@nestjs/common'
+import { INestApplication, Logger} from '@nestjs/common'
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 
