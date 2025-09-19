@@ -36,6 +36,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   dio: ^5.9.0
   json_serializable: ^6.11.1
+  flutter_riverpod: ^3.0.0
 
 dev_dependencies:
   flutter_test:
