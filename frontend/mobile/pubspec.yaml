@@ -31,10 +31,10 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
-  http: ^1.5.0
   get_it: ^8.2.0
   shared_preferences: ^2.5.3
   flutter_secure_storage: ^9.2.4
+  dio: ^5.9.0
 
 dev_dependencies:
   flutter_test:
