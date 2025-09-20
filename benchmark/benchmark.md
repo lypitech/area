@@ -129,3 +129,78 @@ After evaluation, the following choices were made:
 - **Frontend** → **React/TypeScript** for ecosystem maturity and suitability for complex UI.
 
 This stack balances **developer productivity, scalability, and security**, making it a solid foundation for building a Zapier-like workflow automation platform.
+
+# 4. Mobile Benchmark: Flutter vs React Native vs Native (Kotlin)
+
+## Context
+
+For the mobile part of the workflow automation platform, we need:
+
+- **Cross-platform capability** to cover both Android and iOS with a consistent user experience.
+- **Fast development cycles** to quickly iterate on features.
+- **Good ecosystem and libraries** for UI components, APIs, and integrations.
+- **Long-term maintainability** and performance for potentially complex UIs (workflow editor, notifications, dashboards).
+
+---
+
+## Comparison Table
+
+| Criteria              | Flutter                                   | React Native                                 | Native (Kotlin for Android)                      |
+| --------------------- | ----------------------------------------- | -------------------------------------------- | ------------------------------------------------ |
+| **Language**          | Dart                                      | JavaScript / TypeScript                      | Kotlin (Android only)                            |
+| **Cross-platform**    | Yes (iOS, Android, Web, Desktop)          | Yes (iOS and Android)                        | No (Android only)                                |
+| **Performance**       | Very good (near-native, Skia rendering)   | Good, depends on native bridges              | Excellent (fully native)                         |
+| **UI/UX consistency** | Very strong (single rendering engine)     | Medium (relies on native components)         | Perfect (native look & feel)                     |
+| **Ecosystem**         | Growing, rich widget library and plugins  | Large (npm ecosystem, many libraries)        | Mature for Android, limited to one platform      |
+| **Community**         | Large, strong support (since 2017)        | Very large (backed by Meta, OSS)             | Large but Android-only                           |
+| **Development Speed** | High (hot reload, rich widgets)           | High (fast iterations, JS familiarity)       | Medium (requires platform-specific code)         |
+| **App Size**          | Larger binaries (~40–50MB for small apps) | Smaller than Flutter, larger than native     | Smallest possible                                |
+| **Learning Curve**    | Medium (Dart adoption lower than JS/TS)   | Low for JS/TS devs, higher for advanced apps | Medium (familiar to Java devs, but Android-only) |
+| **Typical Use Case**  | Cross-platform apps with complex UI/UX    | Cross-platform apps, quick MVPs              | High-performance Android-only apps               |
+
+---
+
+## Conclusion
+
+- **Flutter**
+
+  - Strength: fast development, cross-platform, great UI/UX consistency, strong widget ecosystem.
+  - Weakness: larger app size, heavy SDK, smaller Dart adoption compared to JS/Kotlin.
+
+- **React Native**
+
+  - Strength: large ecosystem, huge JS/TS developer base, faster ramp-up for web devs.
+  - Weakness: relies on native bridges for performance-critical parts, UI consistency can vary.
+
+- **Native (Kotlin)**
+  - Strength: best performance and full access to Android APIs.
+  - Weakness: single-platform only, slower development, more expensive to maintain for multi-platform.
+
+---
+
+## Security and Maintenance Risks
+
+- **Flutter**:
+
+  - Risk of large bundle size exposing unused packages → mitigate by tree-shaking and package audits.
+  - Dependency ecosystem still maturing → mitigate by selecting well-maintained packages.
+
+- **React Native**:
+
+  - Risk of dependency vulnerabilities (npm) → mitigate with regular audits.
+  - Native module fragmentation can lead to inconsistent behaviors → mitigate with stable libraries and version pinning.
+
+- **Native (Kotlin)**:
+  - No major cross-platform risks, but higher maintenance cost (requires a separate iOS team if targeting both platforms).
+  - Risk of code duplication across platforms → mitigate with shared business logic (e.g., Kotlin Multiplatform if needed).
+
+---
+
+## Final Decision
+
+**Flutter** was chosen for the mobile application because:
+
+- Our mobile developer is already experienced with Flutter, reducing the risk of beginner mistakes.
+- Flutter provides a **cross-platform solution** with consistent UI/UX across Android and iOS.
+- It offers **fast development cycles** (hot reload, widget ecosystem) which aligns with the project’s need for rapid iteration.
+- While app size is larger compared to native, this trade-off is acceptable given the productivity and consistency benefits.
