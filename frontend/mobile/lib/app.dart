@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:area/core/theme/theme.dart';
+import 'package:flutter/material.dart' hide Theme;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/core/constant/constants.dart';
@@ -20,6 +21,8 @@ class App extends ConsumerWidget {
       debugShowCheckedModeBanner: true,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      theme: Theme.light(),
+      darkTheme: Theme.dark(),
     );
   }
 
