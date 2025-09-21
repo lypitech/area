@@ -39,6 +39,7 @@ dependencies:
   json_serializable: ^6.11.1
   flutter_riverpod: ^3.0.0
   flutter_launcher_icons: ^0.14.4
+  fluttertoast: ^9.0.0
 
 dev_dependencies:
   flutter_test:
