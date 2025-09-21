@@ -43,13 +43,13 @@ The requirements will be the following:
 
 ### Security Risks and Mitigations
 
-- **Validation misconfiguration** → Always enable global validation (ValidationPipe with whitelist,
+- **Validation misconfiguration:** Always enable global validation (ValidationPipe with whitelist,
   forbidNonWhitelisted).
-- **CORS misconfigurations** → Restrict allowed origins in production.
-- **Weak JWT/auth handling** → Use short-lived tokens, refresh strategies, secure secret storage.
-- **NoSQL/SQL injection** → Always use parameterized queries and sanitize inputs.
-- **Supply chain attacks** → Audit npm dependencies regularly and pin versions.
-- **Rate limiting** → Use throttling to prevent DoS.
+- **CORS misconfigurations:** Restrict allowed origins in production.
+- **Weak JWT/auth handling:** Use short-lived tokens, refresh strategies, secure secret storage.
+- **NoSQL/SQL injection:** Always use parameterized queries and sanitize inputs.
+- **Supply chain attacks:** Audit npm dependencies regularly and pin versions.
+- **Rate limiting:** Use throttling to prevent DoS.
 
 ---
 
@@ -80,11 +80,11 @@ The requirements will be the following:
 
 ### Security Risks and Mitigations
 
-- **Open instances without authentication** → Always enforce authentication and TLS.
-- **NoSQL injection** → Sanitize inputs, restrict operators.
-- **Overly permissive roles** → Use least-privilege roles per service.
-- **Unencrypted data at rest** → Enable disk encryption and TLS for all connections.
-- **Backup exposure** → Secure backup storage, rotate credentials.
+- **Open instances without authentication:** Always enforce authentication and TLS.
+- **NoSQL injection:** Sanitize inputs, restrict operators.
+- **Overly permissive roles:** Use least-privilege roles per service.
+- **Unencrypted data at rest:** Enable disk encryption and TLS for all connections.
+- **Backup exposure:** Secure backup storage, rotate credentials.
 
 ---
 
@@ -115,11 +115,11 @@ The requirements will be the following:
 
 ### Security Risks and Mitigations
 
-- **XSS via dangerous rendering** → Avoid direct HTML injection, sanitize content.
-- **Insecure state management (token leaks)** → Store tokens in HttpOnly cookies, avoid localStorage for sensitive data.
-- **Dependency vulnerabilities** → Audit npm packages regularly.
-- **Clickjacking** → Use CSP and X-Frame-Options headers.
-- **Leakage in source maps** → Disable source maps in production builds.
+- **XSS via dangerous rendering:** Avoid direct HTML injection, sanitize content.
+- **Insecure state management (token leaks):** Store tokens in HttpOnly cookies, avoid localStorage for sensitive data.
+- **Dependency vulnerabilities:** Audit npm packages regularly.
+- **Clickjacking:** Use CSP and X-Frame-Options headers.
+- **Leakage in source maps:** Disable source maps in production builds.
 
 ---
 
@@ -151,9 +151,9 @@ The requirements will be the following:
 
 ### Security Risks and Mitigations
 
-- **Risk of large bundle size exposing unused packages** → Mitigate by tree-shaking and package audits.
-- **Dependency ecosystem still maturing** → Select only well-maintained packages with good reputation.
-- **Insecure state management (token leaks)** → Store tokens in secure storage, avoid direct clear disk-write for
+- **Risk of large bundle size exposing unused packages:** Mitigate by tree-shaking and package audits.
+- **Dependency ecosystem still maturing:** Select only well-maintained packages with good reputation.
+- **Insecure state management (token leaks):** Store tokens in secure storage, avoid direct clear disk-write for
   sensitive data.
 
 ---
