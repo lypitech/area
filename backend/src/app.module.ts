@@ -1,22 +1,25 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { DatabaseModule } from './database/database.module';
+import { LoginModule } from './login/login.module';
 
 @Module({
   imports: [
-      ConfigModule.forRoot({ isGlobal: true }),
-      UsersModule,
-      AuthModule,
-      CommonModule,
-      DatabaseModule
+    MongooseModule.forRoot('mongodb://mongo:27017/nestdb'),
+    ConfigModule.forRoot({ isGlobal: true }),
+    UsersModule,
+    AuthModule,
+    CommonModule,
+    DatabaseModule,
+    LoginModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-
 export class AppModule {}

@@ -12,8 +12,9 @@
 .env.production.local
 
 # compiled output
-/dist
+**/dist
 **/node_modules
+**/coverage
 /build
 
 # Logs
