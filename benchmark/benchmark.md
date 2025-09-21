@@ -19,7 +19,7 @@ The requirements will be the following:
 
 |                          | [NestJS](https://nestjs.com/) (Node.js/TS)                                                            | [FastAPI](https://fastapi.tiangolo.com/) (Python)                                                                    | [Go](https://go.dev/) (Golang)                                                  |
 |--------------------------|-------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
-| **Raw Performance**      | **Good** (compiled language)                                                                          | **Average** (Python interpreter)                                                                                     | **Excellent** (compiled, close to `C` performance)                              |
+| **Performance**          | **Good** (compiled language)                                                                          | **Average** (Python interpreter)                                                                                     | **Excellent** (compiled, close to `C` performance)                              |
 | **Ease of Development**  | **Medium to high** (MVC structure, decorators)                                                        | **Very high** (clear syntax, little boilerplate)                                                                     | **Medium** (simple syntax but lower level)                                      |
 | **Ecosystem**            | **Large** ([npm](https://www.npmjs.com/), frontend/backend, modern libs)                              | **Rich** (web, ORM)                                                                                                  | **Decent** (solid `stdlib`, but smaller ecosystem)                              |
 | **Learning Curve**       | **Medium** (`TypeScript` + `Nest` concepts)                                                           | **Low**                                                                                                              | **Medium** (simple syntax but different paradigm)                               |
@@ -55,17 +55,17 @@ The requirements will be the following:
 
 ## 2. Database
 
-|                      | [MongoDB](https://www.mongodb.com/)             | [PostgreSQL](https://www.postgresql.org/)                 | [MariaDB](https://mariadb.org/)                                                                                                                                                       |
-|----------------------|-------------------------------------------------|-----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Type**             | **NoSQL** (schema-less document-oriented)       | **Relational**                                            | **Relational**                                                                                                                                                                        |
-| **Raw Performance**  | **Excellent** for massive R/W operations        | **Very good** (especially for complex queries)            | **Good** (optimized for simple queries)                                                                                                                                               |
-| **Scalability**      | **Excellent** (sharding, native replication)    | Vertical and horizontal                                   | **Good**, but less advanced than MongoDB                                                                                                                                              |
-| **Data Flexibility** | **Very flexible**                               | Strict schema, but supports JSON/JSONB                    | SQL schema, low flexibility                                                                                                                                                           |
-| **Transactions**     | Limited multi-document transactions             | Full ACID                                                 | Full ACID                                                                                                                                                                             |
-| **Ecosystem**        | **Large** (big data tools, integrations)        | **Rich** (many extensions)                                | **Large** (many tools)                                                                                                                                                                |
-| **Learning Curve**   | **Medium** (document paradigm differs from SQL) | **Medium** (SQL with more features)                       | **Low**                                                                                                                                                                               |
-| **Typical Use Case** | Big Data, logs, flexible apps                   | Critical apps, complex analytics                          | Classic web apps                                                                                                                                                                      |
-| **Experience**       | No experience.                                  | - [Arthur D.](https://github.com/tuturicide) (since 2025) | - [Lysandre B.](https://github.com/shuvlyy) (since 2019)<br/>- [Pierre M.](https://github.com/PierreMarguerie) (since 2024)<br/>- [Timéo T.](https://github.com/timeotr) (since 2024) |
+|                      | [MongoDB](https://www.mongodb.com/)                   | [PostgreSQL](https://www.postgresql.org/)                 | [MariaDB](https://mariadb.org/)                                                                                                                                                       |
+|----------------------|-------------------------------------------------------|-----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Type**             | **NoSQL** (schema-less document-oriented)             | **Relational**                                            | **Relational**                                                                                                                                                                        |
+| **Performance**      | **Excellent** for massive R/W operations              | **Very good** (especially for complex queries)            | **Good** (optimized for simple queries)                                                                                                                                               |
+| **Scalability**      | **Excellent** (sharding, native replication)          | **Very good** (vertical and horizontal)                   | **Good**, but less advanced than MongoDB                                                                                                                                              |
+| **Data Flexibility** | **Very flexible**                                     | **Strict schema**, but supports JSON/JSONB                | **Low flexibility**, SQL schema                                                                                                                                                       |
+| **Transactions**     | **Limited multi-document transactions**               | **Full ACID**                                             | **Full ACID**                                                                                                                                                                         |
+| **Ecosystem**        | **Large** (big data tools, integrations)              | **Rich** (many extensions)                                | **Large** (many tools)                                                                                                                                                                |
+| **Learning Curve**   | **Medium** (document paradigm is not the same as SQL) | **Medium** (basically MySQL with more features)           | **Low**                                                                                                                                                                               |
+| **Typical Use Case** | Big Data, logs, flexible apps                         | Critical apps, complex analytics                          | Classic web apps                                                                                                                                                                      |
+| **Experience**       | No experience.                                        | - [Arthur D.](https://github.com/tuturicide) (since 2025) | - [Lysandre B.](https://github.com/shuvlyy) (since 2019)<br/>- [Pierre M.](https://github.com/PierreMarguerie) (since 2024)<br/>- [Timéo T.](https://github.com/timeotr) (since 2024) |
 
 ### Decision
 
@@ -74,8 +74,8 @@ The requirements will be the following:
 - Provides **schema flexibility**, essential to store workflow definitions, user configurations, and unstructured
   payloads.
 - Built-in **sharding and replication**, ensuring horizontal scalability for millions of events.
-- Strong ecosystem for **real-time data handling**.
-- Easier to iterate quickly on new features compared to rigid relational schemas.
+- **Strong ecosystem** for **real-time data handling**.
+- **Easier** to iterate quickly on new features compared to rigid relational schemas.
 - We yearn to learn it.
 
 ### Security Risks and Mitigations
@@ -96,7 +96,7 @@ The requirements will be the following:
 | **Performance**      | **Good**                                                               | **Good**, but heavy bundles                                     | **Excellent** (compiled to optimized JS)     |
 | **Learning Curve**   | **Medium** (some ecosystem learning)                                   | **High** (complex concepts, [RxJS](https://rxjs.dev/), modules) | **Low-medium** (syntax close to native HTML) |
 | **Ecosystem**        | **Very large** ([npm](https://www.npmjs.com/), many third-party tools) | **Large**, structured                                           | **Smaller**, but rapidly growing             |
-| **Community**        | **Very large** and dominant (Meta)                                     | **Large** and active (Google)                                   | **Smaller** but very active                  |
+| **Community**        | **Very large and dominant** (Meta)                                     | **Large and active** (Google)                                   | **Smaller** but very active                  |
 | **Scalability**      | **Good**, requires strong architecture discipline                      | **Very good** for large enterprise projects                     | Less suited for very large projects          |
 | **Typical Use Case** | Versatile web apps, flexible frontends                                 | Enterprise apps, complex projects                               | Lightweight apps, fast prototypes            |
 | **Experience**       | - [Esteban B.](https://github.com/Babouye) (since 2024)                | No experience                                                   | No experience                                |
@@ -106,11 +106,11 @@ The requirements will be the following:
 **React/TypeScript** was chosen for the web frontend because:
 
 - It is the **industry standard**, ensuring long-term support.
-- Huge **ecosystem** (state management, routing, visualization).
-- Great flexibility to build a complex **workflow builder UI** with drag-and-drop, real-time updates, and reusable 
+- **Huge ecosystem** (state management, routing, visualization).
+- **Great flexibility** to build a complex workflow builder UI with drag-and-drop, real-time updates, and reusable 
   components.
-- Large and active community, ensuring better sustainability than Svelte.
-- Esteban is already experienced with React, reducing the risk of beginner mistakes and speeding the development
+- **Large and active community**, ensuring better sustainability than Svelte.
+- **Esteban B. is already experienced with React**, reducing the risk of beginner mistakes and speeding the development
   process.
 
 ### Security Risks and Mitigations
@@ -125,27 +125,27 @@ The requirements will be the following:
 
 ## 4. Frontend (Mobile)
 
-|                       | [Flutter](https://flutter.dev)                                  | [React Native](https://reactnative.dev/) / [Expo](https://expo.dev/) | [Native (Kotlin for Android)](https://developer.android.com/kotlin) |
-|-----------------------|-----------------------------------------------------------------|----------------------------------------------------------------------|---------------------------------------------------------------------|
-| **Cross-platform**    | **Yes** (iOS, Android, Web, Desktop)                            | **Yes** (iOS and Android)                                            | **No**                                                              |
-| **Performance**       | **Very good** (near-native, own render engine)                  | **Good**, depends on native bridges                                  | **Excellent**                                                       |
-| **UI/UX consistency** | **Very strong**                                                 | **Medium** (relies on native components)                             | **Perfect** (native look & feel)                                    |
-| **Ecosystem**         | **Growing**, [rich widget library and plugins](https://pub.dev) | **Large** (npm ecosystem, many libraries)                            | **Mature**                                                          |
-| **Community**         | **Large**, **strong support** (owned by Google)                 | **Very large** (owned by Meta)                                       | **Large**                                                           |
-| **Development Speed** | **Very high** (hot reload)                                      | **High** (hot reload, JS familiarity)                                | **Medium** (requires platform-specific code)                        |
-| **App Size**          | **Larger binaries** (~40–50MB for small apps)                   | **Smaller than Flutter, larger than native**                         | **Smallest possible**                                               |
-| **Learning Curve**    | **Medium** (Dart adoption lower than JS/TS)                     | **Low** for JS/TS devs, **higher** for advanced apps                 | **Hard** (painful framework and setup)                              |
-| **Typical Use Case**  | Cross-platform apps with complex UI/UX                          | Cross-platform mobile apps, quick MVPs                               | High-performance apps                                               |
-| **Experience**        | - [Lysandre B.](https://github.com/shuvlyy) (since 2022)        |                                                                      | - [Lysandre B.](https://github.com/shuvlyy) (2019) - Very little    |
+|                       | [Flutter](https://flutter.dev)                                            | [React Native](https://reactnative.dev/) / [Expo](https://expo.dev/) | [Native (Kotlin for Android)](https://developer.android.com/kotlin) |
+|-----------------------|---------------------------------------------------------------------------|----------------------------------------------------------------------|---------------------------------------------------------------------|
+| **Cross-platform**    | **Yes** (iOS, Android, Web, Desktop)                                      | **Yes** (iOS and Android)                                            | **No**                                                              |
+| **Performance**       | **Very good** (near-native, own render engine)                            | **Good**, depends on native bridges                                  | **Excellent**                                                       |
+| **UI/UX consistency** | **Very strong**                                                           | **Medium** (relies on native components)                             | **Perfect** (native look & feel)                                    |
+| **Ecosystem**         | **Large and growing**, [rich widget library and plugins](https://pub.dev) | **Large** (npm ecosystem, many libraries)                            | **Mature**                                                          |
+| **Community**         | **Large**, **strong support** (owned by Google)                           | **Very large** (owned by Meta)                                       | **Large**                                                           |
+| **Development Speed** | **Very high** (hot reload, community packages)                            | **High** (hot reload, JS familiarity)                                | **Medium** (requires platform-specific code)                        |
+| **App Size**          | **Larger binaries** (~40–50MB for small apps)                             | **Smaller than Flutter, larger than native**                         | **Smallest possible**                                               |
+| **Learning Curve**    | **Medium** (Dart adoption lower than JS/TS)                               | **Low** for JS/TS devs, **higher** for advanced apps                 | **Hard** (painful framework and setup)                              |
+| **Typical Use Case**  | Cross-platform apps with complex UI/UX                                    | Cross-platform mobile apps, quick MVPs                               | High-performance apps                                               |
+| **Experience**        | - [Lysandre B.](https://github.com/shuvlyy) (since 2022)                  | No experience.                                                       | - [Lysandre B.](https://github.com/shuvlyy) (2019) - Very little    |
 
 ### Decision
 
 **Flutter** was chosen for the mobile frontend because:
 
 - Our mobile developer is already experienced with Flutter, reducing the risk of beginner mistakes.
-- Flutter provides a **cross-platform solution** with consistent UI/UX across Android and iOS.
-- It offers **fast development cycles** (hot reload, widget ecosystem) which aligns with the project’s need for rapid
-  iteration.
+- Flutter provides a **cross-platform solution** with **consistent UI/UX** across Android and iOS.
+- It offers **fast development cycles** (hot reload, widget ecosystem) which aligns with the project’s need for **rapid
+  iteration**.
 - While app size is larger compared to native, this trade-off is acceptable given the productivity and consistency
   benefits.
 
