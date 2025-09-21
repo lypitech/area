@@ -51,7 +51,7 @@ export default function Login() {
       console.error("Network error:", err);
       setError("Unable to connect to the server.");
     } finally {
-      setLoading(false); // 🔹 arrête le loading dans tous les cas
+      setLoading(false);
     }
   };
 
