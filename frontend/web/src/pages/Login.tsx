@@ -16,35 +16,39 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    console.log("login");
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
+
+    const payload = {
+      email,
+      password,
+    };
 
     try {
-      const response = await fetch("http://localhost:3000/login/", {
+      const response = await fetch("http://localhost:3000/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        throw new Error("Invalid credentials or server error");
-      }
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Login success:", data);
 
-      const data = await response.json();
-
-      if (data.token) {
         localStorage.setItem("token", data.token);
+
         navigate("/home");
       } else {
-        throw new Error("No token received");
+        const error = await response.json();
+        setError(error.message);
+        console.error("Login failed:", error);
+        alert(error.message || "Login failed");
       }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error("Network error:", err);
+      alert("Unable to connect to the server.");
     }
   };
 
@@ -72,6 +76,7 @@ export default function Login() {
               Email
             </label>
             <Input
+              name="email"
               placeholder="you@example.com"
               iconName="login"
               required
@@ -91,6 +96,7 @@ export default function Login() {
               Password
             </label>
             <Input
+              name="password"
               placeholder="Your password"
               iconName="lock"
               required

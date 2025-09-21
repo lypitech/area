@@ -22,18 +22,39 @@ export default function Register() {
       reader.readAsDataURL(file);
     }
   };
-
-  const handleRegister = async (e: React.FormEvent) => {
-    console.log("register");
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const formData = new FormData(e.currentTarget as HTMLFormElement);
-    const response = await fetch("http://localhost:3000/login/register/", {
-      method: "POST",
-      body: formData,
-    });
-    if (response.ok) {
-      navigate("/login");
+    // Récupération des champs depuis le formulaire
+    const formData = new FormData(e.currentTarget);
+    const payload = {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      name: formData.get("nickname"), // ou "username" selon ton back
+    };
+
+    try {
+      const response = await fetch("http://localhost:3000/login/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Register success:", data);
+        // Redirige vers le login
+        navigate("/login");
+      } else {
+        const error = await response.json();
+        console.error("Register failed:", error);
+        alert(error.message || "Registration failed");
+      }
+    } catch (err) {
+      console.error("Network error:", err);
+      alert("Unable to connect to the server.");
     }
   };
 
