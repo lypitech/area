@@ -39,6 +39,7 @@ dependencies:
   json_serializable: ^6.11.1
   flutter_riverpod: ^3.0.0
   flutter_launcher_icons: ^0.14.4
+  fluttertoast: ^9.0.0
 
 dev_dependencies:
   flutter_test:
@@ -78,3 +79,52 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  fonts:
+    - family: Kanit
+      fonts:
+        - asset: assets/font/Kanit-Thin.ttf
+          weight: 100
+        - asset: assets/font/Kanit-ThinItalic.ttf
+          weight: 100
+          style: italic
+        - asset: assets/font/Kanit-ExtraLight.ttf
+          weight: 200
+        - asset: assets/font/Kanit-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: assets/font/Kanit-Light.ttf
+          weight: 300
+        - asset: assets/font/Kanit-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: assets/font/Kanit-Regular.ttf
+          weight: 400
+        - asset: assets/font/Kanit-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/font/Kanit-Medium.ttf
+          weight: 500
+        - asset: assets/font/Kanit-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/font/Kanit-SemiBold.ttf
+          weight: 600
+        - asset: assets/font/Kanit-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/font/Kanit-Bold.ttf
+          weight: 700
+        - asset: assets/font/Kanit-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/font/Kanit-ExtraBold.ttf
+          weight: 800
+        - asset: assets/font/Kanit-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        - asset: assets/font/Kanit-Black.ttf
+          weight: 900
+        - asset: assets/font/Kanit-BlackItalic.ttf
+          weight: 900
+          style: italic
