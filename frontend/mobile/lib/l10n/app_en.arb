@@ -1,3 +1,6 @@
 {
-  "welcome": "Welcome!"
+  "forgot_password": "Forgot password?",
+  "or_continue_with": "Or continue with",
+  "email": "E-mail",
+  "password": "Password"
 }
