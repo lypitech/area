@@ -1,42 +1,46 @@
 import 'package:area/core/constant/constants.dart';
+import 'package:area/data/provider/auth_service_provider.dart';
+import 'package:area/data/provider/auth_state_provider.dart';
 import 'package:area/widget/a_text_field.dart';
 import 'package:area/widget/clickable_frame.dart';
 import 'package:area/widget/logo.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 
-class LoginPage extends StatefulWidget {
-
-  const LoginPage({
-    super.key
-  });
-
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-
-}
-
-class _LoginPageState extends State<LoginPage> {
+class LoginPage extends ConsumerWidget {
 
   final _authFormKey = GlobalKey<FormState>();
 
   final _emailFieldController = TextEditingController();
   final _passwordFieldController = TextEditingController();
 
-  void _login() {
-    // ...
+  LoginPage({
+    super.key
+  });
+
+  void _login(WidgetRef ref) async {
+    if (_authFormKey.currentState != null &&
+        !_authFormKey.currentState!.validate()) {
+      return;
+    }
+
+    try {
+      await ref.read(authServiceProvider).login(
+        _emailFieldController.text,
+        _passwordFieldController.text,
+      );
+      ref.read(authStateProvider.notifier).state = true;
+    } catch (e) {
+      print(e);
+      Fluttertoast.showToast(msg: 'Login failed: $e');
+    }
   }
 
   @override
-  void dispose() {
-    _emailFieldController.dispose();
-    _passwordFieldController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
 
@@ -93,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 Gap(40),
                 ClickableFrame(
-                  onTap: _login,
+                  onTap: () => _login(ref),
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: Icon(Icons.arrow_forward_ios_rounded),
