@@ -1,51 +1,50 @@
-# Technology Benchmark for a Workflow Automation Platform (Zapier-like)
+<img src="../md/assets/AREA_1024.png" width=72 alt="Logo of the application"/>
 
-## Global Context
+# DEV-500 ‒ `AREA` ‒ Stack Benchmark
 
-The goal is to develop a **web application similar to IFTTT or Zapier**, where users can create, configure, and run automated workflows.  
-Such a platform requires:
+## Context
 
-- A **scalable backend** capable of handling many concurrent requests.
+The goal is to develop a **web application similar to IFTTT or Zapier**, where users can create, configure, and run 
+automated workflows.
+The requirements will be the following:
+
+- A **scalable backend** capable of handling many requests at once.
 - A **database** able to manage both structured and semi-structured data with strong scalability.
-- A **frontend** that provides a rich, interactive workflow builder (drag-and-drop, event triggers, visual flows).
+- A **frontend** that can provide an interactive workflow builder (drag-and-drop, event triggers, visual flows).
 - A stack that balances **performance, scalability, developer productivity, and security**.
-
-After evaluation, the following choices were made:
-
-- **Backend**: NestJS
-- **Database**: MongoDB
-- **Frontend**: React/TypeScript
 
 ---
 
-# 1. Backend Benchmark: FastAPI vs NestJS vs Go
+## 1. Backend
 
-## Comparison Table
+|                          | `NestJS` (Node.js/TS)                        | `FastAPI` (Python)                           | `Go` (Golang)                                  |
+|--------------------------|----------------------------------------------|----------------------------------------------|------------------------------------------------|
+| **Raw Performance**      | Good (compiled language)                     | Average (Python interpreter)                 | Excellent (compiled, close to `C` performance) |
+| **Ease of Development**  | Medium to high (MVC structure, decorators)   | Very high (clear syntax, little boilerplate) | Medium (simple syntax but lower level)         |
+| **Ecosystem**            | Large (`npm`, frontend/backend, modern libs) | Rich (web, ORM)                              | Decent (solid `stdlib`, but smaller ecosystem) |
+| **Learning Curve**       | Medium (`TypeScript` + `Nest` concepts)      | Low                                          | Medium (simple syntax but different paradigm)  |
+| **Scalability**          | Good (microservices-oriented, websockets)    | Limited, good for I/O APIs                   | Very good (native concurrency support)         |
+| **Community**            | Large (backed by the `JS` ecosystem)         | Large                                        | Large (DevOps/backend focus)                   |
+| **ORM / DB Integration** | `TypeORM`, `Prisma`, `Mongoose`              | SQLAlchemy, Tortoise, Prisma                 | `GORM`, `sqlx`                                 |
+| **Typical Use Case**     | Full web apps, Node-based microservices      | Quick APIs, AI integrations                  | High-performance services, distributed systems |
+| **Experience**           | Backend team has experience with `JS`        | Everyone (`Python`)                          | - Esteban B. (since 2024)                      |
 
-| Criteria                 | FastAPI (Python)                                 | NestJS (Node.js/TS)                        | Go (Golang)                                    |
-| ------------------------ | ------------------------------------------------ | ------------------------------------------ | ---------------------------------------------- |
-| **Language**             | Python                                           | TypeScript / JavaScript                    | Go                                             |
-| **Raw Performance**      | Average (Python interpreter, depends on uvicorn) | Good (Node.js + TypeScript, scalable)      | Excellent (compiled, close to C performance)   |
-| **Ease of Development**  | Very high (clear syntax, little boilerplate)     | Medium to high (MVC structure, decorators) | Medium (simple syntax but lower level)         |
-| **Ecosystem**            | Rich (AI, data science, web, SQLAlchemy ORM)     | Large (npm, frontend/backend, modern libs) | Decent (solid stdlib, but smaller ecosystem)   |
-| **Learning Curve**       | Low for Python developers                        | Medium (TypeScript + Nest concepts)        | Medium (simple syntax but different paradigm)  |
-| **Scalability**          | Limited by Python GIL, good for I/O APIs         | Good (microservices-oriented, websockets)  | Very good (native concurrency support)         |
-| **Community**            | Large (especially data/AI oriented)              | Large (backed by the JS ecosystem)         | Large and active (DevOps/backend focus)        |
-| **ORM / DB Integration** | SQLAlchemy, Tortoise, Prisma (less mature)       | TypeORM, Prisma, Mongoose (very mature)    | GORM, sqlx (good but lower level)              |
-| **Typical Use Case**     | Quick APIs, ML/AI integrations                   | Full web apps, Node-based microservices    | High-performance services, distributed systems |
+### Decision
 
-## Decision
+**`NestJS`** was chosen for the backend because:
 
-**NestJS** was chosen for the backend because:
-
-- Provides **structured and opinionated architecture**, crucial for complex workflow applications.
-- Excellent **ecosystem** with npm and TypeScript, enabling fast integration of external services.
+- Provides **structured and opinionated (strict) architecture**, crucial for complex workflow applications.
+- Excellent **ecosystem** with `npm` and `TypeScript`, enabling fast integration of external services.
 - Built-in support for **microservices and websockets**, aligned with event-driven workflow execution.
-- Good balance between **performance and developer productivity** compared to FastAPI (simpler but less scalable) and Go (faster but more low-level).
+- Good balance between **performance and developer productivity** compared to `FastAPI` (simpler but less scalable) and
+  `Go` (faster but more low-level).
+- Due to the far due date, we have decided that this project would be a good opportunity to learn a new framework, that
+  is widely used in the real-world.
 
-## Security Risks and Mitigations
+### Security Risks and Mitigations
 
-- **Validation misconfiguration** → Always enable global validation (ValidationPipe with whitelist, forbidNonWhitelisted).
+- **Validation misconfiguration** → Always enable global validation (ValidationPipe with whitelist,
+  forbidNonWhitelisted).
 - **CORS misconfigurations** → Restrict allowed origins in production.
 - **Weak JWT/auth handling** → Use short-lived tokens, refresh strategies, secure secret storage.
 - **NoSQL/SQL injection** → Always use parameterized queries and sanitize inputs.
@@ -54,31 +53,32 @@ After evaluation, the following choices were made:
 
 ---
 
-# 2. Database Benchmark: PostgreSQL vs MongoDB vs MariaDB
+## 2. Database
 
-## Comparison Table
+|                      | MongoDB                                     | PostgreSQL                                 | MariaDB                                                                            |
+|----------------------|---------------------------------------------|--------------------------------------------|------------------------------------------------------------------------------------|
+| **Type**             | NoSQL (schema-less document-oriented)       | Relational                                 | Relational                                                                         |
+| **Raw Performance**  | Excellent for massive R/W operations        | Very good (especially for complex queries) | Good (optimized for simple queries)                                                |
+| **Scalability**      | Excellent (sharding, native replication)    | Vertical and horizontal                    | Good but less advanced than MongoDB                                                |
+| **Data Flexibility** | Very flexible                               | Strict schema, but supports JSON/JSONB     | SQL schema, low flexibility                                                        |
+| **Transactions**     | Limited multi-document transactions         | Full ACID                                  | Full ACID                                                                          |
+| **Ecosystem**        | Large (big data tools, integrations)        | Rich (many extensions)                     | Large (many tools)                                                                 |
+| **Learning Curve**   | Medium (document paradigm differs from SQL) | Medium (SQL with more features)            | Low                                                                                |
+| **Typical Use Case** | Big Data, logs, flexible apps               | Critical apps, complex analytics           | Classic web apps                                                                   |
+| **Experience**       | No experience.                              | - Arthur D. (since 2025)                   | - Lysandre B. (since 2019)<br/>-Pierre M. (since 2024)<br/>- Timéo T. (since 2024) |
 
-| Criteria             | PostgreSQL                                     | MongoDB                                     | MariaDB                                 |
-| -------------------- | ---------------------------------------------- | ------------------------------------------- | --------------------------------------- |
-| **Type**             | Relational (SQL)                               | NoSQL (document-oriented)                   | Relational (SQL, MySQL fork)            |
-| **Raw Performance**  | Very good, especially for complex queries      | Excellent for massive read/write operations | Good, optimized for simple queries      |
-| **Scalability**      | Vertical and horizontal (extensions available) | Excellent (sharding, native replication)    | Good but less advanced than MongoDB     |
-| **Data Flexibility** | Strict schema, but supports JSON/JSONB         | Very flexible (schema-less documents)       | SQL schema, low flexibility             |
-| **Transactions**     | Full ACID                                      | Limited multi-document transactions         | Full ACID                               |
-| **Ecosystem**        | Rich (PostGIS, TimescaleDB, many extensions)   | Large (big data tools, BI, integrations)    | Large (MySQL compatibility, many tools) |
-| **Learning Curve**   | Medium (advanced SQL features)                 | Medium (document paradigm differs from SQL) | Low if familiar with MySQL              |
-| **Typical Use Case** | Critical apps, complex analytics, BI           | Big Data, IoT, logs, flexible apps          | Classic web apps, MySQL replacement     |
+### Decision
 
-## Decision
+**`MongoDB`** was chosen for the database because:
 
-**MongoDB** was chosen for the database because:
-
-- Provides **schema flexibility**, essential to store workflow definitions, user configurations, and unstructured payloads.
+- Provides **schema flexibility**, essential to store workflow definitions, user configurations, and unstructured
+  payloads.
 - Built-in **sharding and replication**, ensuring horizontal scalability for millions of events.
-- Strong ecosystem for **real-time data handling** (e.g., Change Streams for event-driven architectures).
+- Strong ecosystem for **real-time data handling**.
 - Easier to iterate quickly on new features compared to rigid relational schemas.
+- We yearn to learn it.
 
-## Security Risks and Mitigations
+### Security Risks and Mitigations
 
 - **Open instances without authentication** → Always enforce authentication and TLS.
 - **NoSQL injection** → Sanitize inputs, restrict operators.
@@ -88,33 +88,34 @@ After evaluation, the following choices were made:
 
 ---
 
-# 3. Frontend Benchmark: Angular vs React/TypeScript vs Svelte
+## 3. Frontend (Web)
 
-## Comparison Table
+|                      | React/TypeScript/Vite                         | Angular                                 | Svelte                                   |
+|----------------------|-----------------------------------------------|-----------------------------------------|------------------------------------------|
+| **Architecture**     | UI library, highly flexible                   | Full framework (opinionated, MVC-like)  | Compiled framework, component-driven     |
+| **Performance**      | Good                                          | Good, but heavy bundles                 | Excellent (compiled to optimized JS)     |
+| **Learning Curve**   | Medium (some ecosystem learning)              | High (complex concepts, RxJS, modules)  | Low-medium (syntax close to native HTML) |
+| **Ecosystem**        | Very large (npm, many third-party tools)      | Large, structured                       | Smaller, but rapidly growing             |
+| **Community**        | Very large and dominant (Meta)                | Large and active (Google)               | Smaller but very active                  |
+| **Scalability**      | Good, requires strong architecture discipline | Very good for large enterprise projects | Less suited for very large projects      |
+| **Typical Use Case** | Versatile web apps, flexible frontends        | Enterprise apps, complex projects       | Lightweight apps, fast prototypes        |
+| **Experience**       | - Esteban B. (since 2024)                     | No experience                           | No experience                            |
 
-| Criteria             | Angular                                 | React/TypeScript                              | Svelte                                      |
-| -------------------- | --------------------------------------- | --------------------------------------------- | ------------------------------------------- |
-| **Main Language**    | TypeScript                              | TypeScript / JavaScript                       | JavaScript / TypeScript                     |
-| **Architecture**     | Full framework (opinionated, MVC-like)  | UI library, highly flexible                   | Compiled framework, component-driven        |
-| **Performance**      | Good, but heavy bundles                 | Good, depends on chosen ecosystem             | Excellent (compiled to optimized JS)        |
-| **Learning Curve**   | High (complex concepts, RxJS, modules)  | Medium (JS/TS + JSX, some ecosystem learning) | Low to medium (syntax close to native HTML) |
-| **Ecosystem**        | Large, official, structured             | Very large (npm, many third-party tools)      | Smaller, but rapidly growing                |
-| **Community**        | Large and active (Google)               | Very large and dominant (Meta, OSS)           | Smaller but very active                     |
-| **Scalability**      | Very good for large enterprise projects | Good, requires strong architecture discipline | Less suited for very large projects         |
-| **Typical Use Case** | Enterprise apps, complex projects       | Versatile web apps, flexible frontends        | Lightweight apps, fast prototypes           |
+### Decision
 
-## Decision
+**React/TypeScript** was chosen for the web frontend because:
 
-**React/TypeScript** was chosen for the frontend because:
-
-- It is the **industry standard**, ensuring easier recruitment and long-term support.
+- It is the **industry standard**, ensuring long-term support.
 - Huge **ecosystem** (state management, routing, visualization).
-- Great flexibility to build a complex **workflow builder UI** with drag-and-drop, real-time updates, and reusable components.
+- Great flexibility to build a complex **workflow builder UI** with drag-and-drop, real-time updates, and reusable 
+  components.
 - Large and active community, ensuring better sustainability than Svelte.
+- Esteban is already experienced with React, reducing the risk of beginner mistakes and speeding the development
+  process.
 
-## Security Risks and Mitigations
+### Security Risks and Mitigations
 
-- **XSS via dangerous rendering (dangerouslySetInnerHTML)** → Avoid direct HTML injection, sanitize content.
+- **XSS via dangerous rendering** → Avoid direct HTML injection, sanitize content.
 - **Insecure state management (token leaks)** → Store tokens in HttpOnly cookies, avoid localStorage for sensitive data.
 - **Dependency vulnerabilities** → Audit npm packages regularly.
 - **Clickjacking** → Use CSP and X-Frame-Options headers.
@@ -122,85 +123,46 @@ After evaluation, the following choices were made:
 
 ---
 
-# Final Summary
+## 4. Frontend (Mobile)
 
-- **Backend** → **NestJS** for structured architecture, scalability, and microservice support.
-- **Database** → **MongoDB** for flexible schema and high scalability.
-- **Frontend** → **React/TypeScript** for ecosystem maturity and suitability for complex UI.
+|                       | Flutter                                                     | React Native / Expo                          | Native (Kotlin for Android)              |
+|-----------------------|-------------------------------------------------------------|----------------------------------------------|------------------------------------------|
+| **Cross-platform**    | Yes (iOS, Android, Web, Desktop)                            | Yes (iOS and Android)                        | No                                       |
+| **Performance**       | Very good (near-native, own render engine)                  | Good, depends on native bridges              | Excellent                                |
+| **UI/UX consistency** | Very strong                                                 | Medium (relies on native components)         | Perfect (native look & feel)             |
+| **Ecosystem**         | Growing, [rich widget library and plugins](https://pub.dev) | Large (npm ecosystem, many libraries)        | Mature                                   |
+| **Community**         | Large, strong support (owned by Google)                     | Very large (owned by Meta)                   | Large                                    |
+| **Development Speed** | Very high (hot reload)                                      | High (hot reload, JS familiarity)            | Medium (requires platform-specific code) |
+| **App Size**          | Larger binaries (~40–50MB for small apps)                   | Smaller than Flutter, larger than native     | Smallest possible                        |
+| **Learning Curve**    | Medium (Dart adoption lower than JS/TS)                     | Low for JS/TS devs, higher for advanced apps | Hard (painful framework and setup)       |
+| **Typical Use Case**  | Cross-platform apps with complex UI/UX                      | Cross-platform mobile apps, quick MVPs       | High-performance apps                    |
 
-This stack balances **developer productivity, scalability, and security**, making it a solid foundation for building a Zapier-like workflow automation platform.
+### Decision
 
-# 4. Mobile Benchmark: Flutter vs React Native vs Native (Kotlin)
-
-## Context
-
-For the mobile part of the workflow automation platform, we need:
-
-- **Cross-platform capability** to cover both Android and iOS with a consistent user experience.
-- **Fast development cycles** to quickly iterate on features.
-- **Good ecosystem and libraries** for UI components, APIs, and integrations.
-- **Long-term maintainability** and performance for potentially complex UIs (workflow editor, notifications, dashboards).
-
----
-
-## Comparison Table
-
-| Criteria              | Flutter                                   | React Native                                 | Native (Kotlin for Android)                      |
-| --------------------- | ----------------------------------------- | -------------------------------------------- | ------------------------------------------------ |
-| **Language**          | Dart                                      | JavaScript / TypeScript                      | Kotlin (Android only)                            |
-| **Cross-platform**    | Yes (iOS, Android, Web, Desktop)          | Yes (iOS and Android)                        | No (Android only)                                |
-| **Performance**       | Very good (near-native, Skia rendering)   | Good, depends on native bridges              | Excellent (fully native)                         |
-| **UI/UX consistency** | Very strong (single rendering engine)     | Medium (relies on native components)         | Perfect (native look & feel)                     |
-| **Ecosystem**         | Growing, rich widget library and plugins  | Large (npm ecosystem, many libraries)        | Mature for Android, limited to one platform      |
-| **Community**         | Large, strong support (since 2017)        | Very large (backed by Meta, OSS)             | Large but Android-only                           |
-| **Development Speed** | High (hot reload, rich widgets)           | High (fast iterations, JS familiarity)       | Medium (requires platform-specific code)         |
-| **App Size**          | Larger binaries (~40–50MB for small apps) | Smaller than Flutter, larger than native     | Smallest possible                                |
-| **Learning Curve**    | Medium (Dart adoption lower than JS/TS)   | Low for JS/TS devs, higher for advanced apps | Medium (familiar to Java devs, but Android-only) |
-| **Typical Use Case**  | Cross-platform apps with complex UI/UX    | Cross-platform apps, quick MVPs              | High-performance Android-only apps               |
-
----
-
-## Conclusion
-
-- **Flutter**
-
-  - Strength: fast development, cross-platform, great UI/UX consistency, strong widget ecosystem.
-  - Weakness: larger app size, heavy SDK, smaller Dart adoption compared to JS/Kotlin.
-
-- **React Native**
-
-  - Strength: large ecosystem, huge JS/TS developer base, faster ramp-up for web devs.
-  - Weakness: relies on native bridges for performance-critical parts, UI consistency can vary.
-
-- **Native (Kotlin)**
-  - Strength: best performance and full access to Android APIs.
-  - Weakness: single-platform only, slower development, more expensive to maintain for multi-platform.
-
----
-
-## Security and Maintenance Risks
-
-- **Flutter**:
-
-  - Risk of large bundle size exposing unused packages → mitigate by tree-shaking and package audits.
-  - Dependency ecosystem still maturing → mitigate by selecting well-maintained packages.
-
-- **React Native**:
-
-  - Risk of dependency vulnerabilities (npm) → mitigate with regular audits.
-  - Native module fragmentation can lead to inconsistent behaviors → mitigate with stable libraries and version pinning.
-
-- **Native (Kotlin)**:
-  - No major cross-platform risks, but higher maintenance cost (requires a separate iOS team if targeting both platforms).
-  - Risk of code duplication across platforms → mitigate with shared business logic (e.g., Kotlin Multiplatform if needed).
-
----
-
-## Final Decision
-
-**Flutter** was chosen for the mobile application because:
+**Flutter** was chosen for the mobile frontend because:
 
 - Our mobile developer is already experienced with Flutter, reducing the risk of beginner mistakes.
 - Flutter provides a **cross-platform solution** with consistent UI/UX across Android and iOS.
-- It offers **fast development cycles** (hot reload, widget ecosystem) which aligns with the project’s need for rapid iteration.
-- While app size is larger compared to native, this trade-off is acceptable given the productivity and consistency benefits.
+- It offers **fast development cycles** (hot reload, widget ecosystem) which aligns with the project’s need for rapid
+  iteration.
+- While app size is larger compared to native, this trade-off is acceptable given the productivity and consistency
+  benefits.
+
+### Security Risks and Mitigations
+
+- **Risk of large bundle size exposing unused packages** → Mitigate by tree-shaking and package audits.
+- **Dependency ecosystem still maturing** → Select only well-maintained packages with good reputation.
+- **Insecure state management (token leaks)** → Store tokens in secure storage, avoid direct clear disk-write for
+  sensitive data.
+
+---
+
+## After evaluation, the following choices were made:
+
+- **Backend**: NestJS (TS)
+- **Database**: MongoDB
+- **Mobile Frontend**: React/Vite (TypeScript)
+- **Mobile Frontend:** Flutter (Dart)
+
+This stack balances **developer productivity, scalability, and security**, making it a solid foundation for this
+project.
