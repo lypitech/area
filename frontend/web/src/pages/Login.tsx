@@ -18,6 +18,8 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
 
     const payload = {
       email,
@@ -41,14 +43,15 @@ export default function Login() {
 
         navigate("/home");
       } else {
-        const error = await response.json();
-        setError(error.message);
-        console.error("Login failed:", error);
-        alert(error.message || "Login failed");
+        const errorData = await response.json();
+        setError(errorData.message || "Login failed");
+        console.error("Login failed:", errorData);
       }
     } catch (err) {
       console.error("Network error:", err);
-      alert("Unable to connect to the server.");
+      setError("Unable to connect to the server.");
+    } finally {
+      setLoading(false); // 🔹 arrête le loading dans tous les cas
     }
   };
 
