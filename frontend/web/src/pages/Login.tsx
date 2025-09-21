@@ -4,6 +4,11 @@ import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  // Check if user is already logged in
+  if (localStorage.getItem("token")) {
+    window.location.href = "/home";
+  }
+
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -12,6 +17,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
+    console.log("login");
     e.preventDefault();
     setError(null);
     setLoading(true);

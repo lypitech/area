@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   // Check if user is already logged in
-  // if (localStorage.getItem("token")) {
-  //   window.location.href = "/home";
-  // }
+  if (localStorage.getItem("token")) {
+    window.location.href = "/home";
+  }
 
   const navigate = useNavigate();
   const [preview, setPreview] = useState<string | null>(null);
@@ -20,6 +20,20 @@ export default function Register() {
         setPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    console.log("register");
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const response = await fetch("http://localhost:3000/login/register/", {
+      method: "POST",
+      body: formData,
+    });
+    if (response.ok) {
+      navigate("/login");
     }
   };
 
@@ -37,7 +51,7 @@ export default function Register() {
           <p>Register your account</p>
         </h1>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleRegister}>
           {/* Profile picture */}
           <div className="flex flex-col items-center">
             <label
