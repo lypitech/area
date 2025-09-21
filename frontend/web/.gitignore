@@ -1,44 +1,50 @@
-# .gitignore for Web application (AREA)
-
-# Dependencies
+# Node modules
 node_modules/
 
-# Build outputs
+# Build output
 dist/
-build/
 
-# Production
-*.log
+# Vite cache
+.vite/
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-# Runtime data
-.pnpm-store/
-*.pid
-*.seed
-*.pid.lock
+# Environment variables
+.env
+.env.*.local
 
-# Testing
-coverage/
-*.lcov
-jest-html-reporters-*
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 
-# Tailwind
-*.css.map
+# OS files
+.DS_Store
+Thumbs.db
 
 # TypeScript
 *.tsbuildinfo
 
-# Mac / Windows / Linux system files
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
+# Jest / Testing
+coverage/
+*.lcov
 
-# Vite cache
-.vite/
-vite.config.ts.timestamp-*
+# Tailwind
+tailwind.config.js
+tailwind.config.cjs
+tailwind.config.ts
 
+# Optional: npm package lock files (choose one)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Misc
+*.log
