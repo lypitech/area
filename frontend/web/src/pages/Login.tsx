@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Button } from "../components/Button";
 import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
+import { login } from "../services/authServices";
 
 export default function Login() {
-  // Check if user is already logged in
   if (localStorage.getItem("token")) {
     window.location.href = "/home";
   }
@@ -21,35 +21,12 @@ export default function Login() {
     setLoading(true);
     setError(null);
 
-    const payload = {
-      email,
-      password,
-    };
-
     try {
-      const response = await fetch("http://localhost:3000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Login success:", data);
-
-        localStorage.setItem("token", data.token);
-
-        navigate("/home");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Login failed");
-        console.error("Login failed:", errorData);
-      }
-    } catch (err) {
-      console.error("Network error:", err);
-      setError("Unable to connect to the server.");
+      const data = await login(email, password);
+      localStorage.setItem("token", data.token);
+      navigate("/home");
+    } catch (err: any) {
+      setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -111,16 +88,14 @@ export default function Login() {
           </div>
 
           {/* Error message */}
-          {error && (
-            <p className="text-red-500 text-sm text-center">Login failed</p>
-          )}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           {/* Submit button */}
           <Button
             className="w-full bg-black text-white font-semibold hover:opacity-90 transition"
             disabled={loading}
           >
-            Sign in
+            {loading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
 
