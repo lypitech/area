@@ -62,7 +62,9 @@ class RegisterPageLayout extends ConsumerWidget {
                 children: [
                   Text(
                     title,
-                    style: textTheme.displayMedium,
+                    style: textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.w500
+                    ),
                   ),
                   Column(
                     children: children,
