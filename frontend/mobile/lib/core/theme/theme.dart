@@ -1,3 +1,4 @@
+import 'package:area/widget/a_appbar.dart';
 import 'package:flutter/material.dart';
 
 class Theme {
@@ -19,6 +20,9 @@ class Theme {
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: true,
+        backgroundColor: Colors.transparent,
+        toolbarHeight: AAppbar.size,
+        scrolledUnderElevation: 0
       ),
       inputDecorationTheme: InputDecorationTheme(
         labelStyle: textTheme.bodyMedium?.copyWith(
