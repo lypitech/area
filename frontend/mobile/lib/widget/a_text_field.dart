@@ -11,6 +11,7 @@ class ATextField extends StatefulWidget {
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   final bool showValidator;
+  final void Function(String?)? onChange;
 
   const ATextField({
     required this.title,
@@ -22,6 +23,7 @@ class ATextField extends StatefulWidget {
     this.controller,
     this.validator,
     this.showValidator = true,
+    this.onChange,
     super.key
   });
 
@@ -64,6 +66,7 @@ class _ATextFieldState extends State<ATextField> {
         }) {
         return null;
       },
+      onChanged: widget.onChange,
       decoration: InputDecoration(
         labelText: widget.title,
         hintText: widget.hintText,
