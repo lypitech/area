@@ -7,6 +7,7 @@ class ATextField extends StatefulWidget {
   final IconData? leadingIcon;
   final bool obscureToggle;
   final TextInputType keyboardType;
+  final int? maxLength;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   final bool showValidator;
@@ -17,6 +18,7 @@ class ATextField extends StatefulWidget {
     this.leadingIcon,
     this.obscureToggle = false,
     this.keyboardType = TextInputType.text,
+    this.maxLength,
     this.controller,
     this.validator,
     this.showValidator = true,
@@ -48,14 +50,20 @@ class _ATextFieldState extends State<ATextField> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return TextFormField(
       controller: widget.controller,
       keyboardType: widget.keyboardType,
       obscureText: _obscureText,
       validator: widget.validator,
-
+      maxLength: widget.maxLength,
+      buildCounter: (
+        _, {
+          required int currentLength,
+          required bool isFocused,
+          required int? maxLength,
+        }) {
+        return null;
+      },
       decoration: InputDecoration(
         labelText: widget.title,
         hintText: widget.hintText,
