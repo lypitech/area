@@ -79,6 +79,11 @@ class RegisterPageLayout extends ConsumerWidget {
                     children: [
                       ClickableFrame(
                         onTap: () {
+                          if (formKey != null &&
+                              formKey!.currentState != null &&
+                              !formKey!.currentState!.validate()) {
+                            return;
+                          }
                           if (!onConfirm()) {
                             return;
                           }
