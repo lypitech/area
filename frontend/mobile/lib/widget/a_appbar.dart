@@ -22,6 +22,14 @@ class AAppbar extends StatelessWidget implements PreferredSizeWidget {
           width: 64,
           height: 64,
           decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                offset: Offset(0, 4),
+                blurRadius: 4,
+                color: Colors.black.withOpacity(.15)
+              )
+            ],
             image: DecorationImage(
               image: AssetImage('assets/image/AREA_1024.png')
             )
