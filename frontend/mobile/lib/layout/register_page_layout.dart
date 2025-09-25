@@ -12,11 +12,13 @@ class RegisterPageLayout extends ConsumerWidget {
   final String title;
   final List<Widget> children;
   final bool Function() onConfirm;
+  final GlobalKey<FormState>? formKey;
 
   const RegisterPageLayout({
     required this.title,
     required this.children,
     required this.onConfirm,
+    this.formKey,
     super.key
   });
 
@@ -25,7 +27,8 @@ class RegisterPageLayout extends ConsumerWidget {
     final registerModal = ref.read(registerModalProvider);
     final textTheme = Theme.of(context).textTheme;
 
-    return PopScope(
+    return Form(
+      key: formKey,
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
