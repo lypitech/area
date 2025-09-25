@@ -39,6 +39,7 @@ class RegisterPageLayout extends ConsumerWidget {
           return context.go('/login');
         }
         registerModal.currentPage--;
+        context.pop();
       },
       child: Scaffold(
         appBar: AAppbar(
