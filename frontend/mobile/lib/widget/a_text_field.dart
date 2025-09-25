@@ -39,6 +39,14 @@ class _ATextFieldState extends State<ATextField> {
   }
 
   @override
+  void initState() {
+    if (widget.obscureToggle) {
+      _obscureText = true;
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
@@ -66,8 +74,8 @@ class _ATextFieldState extends State<ATextField> {
             onPressed: _toggleObscureText,
             icon: Icon(
               _obscureText
-                ? Icons.visibility_off
-                : Icons.visibility,
+                ? Icons.visibility
+                : Icons.visibility_off,
             ),
           )
           : null
