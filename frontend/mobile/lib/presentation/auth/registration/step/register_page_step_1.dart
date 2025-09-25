@@ -61,29 +61,29 @@ class _RegisterPage1State extends ConsumerState<RegisterPageStep1> {
       onConfirm: _onConfirm,
       children: [
         ATextField(
-          title: 'Nickname',
+          title: l10n.nickname,
           leadingIcon: Icons.person_rounded,
           maxLength: Limits.maxNicknameLength,
           controller: _nicknameFieldController,
           validator: (String? value) {
             if (value == null || value.isEmpty) {
-              return 'Please specify a nickname.';
+              return l10n.validator_empty_nickname;
             }
             return null;
           },
         ),
         Gap(20),
         ATextField(
-          title: 'Username',
+          title: l10n.username,
           leadingIcon: Icons.alternate_email_rounded,
           maxLength: Limits.maxUsernameLength,
           controller: _usernameFieldController,
           validator: (String? value) {
             if (value == null || value.isEmpty) {
-              return 'Please specify a username.';
+              return l10n.validator_empty_username;
             }
             if (!Regexes.username.hasMatch(value)) {
-              return 'Only lowercased letters, digits and underscores are authorized.';
+              return l10n.validator_username_requirements;
             }
             return null;
           },

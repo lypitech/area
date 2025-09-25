@@ -64,10 +64,10 @@ class _RegisterPage2State extends ConsumerState<RegisterPageStep2> {
           controller: _emailFieldController,
           validator: (String? value) {
             if (value == null || value.isEmpty) {
-              return 'Please specify an email.';
+              return l10n.validator_empty_email;
             }
             if (!Regexes.email.hasMatch(value)) {
-              return 'Please specify a valid email address.';
+              return l10n.validator_invalid_email;
             }
             return null;
           },
