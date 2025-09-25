@@ -11,7 +11,7 @@ class RegisterPageLayout extends ConsumerWidget {
 
   final String title;
   final List<Widget> children;
-  final VoidCallback onConfirm;
+  final bool Function() onConfirm;
 
   const RegisterPageLayout({
     required this.title,
@@ -74,6 +74,12 @@ class RegisterPageLayout extends ConsumerWidget {
                     spacing: 20,
                     children: [
                       ClickableFrame(
+                        onTap: () {
+                          if (!onConfirm()) {
+                            return;
+                          }
+                          context.push('/register');
+                        },
                         child: Padding(
                           padding: const EdgeInsetsGeometry.all(20),
                           child: Icon(Icons.arrow_forward_ios_rounded),
