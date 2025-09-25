@@ -89,7 +89,7 @@ class LoginPage extends ConsumerWidget {
                         l10n.forgot_password,
                         textAlign: TextAlign.right,
                         style: textTheme.bodyMedium?.copyWith(
-                            decoration: TextDecoration.underline
+                          decoration: TextDecoration.underline
                         ),
                       )
                     )
