@@ -40,6 +40,7 @@ dependencies:
   flutter_riverpod: ^3.0.0
   flutter_launcher_icons: ^0.14.4
   fluttertoast: ^9.0.0
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +53,7 @@ flutter:
   generate: true
 
   assets:
+    - .env
     - assets/image/AREA_1024.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
