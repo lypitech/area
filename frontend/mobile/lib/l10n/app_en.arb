@@ -26,5 +26,11 @@
   "validator_empty_email": "Please specify an email address.",
   "validator_invalid_email": "Please specify a valid email address.",
   "validator_empty_password": "Please specify a password.",
-  "validator_not_matching_password": "Both passwords must be the same."
+  "validator_not_matching_password": "Both passwords must be the same.",
+  "validator_invalid_password": "Please specify a valid password (see the validators below).",
+
+  "validator_password_8_chars_min": "8 characters min.",
+  "validator_password_capital_letter": "Capital letter",
+  "validator_password_small_letter": "Small letter",
+  "validator_password_special_char": "Special character"
 }
