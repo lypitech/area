@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends ConsumerWidget {
 
@@ -101,6 +102,17 @@ class LoginPage extends ConsumerWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: Icon(Icons.arrow_forward_ios_rounded),
+                  ),
+                ),
+                Gap(20),
+                ClickableFrame(
+                  onTap: () {
+                    context.push('/register');
+                  },
+                  child: Container(
+                    width: 64,
+                    height: 64,
+                    color: Colors.purpleAccent,
                   ),
                 ),
                 Gap(40),
