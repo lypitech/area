@@ -28,16 +28,16 @@ class LoginPage extends ConsumerWidget {
       return;
     }
 
-    try {
-      await ref.read(authServiceProvider).login(
-        _emailFieldController.text,
-        _passwordFieldController.text,
-      );
-      ref.read(authStateProvider.notifier).state = true;
-    } catch (e) {
-      print(e);
-      Fluttertoast.showToast(msg: 'Login failed: $e');
-    }
+    // try {
+    //   await ref.read(authServiceProvider).login(
+    //     _emailFieldController.text,
+    //     _passwordFieldController.text,
+    //   );
+    //   ref.read(authStateProvider.notifier).state = true;
+    // } catch (e) {
+    //   print(e);
+    //   Fluttertoast.showToast(msg: 'Login failed: $e');
+    // }
   }
 
   @override
