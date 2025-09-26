@@ -152,7 +152,7 @@ class LoginPage extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      'Don\'t have an account yet?',
+                      l10n.register_prompt,
                       style: textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w300
                       ),
@@ -162,7 +162,7 @@ class LoginPage extends ConsumerWidget {
                         context.push('/register');
                       },
                       child: Text(
-                        'Sign up',
+                        l10n.sign_up,
                         style: textTheme.titleSmall,
                       )
                     )

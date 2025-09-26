@@ -1,3 +1,4 @@
+import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:flutter/material.dart';
 
@@ -9,10 +10,10 @@ class MyAreasPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return MainPageLayout(
-      title: 'My AREAs',
+      title: l10n.my_areas_page_title,
       children: [
 
       ],
