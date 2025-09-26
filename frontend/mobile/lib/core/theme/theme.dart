@@ -31,6 +31,9 @@ class Theme {
         hintStyle: textTheme.bodyLarge?.copyWith(
           color: textTheme.bodyLarge!.color!.withOpacity(.3)
         ),
+      ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        year2023: false
       )
     );
   }
