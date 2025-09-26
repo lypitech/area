@@ -17,6 +17,7 @@ services:
 
   mongo:
     image: mongo:6
+    command: ["--quiet", "--logpath", "/data/db/mongo.log", "--logappend"]
     container_name: mongodb
     ports:
       - "27017:27017"
