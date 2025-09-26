@@ -104,17 +104,6 @@ class LoginPage extends ConsumerWidget {
                     child: Icon(Icons.arrow_forward_ios_rounded),
                   ),
                 ),
-                Gap(20),
-                ClickableFrame(
-                  onTap: () {
-                    context.push('/register');
-                  },
-                  child: Container(
-                    width: 64,
-                    height: 64,
-                    color: Colors.purpleAccent,
-                  ),
-                ),
                 Gap(40),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -159,6 +148,27 @@ class LoginPage extends ConsumerWidget {
                         fallbackHeight: 56,
                       ),
                     ),
+                  ],
+                ),
+                Gap(20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Don\'t have an account yet?',
+                      style: textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w300
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        context.push('/register');
+                      },
+                      child: Text(
+                        'Sign up',
+                        style: textTheme.titleSmall,
+                      )
+                    )
                   ],
                 )
               ],
