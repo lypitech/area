@@ -55,6 +55,7 @@ flutter:
   assets:
     - .env
     - assets/image/AREA_1024.png
+    - assets/image/default_profile_picture.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
