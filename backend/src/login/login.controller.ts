@@ -9,9 +9,10 @@ export class LoginController {
   register(
     @Body('email') email: string,
     @Body('password') password: string,
-    @Body('name') name: string,
+    @Body('nickname') nickname: string,
+    @Body('username') username: string,
   ) {
-    return this.loginService.register(email, password, name);
+    return this.loginService.register(email, password, nickname, username);
   }
 
   @Post()
