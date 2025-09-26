@@ -1,4 +1,5 @@
 import 'package:area/data/provider/register_modal_provider.dart';
+import 'package:area/l10n/app_localizations.dart';
 import 'package:area/widget/a_appbar.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/clickable_frame.dart';
@@ -13,18 +14,21 @@ class RegisterPageLayout extends ConsumerWidget {
   final List<Widget> children;
   final bool Function() onConfirm;
   final GlobalKey<FormState>? formKey;
+  final bool isStepSkippable;
 
   const RegisterPageLayout({
     required this.title,
     required this.children,
     required this.onConfirm,
     this.formKey,
+    this.isStepSkippable = false,
     super.key
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final registerModal = ref.read(registerModalProvider);
+    final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
 
     return Form(
@@ -66,7 +70,7 @@ class RegisterPageLayout extends ConsumerWidget {
                 children: [
                   Text(
                     title,
-                    style: textTheme.displaySmall?.copyWith(
+                    style: textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.w500
                     ),
                   ),
@@ -92,12 +96,26 @@ class RegisterPageLayout extends ConsumerWidget {
                         child: Padding(
                           padding: const EdgeInsetsGeometry.all(20),
                           child: Icon(Icons.arrow_forward_ios_rounded),
-                        )
+                        ),
                       ),
                       DotStepper(
                         amount: registerModal.totalPages,
                         index: registerModal.currentPage + 1
                       ),
+                      if (isStepSkippable) ... {
+                        TextButton(
+                          onPressed: () {
+                            registerModal.currentPage++;
+                            context.push('/register');
+                          },
+                          child: Text(
+                            l10n.register_skip_step,
+                            style: textTheme.titleMedium?.copyWith(
+                              color: Colors.grey.shade400
+                            ),
+                          )
+                        ),
+                      },
                     ],
                   ),
                 ],

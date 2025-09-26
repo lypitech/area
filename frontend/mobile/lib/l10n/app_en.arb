@@ -19,6 +19,7 @@
   "register_page_3_title": "Now set up what your password will be.",
   "register_page_4_title": "Now, let's put on a profile picture, shall we?",
   "register_page_final_title": "Hold tight, we're creating your account...",
+  "register_skip_step": "Skip this step",
 
   "validator_empty_nickname": "Please specify a nickname.",
   "validator_empty_username": "Please specify a username.",
