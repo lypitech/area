@@ -6,6 +6,6 @@ class RegisterModal {
   String password = '';
   // TODO: Profile picture
   int currentPage = 0;
-  int totalPages = 4;
+  int totalPages = 5;
 
 }
