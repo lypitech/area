@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '/login',
     errorBuilder: (_, _) {
       return ErrorPage();
     },
@@ -22,7 +21,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         return '/login';
       }
       if (loggedIn && state.matchedLocation == '/login') {
-        return '/home';
+        return '/';
       }
       return null;
     },

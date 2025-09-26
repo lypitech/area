@@ -131,3 +131,6 @@ flutter:
         - asset: assets/font/Kanit-BlackItalic.ttf
           weight: 900
           style: italic
+    - family: AreaIcons
+      fonts:
+        - asset: assets/icon/AreaIcons.ttf

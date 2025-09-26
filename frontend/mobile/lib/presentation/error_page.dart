@@ -9,7 +9,7 @@ class ErrorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text('How did you land there?'),
+      child: Text('crampter'),
     );
   }
 
