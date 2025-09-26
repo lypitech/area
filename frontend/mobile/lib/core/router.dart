@@ -1,5 +1,6 @@
 import 'package:area/data/provider/auth_state_provider.dart';
 import 'package:area/presentation/auth/login_page.dart';
+import 'package:area/presentation/auth/registration/register_page.dart';
 import 'package:area/presentation/error_page.dart';
 import 'package:area/presentation/main_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,18 +28,25 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
     routes: <GoRoute>[
       GoRoute(
-        path: '/login',
-        builder: (_, _) {
-          return LoginPage();
-        }
-      ),
-      // register
-      GoRoute(
-        path: '/home',
+        path: '/',
         builder: (_, _) {
           return MainPage();
-        }
-      )
-    ]
+        },
+        routes: [
+          GoRoute(
+            path: 'login',
+            builder: (_, _) {
+              return LoginPage();
+            },
+          ),
+          GoRoute(
+            path: 'register',
+            builder: (_, _) {
+              return RegisterPage();
+            },
+          ),
+        ],
+      ),
+    ],
   );
 });

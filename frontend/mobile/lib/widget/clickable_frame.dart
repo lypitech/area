@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 class ClickableFrame extends StatefulWidget {
 
   final VoidCallback? onTap;
+  final double borderRadius;
   final Widget child;
 
   const ClickableFrame({
     this.onTap,
+    this.borderRadius = 20,
     required this.child,
     super.key
   });
@@ -30,7 +32,7 @@ class _ClickableFrameState extends State<ClickableFrame> {
         color: Colors.white,
         shadowColor: Colors.black,
         elevation: 8,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(widget.borderRadius),
         child: InkWell(
           onTapDown: (_) {
             setState(() => _scale = 0.95);
@@ -42,7 +44,7 @@ class _ClickableFrameState extends State<ClickableFrame> {
             setState(() => _scale = 1);
           },
           onTap: widget.onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(widget.borderRadius),
           child: widget.child,
         ),
       ),

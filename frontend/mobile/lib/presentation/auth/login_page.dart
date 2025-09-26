@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends ConsumerWidget {
 
@@ -89,7 +90,7 @@ class LoginPage extends ConsumerWidget {
                         l10n.forgot_password,
                         textAlign: TextAlign.right,
                         style: textTheme.bodyMedium?.copyWith(
-                            decoration: TextDecoration.underline
+                          decoration: TextDecoration.underline
                         ),
                       )
                     )
@@ -147,6 +148,27 @@ class LoginPage extends ConsumerWidget {
                         fallbackHeight: 56,
                       ),
                     ),
+                  ],
+                ),
+                Gap(20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Don\'t have an account yet?',
+                      style: textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w300
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        context.push('/register');
+                      },
+                      child: Text(
+                        'Sign up',
+                        style: textTheme.titleSmall,
+                      )
+                    )
                   ],
                 )
               ],

@@ -2,5 +2,36 @@
   "forgot_password": "Forgot password?",
   "or_continue_with": "Or continue with",
   "email": "E-mail",
-  "password": "Password"
+  "password": "Password",
+  "password_confirmation": "Password confirmation",
+  "nickname": "Nickname",
+  "username": "Username",
+
+  "register_page_1_title": "How should we\ncall you?",
+  "register_page_2_title": "Alright {name}!\nWhat email should we put your account on?",
+  "@register_page_2_title": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "register_page_3_title": "Now set up what your password will be.",
+  "register_page_4_title": "Now, let's put on a profile picture, shall we?",
+  "register_page_final_title": "Hold tight, we're creating your account...",
+  "register_skip_step": "Skip this step",
+
+  "validator_empty_nickname": "Please specify a nickname.",
+  "validator_empty_username": "Please specify a username.",
+  "validator_username_requirements": "Only lowercased letters, digits and underscores are authorized.",
+  "validator_empty_email": "Please specify an email address.",
+  "validator_invalid_email": "Please specify a valid email address.",
+  "validator_empty_password": "Please specify a password.",
+  "validator_not_matching_password": "Both passwords must be the same.",
+  "validator_invalid_password": "Please specify a valid password (see the validators below).",
+
+  "validator_password_8_chars_min": "8 characters min.",
+  "validator_password_capital_letter": "Capital letter",
+  "validator_password_small_letter": "Small letter",
+  "validator_password_special_char": "Special character"
 }
