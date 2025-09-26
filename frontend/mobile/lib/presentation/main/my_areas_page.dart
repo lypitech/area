@@ -1,7 +1,5 @@
 import 'package:area/layout/main_page_layout.dart';
-import 'package:area/widget/clickable_frame.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class MyAreasPage extends StatelessWidget {
 

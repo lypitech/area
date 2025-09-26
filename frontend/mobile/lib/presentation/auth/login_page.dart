@@ -1,13 +1,10 @@
 import 'package:area/core/constant/constants.dart';
-import 'package:area/data/provider/auth_service_provider.dart';
-import 'package:area/data/provider/auth_state_provider.dart';
 import 'package:area/widget/a_text_field.dart';
 import 'package:area/widget/clickable_frame.dart';
 import 'package:area/widget/logo.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
