@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Action, ActionSchema } from './schemas/action.shemas';
+import { Action, ActionSchema } from './schemas/action.schemas';
 import { ActionsService } from './action.service';
 import { ActionsController } from './action.controller';
 

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ActionsService } from './action.service';
-import { Action } from './schemas/action.shemas';
+import { Action } from './schemas/action.schemas';
 
 @Controller('actions')
 export class ActionsController {
