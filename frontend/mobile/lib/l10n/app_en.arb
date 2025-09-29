@@ -6,6 +6,8 @@
   "password_confirmation": "Password confirmation",
   "nickname": "Nickname",
   "username": "Username",
+  "sign_up": "Sign up",
+  "register_prompt": "Don't have an account yet?",
 
   "register_page_1_title": "How should we\ncall you?",
   "register_page_2_title": "Alright {name}!\nWhat email should we put your account on?",
@@ -33,5 +35,10 @@
   "validator_password_8_chars_min": "8 characters min.",
   "validator_password_capital_letter": "Capital letter",
   "validator_password_small_letter": "Small letter",
-  "validator_password_special_char": "Special character"
+  "validator_password_special_char": "Special character",
+
+  "home_page_title": "Home",
+  "discover_page_title": "Discover",
+  "my_areas_page_title": "My AREAs",
+  "profile_page_title": "Profile"
 }
