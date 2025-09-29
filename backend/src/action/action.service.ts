@@ -1,17 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Action } from './schemas/action.schema';
+import { Action, ActionDocument } from './schemas/action.shemas';
 
 @Injectable()
-export class ActionService {
-  constructor(@InjectModel(Action.name) private actionModel: Model<Action>) {}
+export class ActionsService {
+  constructor(
+    @InjectModel(Action.name) private actionModel: Model<ActionDocument>,
+  ) {}
 
-  findAll() {
+  async findAll() {
     return this.actionModel.find().exec();
   }
-  createAction(payload: any) {
-    const createdAction = new this.actionModel(payload);
-    return createdAction.save();
+
+  async createAction(data: Partial<Action>): Promise<Action> {
+    const newAction = new this.actionModel(data);
+    return newAction.save();
   }
 }

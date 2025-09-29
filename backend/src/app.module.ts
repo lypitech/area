@@ -6,9 +6,10 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
-import { DatabaseModule } from './database/database.module';
 import { LoginModule } from './login/login.module';
-import { ActionModule } from './action/action.module';
+import { ActionsModule } from './action/action.module';
+import { ActionsController } from './action/action.controller';
+import { ActionsService } from './action/action.service';
 
 @Module({
   imports: [
@@ -17,11 +18,10 @@ import { ActionModule } from './action/action.module';
     UserModule,
     AuthModule,
     CommonModule,
-    DatabaseModule,
     LoginModule,
-    ActionModule,
+    ActionsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, ActionsController],
+  providers: [AppService, ActionsService],
 })
 export class AppModule {}

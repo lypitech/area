@@ -1,18 +1,18 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
-import { ActionService } from './action.service';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { ActionsService } from './action.service';
+import { Action } from './schemas/action.shemas';
 
-@Controller('action')
-export class ActionController {
-  constructor(private readonly actionService: ActionService) {}
+@Controller('actions')
+export class ActionsController {
+  constructor(private readonly actionsService: ActionsService) {}
 
   @Get()
-  findAll() {
-    return this.actionService.findAll();
+  getAll() {
+    return this.actionsService.findAll();
   }
 
   @Post()
-  createAction(@Body() payload: any) {
-    console.log(JSON.stringify(payload, null, 2));
-    return this.actionService.createAction(payload);
+  create(@Body() body: Partial<Action>) {
+    return this.actionsService.createAction(body);
   }
 }
