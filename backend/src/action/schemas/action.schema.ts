@@ -1,10 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { v4 } from 'uuid';
+import { HydratedDocument } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
-@Schema({ timestamps: true })
-export class Action extends Document {
-  @Prop({ required: true, unique: true, default: () => v4() })
+export type ActionDocument = HydratedDocument<Action>;
+
+export const TriggerTypes = ['webhook', 'polling'] as const;
+export type TriggerType = (typeof TriggerTypes)[number];
+
+@Schema({ timestamps: true, versionKey: false })
+export class Action {
+  @Prop({ required: true, unique: true, default: () => uuidv4() })
   uuid!: string;
 
   @Prop({ required: true })
@@ -15,6 +20,21 @@ export class Action extends Document {
 
   @Prop()
   description?: string;
+
+  @Prop({ required: true, index: true })
+  area_uuid!: string;
+
+  @Prop({ default: null })
+  service_resource_id?: string | null;
+
+  @Prop({ required: true, select: false })
+  token!: string;
+
+  @Prop({ default: null })
+  oauth_token_id?: string | null;
+
+  @Prop({ required: true, enum: TriggerTypes })
+  trigger_type!: TriggerType;
 }
 
 export const ActionSchema = SchemaFactory.createForClass(Action);
