@@ -5,12 +5,19 @@ import { v4 as uuid_v4 } from 'uuid';
 export class Reaction {
   @Prop({ required: true, unique: true, default: () => uuid_v4() })
   uuid!: string;
-  @Prop({ required: true }) service_name!: string;
+
+  @Prop({ required: true })
+  service_name!: string;
+
   @Prop({ required: true }) name!: string;
-  @Prop({ default: null }) service_resource_id?: string | null;
+
+  @Prop({ default: null })
+  service_resource_id?: string;
+
   @Prop() description?: string;
-  @Prop({ required: true }) payload!: string;
+
+  @Prop({ required: true })
+  payload!: string;
 }
 
 export const ReactionSchema = SchemaFactory.createForClass(Reaction);
-export type ReactionDocument = Reaction & Document;
