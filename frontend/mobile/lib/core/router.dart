@@ -3,6 +3,7 @@ import 'package:area/presentation/auth/login_page.dart';
 import 'package:area/presentation/auth/registration/register_page.dart';
 import 'package:area/presentation/error_page.dart';
 import 'package:area/presentation/main_page.dart';
+import 'package:area/presentation/new_area/new_area_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -44,6 +45,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               return RegisterPage();
             },
           ),
+          GoRoute(
+            path: 'new_area',
+            builder: (_, _) {
+              return NewAreaPage();
+            }
+          )
         ],
       ),
     ],
