@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { DatabaseModule } from './database/database.module';
 import { LoginModule } from './login/login.module';
+import { ActionModule } from './action/action.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { LoginModule } from './login/login.module';
     CommonModule,
     DatabaseModule,
     LoginModule,
+    ActionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
