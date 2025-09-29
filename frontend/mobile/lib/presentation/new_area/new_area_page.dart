@@ -28,9 +28,45 @@ class NewAreaPage extends ConsumerWidget {
       children: [
         ClickableFrame(
           padding: const EdgeInsets.all(20),
-          child: Placeholder(
-            fallbackHeight: 50,
-          ),
+          child: Row(
+            spacing: 10,
+            children: [
+              Container(
+                height: 64,
+                width: 64,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                ),
+                child: Placeholder(), // TODO: Put platform icon
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      areaModal.actionPlatform != null
+                        ? areaModal.actionPlatform!.name
+                        : 'Choose a platform',
+                      style: textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w300
+                      ),
+                    ),
+                    Text(
+                      areaModal.trigger != null
+                        ? areaModal.trigger!.name
+                        : 'Choose a trigger',
+                      style: textTheme.titleMedium?.copyWith(
+                        fontSize: 20
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded
+              )
+            ],
+          )
         ),
         Column(
           spacing: 5,
