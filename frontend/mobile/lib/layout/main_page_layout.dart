@@ -1,14 +1,17 @@
 import 'package:area/widget/a_appbar.dart';
+import 'package:area/widget/appbar_button.dart';
 import 'package:flutter/material.dart';
 
 class MainPageLayout extends StatelessWidget {
 
   final String? title;
   final List<Widget> children;
+  final AppbarButton? leading;
 
   const MainPageLayout({
     this.title,
     required this.children,
+    this.leading,
     super.key
   });
 
@@ -17,7 +20,9 @@ class MainPageLayout extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AAppbar(),
+      appBar: AAppbar(
+        leading: leading,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
