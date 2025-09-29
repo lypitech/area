@@ -9,12 +9,20 @@ export class ActionsService {
     @InjectModel(Action.name) private actionModel: Model<ActionDocument>,
   ) {}
 
-  async findAll() {
+  async getAll() {
     return this.actionModel.find().exec();
+  }
+
+  async getOne(id: string) {
+    return this.actionModel.findById(id).exec();
   }
 
   async createAction(data: Partial<Action>): Promise<Action> {
     const newAction = new this.actionModel(data);
     return newAction.save();
+  }
+
+  async deleteAction(id: string): Promise<Action | null> {
+    return this.actionModel.findByIdAndDelete(id).exec();
   }
 }

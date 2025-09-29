@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ActionsService } from './action.service';
 import { Action } from './schemas/action.schemas';
 
@@ -8,11 +8,21 @@ export class ActionsController {
 
   @Get()
   getAll() {
-    return this.actionsService.findAll();
+    return this.actionsService.getAll();
+  }
+
+  @Get(':id')
+  getOne(@Param('id') id: string) {
+    return this.actionsService.getOne(id);
   }
 
   @Post()
   create(@Body() body: Partial<Action>) {
     return this.actionsService.createAction(body);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.actionsService.deleteAction(id);
   }
 }
