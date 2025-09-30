@@ -7,7 +7,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { LoginModule } from './login/login.module';
-import { ReactionsModule } from './reaction/reaction.module';
+import { ActionModule } from './action/action.module';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { ReactionsModule } from './reaction/reaction.module';
     AuthModule,
     CommonModule,
     LoginModule,
-    ReactionsModule,
+    ActionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
