@@ -13,8 +13,8 @@ export class ActionsService {
     return this.actionModel.find().exec();
   }
 
-  async getOne(id: string) {
-    return this.actionModel.findById(id).exec();
+  async getByUUID(uuid: string) {
+    return this.actionModel.findOne({ uuid }).exec();
   }
 
   async createAction(data: Partial<Action>): Promise<Action> {
@@ -22,7 +22,7 @@ export class ActionsService {
     return newAction.save();
   }
 
-  async deleteAction(id: string): Promise<Action | null> {
-    return this.actionModel.findByIdAndDelete(id).exec();
+  async remove(uuid: string): Promise<Action | null> {
+    return this.actionModel.findOneAndDelete({ uuid }).exec();
   }
 }

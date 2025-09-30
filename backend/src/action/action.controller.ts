@@ -11,9 +11,9 @@ export class ActionsController {
     return this.actionsService.getAll();
   }
 
-  @Get(':id')
-  getOne(@Param('id') id: string) {
-    return this.actionsService.getOne(id);
+  @Get(':uuid')
+  getByUUID(@Param('uuid') uuid: string) {
+    return this.actionsService.getByUUID(uuid);
   }
 
   @Post()
@@ -21,8 +21,8 @@ export class ActionsController {
     return this.actionsService.createAction(body);
   }
 
-  @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.actionsService.deleteAction(id);
+  @Delete(':uuid')
+  remove(@Param('uuid') uuid: string) {
+    return this.actionsService.remove(uuid);
   }
 }

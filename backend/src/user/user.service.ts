@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { OAuth } from '../database/schemas/oauth.schema';
+//import { OAuth } from '../database/schemas/oauth.schema';
 
 @Injectable()
 export class UserService {
@@ -36,7 +36,7 @@ export class UserService {
     nickname: string,
     username: string,
     profilePicture: string = '',
-    OAuth_ids: OAuth[] = [],
+    //OAuth_ids: OAuth[] = [],
   ): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new this.userModel({
@@ -45,7 +45,7 @@ export class UserService {
       nickname: nickname,
       username: username,
       profilePicture: profilePicture,
-      OAuth_ids: OAuth_ids,
+      //OAuth_ids: OAuth_ids,
     });
     return user.save();
   }
