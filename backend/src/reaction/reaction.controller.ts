@@ -19,8 +19,8 @@ export class ReactionsController {
   }
 
   @Get(':uuid')
-  getOne(@Param('uuid') uuid: string) {
-    return this.reactionsService.getOne(uuid);
+  getByUUID(@Param('uuid') uuid: string) {
+    return this.reactionsService.getByUUID(uuid);
   }
 
   @Post()
