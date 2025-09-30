@@ -6,8 +6,8 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
-import { DatabaseModule } from './database/database.module';
 import { LoginModule } from './login/login.module';
+import { ReactionsModule } from './reaction/reaction.module';
 
 @Module({
   imports: [
@@ -16,8 +16,8 @@ import { LoginModule } from './login/login.module';
     UserModule,
     AuthModule,
     CommonModule,
-    DatabaseModule,
     LoginModule,
+    ReactionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
