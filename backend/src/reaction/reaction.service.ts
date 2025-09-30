@@ -5,24 +5,29 @@ import { Reaction } from './schemas/reaction.schema';
 
 @Injectable()
 export class ReactionsService {
-  constructor(@InjectModel(Reaction.name) private rxModel: Model<Reaction>) {}
+  constructor(
+    @InjectModel(Reaction.name) private reactionModel: Model<Reaction>,
+  ) {}
 
   async getAll(): Promise<Reaction[]> {
-    return this.rxModel.find().lean().exec();
+    return this.reactionModel.find().lean().exec();
   }
 
   async getByUUID(uuid: string): Promise<Reaction | null> {
-    return this.rxModel.findOne({ uuid }).lean().exec();
+    return this.reactionModel.findOne({ uuid }).lean().exec();
   }
 
   async create(data: Partial<Reaction>): Promise<Reaction> {
-    const doc = new this.rxModel(data);
+    const doc = new this.reactionModel(data);
     const saved = await doc.save();
     return saved.toObject();
   }
 
   async delete(uuid: string): Promise<{ deleted: true; uuid: string }> {
-    const res = await this.rxModel.findOneAndDelete({ uuid }).lean().exec();
+    const res = await this.reactionModel
+      .findOneAndDelete({ uuid })
+      .lean()
+      .exec();
     if (!res) throw new NotFoundException('Reaction not found');
     return { deleted: true, uuid };
   }

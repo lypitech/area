@@ -9,12 +9,14 @@ export class Reaction {
   @Prop({ required: true })
   service_name!: string;
 
-  @Prop({ required: true }) name!: string;
+  @Prop({ required: true })
+  name!: string;
 
   @Prop({ default: null })
   service_resource_id?: string;
 
-  @Prop() description?: string;
+  @Prop()
+  description?: string;
 
   @Prop({ required: true })
   payload!: string;
