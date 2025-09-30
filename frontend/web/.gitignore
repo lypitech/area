@@ -41,4 +41,3 @@ Thumbs.db
 # Vite cache
 .vite/
 vite.config.ts.timestamp-*
-
