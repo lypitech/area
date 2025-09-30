@@ -19,7 +19,7 @@ export class AreaController {
   }
 
   @Get(':uuid')
-  getOne(@Param('uuid') uuid: string) {
+  getByUUID(@Param('uuid') uuid: string) {
     return this.areaService.findByUUID(uuid);
   }
 
