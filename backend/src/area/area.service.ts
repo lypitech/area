@@ -7,24 +7,24 @@ import { Area } from './schemas/area.schema';
 export class AreaService {
   constructor(@InjectModel(Area.name) private areaModel: Model<Area>) {}
 
-  findByUUID(area_uuid: string) {
+  findByUUID(area_uuid: string): Promise<Area | null> {
     return this.areaModel.findOne({ area_uuid }).exec();
   }
 
-  findByActionUuid(action_uuid: string) {
+  findByActionUuid(action_uuid: string): Promise<Area | null> {
     return this.areaModel.findOne({ action_uuid }).lean().exec();
   }
 
-  findAll() {
+  findAll(): Promise<Area[]> {
     return this.areaModel.find().exec();
   }
 
-  create(area: Partial<Area>) {
+  create(area: Partial<Area>): Promise<Area> {
     const newArea = new this.areaModel(area);
     return newArea.save();
   }
 
-  async deleteByUUID(uuid: string) {
+  async deleteByUUID(uuid: string): Promise<boolean> {
     const result = await this.areaModel.deleteOne({ uuid }).exec();
     return result.deletedCount === 1;
   }
@@ -32,7 +32,7 @@ export class AreaService {
   async pushHistory(
     area_uuid: string,
     item: { timestamp: string; status: string },
-  ) {
+  ): Promise<void> {
     await this.areaModel.updateOne(
       { uuid: area_uuid },
       { $push: { history: item } },
