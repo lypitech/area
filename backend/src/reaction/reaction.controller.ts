@@ -7,20 +7,20 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ReactionsService } from './reaction.service';
+import { ReactionService } from './reaction.service';
 
 @Controller('reactions')
-export class ReactionsController {
-  constructor(private readonly reactionsService: ReactionsService) {}
+export class ReactionController {
+  constructor(private readonly reactionsService: ReactionService) {}
 
   @Get()
   getAll() {
-    return this.reactionsService.getAll();
+    return this.reactionsService.findAll();
   }
 
   @Get(':uuid')
   getByUUID(@Param('uuid') uuid: string) {
-    return this.reactionsService.getByUUID(uuid);
+    return this.reactionsService.findById(uuid);
   }
 
   @Post()
