@@ -21,7 +21,10 @@ export class LoginService {
     return this.userService.createNew(email, password, username, nickname);
   }
 
-  async login(email: string, password: string) {
+  async login(
+    email: string,
+    password: string
+  ) {
     const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');

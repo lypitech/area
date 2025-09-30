@@ -14,7 +14,9 @@ export class UserService {
     return users;
   }
 
-  async findByUUID(uuid: string): Promise<User> {
+  async findByUUID(
+    uuid: string
+  ): Promise<User> {
     const user: User | null = await this.userModel.findOne({ uuid: uuid });
     if (!user) {
       throw new NotFoundException(`No user with uuid ${uuid} found.`);
@@ -22,7 +24,9 @@ export class UserService {
     return user;
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(
+    email: string
+  ): Promise<User> {
     const user: User | null = await this.userModel.findOne({ email: email });
     if (!user) {
       throw new NotFoundException(`No user with email ${email}`);
