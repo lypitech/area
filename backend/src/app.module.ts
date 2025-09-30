@@ -10,6 +10,7 @@ import { LoginModule } from './login/login.module';
 import { ActionsModule } from './action/action.module';
 import { ActionsController } from './action/action.controller';
 import { ActionsService } from './action/action.service';
+import { ReactionsModule } from './reaction/reaction.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ActionsService } from './action/action.service';
     CommonModule,
     LoginModule,
     ActionsModule,
+    ReactionsModule,
   ],
   controllers: [AppController, ActionsController],
   providers: [AppService, ActionsService],
