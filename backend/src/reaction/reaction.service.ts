@@ -1,19 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Reaction } from './schemas/reaction.schema';
+import { DiscordReactions } from './services/discord.service';
 
 @Injectable()
-<<<<<<< HEAD
-export class ReactionsService {
-=======
 export class ReactionService {
->>>>>>> 2e84b49 (feat(backend>reaction): Added `Reaction` module setup)
   constructor(
     @InjectModel(Reaction.name) private reactionModel: Model<Reaction>,
+    @Inject(DiscordReactions) private discord: DiscordReactions,
   ) {}
 
-<<<<<<< HEAD
   async getAll(): Promise<Reaction[]> {
     return this.reactionModel.find().lean().exec();
   }
@@ -35,7 +32,7 @@ export class ReactionService {
       .exec();
     if (!res) throw new NotFoundException('Reaction not found');
     return { deleted: true, uuid };
-=======
+  }
   async findAll(): Promise<Reaction[]> {
     return this.reactionModel.find().exec();
   }
@@ -50,19 +47,11 @@ export class ReactionService {
     return reaction;
   }
 
-  async createNew(
-    service_name: string,
-    reaction_name: string,
-    description: string,
-    payload: string,
-  ): Promise<Reaction> {
-    const reaction = new this.reactionModel({
-      service_name: service_name,
-      name: reaction_name,
-      description: description,
-      payload: payload,
-    });
-    return reaction.save();
->>>>>>> 2e84b49 (feat(backend>reaction): Added `Reaction` module setup)
+  dispatch(reaction: Reaction, action_payload: string) {
+    const service_name: string = reaction.service_name;
+    switch (service_name) {
+      case 'discord':
+        return this.discord.dispatch(reaction, action_payload);
+    }
   }
 }

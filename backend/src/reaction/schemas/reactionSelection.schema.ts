@@ -20,5 +20,13 @@ export class ReactionSelection extends Document {
   schema_input: string; // this field is required to be a json specifying expected infos for the service
 }
 
+export interface ReactionSelectionType {
+  uuid?: string;
+  service_name: string;
+  name: string;
+  description: string;
+  schema_input: string;
+}
+
 export const ReactionSelectionSchema =
   SchemaFactory.createForClass(ReactionSelection);
