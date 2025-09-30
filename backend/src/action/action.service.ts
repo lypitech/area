@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { Action, ActionDocument } from './schemas/action.schemas';
 
 @Injectable()
-export class ActionsService {
+export class ActionService {
   constructor(
     @InjectModel(Action.name) private actionModel: Model<ActionDocument>,
   ) {}
