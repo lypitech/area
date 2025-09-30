@@ -7,6 +7,13 @@ async function bootstrap() {
   const app: INestApplication = await NestFactory.create(AppModule);
   const port: string | undefined = '3000';
 
+  app.enableCors({
+    origin: 'http://localhost:5173',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type,Authorization',
+    credentials: true,
+  });
+
   if (!port) {
     Logger.warn('Expected PORT value in environment variables');
     return;
