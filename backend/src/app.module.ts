@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { LoginModule } from './login/login.module';
 import { AreaModule } from './area/area.module';
+import { ReactionsModule } from './reaction/reaction.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AreaModule } from './area/area.module';
     CommonModule,
     LoginModule,
     AreaModule,
+    ReactionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
