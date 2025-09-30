@@ -7,9 +7,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { LoginModule } from './login/login.module';
-import { ActionsModule } from './action/action.module';
-import { ActionsController } from './action/action.controller';
-import { ActionsService } from './action/action.service';
+import { ActionModule } from './action/action.module';
 
 @Module({
   imports: [
@@ -19,9 +17,9 @@ import { ActionsService } from './action/action.service';
     AuthModule,
     CommonModule,
     LoginModule,
-    ActionsModule,
+    ActionModule,
   ],
-  controllers: [AppController, ActionsController],
-  providers: [AppService, ActionsService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
