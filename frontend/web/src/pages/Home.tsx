@@ -62,8 +62,10 @@ export default function Home() {
               onClick={() => {
                 nav(f.destination);
               }}
+              className="p-6 bg-white rounded-2xl shadow-black shadow-md transition-all duration-100 ease-in-out hover:shadow-xl hover:scale-105 cursor-pointer"
+              aria-label={f.title}
             >
-              s<h3 className="text-lg font-semibold mb-2">{f.title}</h3>
+              <h3 className="text-lg font-semibold mb-2">{f.title}</h3>
               <p className="text-sm text-slate-600">{f.desc}</p>
             </article>
           ))}
