@@ -11,10 +11,6 @@ export class ReactionService {
     @Inject(DiscordReactions) private discord: DiscordReactions,
   ) {}
 
-  async getAll(): Promise<Reaction[]> {
-    return this.reactionModel.find().lean().exec();
-  }
-
   async getByUUID(uuid: string): Promise<Reaction | null> {
     return this.reactionModel.findOne({ uuid }).lean().exec();
   }
@@ -33,6 +29,7 @@ export class ReactionService {
     if (!res) throw new NotFoundException('Reaction not found');
     return { deleted: true, uuid };
   }
+
   async findAll(): Promise<Reaction[]> {
     return this.reactionModel.find().exec();
   }
