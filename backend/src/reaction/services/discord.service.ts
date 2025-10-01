@@ -3,9 +3,9 @@ import { HttpService } from '@nestjs/axios';
 import { Reaction } from 'src/reaction/schemas/reaction.schema';
 
 @Injectable()
-export class DiscordReactions {
-  private _base_url: string = 'https://discord.com/api/';
+export class DiscordReactionService {
   constructor(private readonly httpService: HttpService) {}
+  private _base_url: string = 'https://discord.com/api/';
 
   dispatch(reaction: Reaction, action_payload: string) {
     const reaction_name: string = reaction.name;

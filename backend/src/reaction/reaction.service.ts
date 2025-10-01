@@ -2,13 +2,13 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Reaction } from './schemas/reaction.schema';
-import { DiscordReactions } from './services/discord.service';
+import { DiscordReactionService } from './services/discord.service';
 
 @Injectable()
 export class ReactionService {
   constructor(
     @InjectModel(Reaction.name) private reactionModel: Model<Reaction>,
-    @Inject(DiscordReactions) private discord: DiscordReactions,
+    @Inject(DiscordReactionService) private discord: DiscordReactionService,
   ) {}
 
   async getByUUID(uuid: string): Promise<Reaction | null> {
