@@ -1,17 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Reaction } from './schemas/reaction.schema';
+import { DiscordReactions } from './services/discord.service';
 
 @Injectable()
-export class ReactionsService {
+export class ReactionService {
   constructor(
     @InjectModel(Reaction.name) private reactionModel: Model<Reaction>,
+    @Inject(DiscordReactions) private discord: DiscordReactions,
   ) {}
-
-  async getAll(): Promise<Reaction[]> {
-    return this.reactionModel.find().lean().exec();
-  }
 
   async getByUUID(uuid: string): Promise<Reaction | null> {
     return this.reactionModel.findOne({ uuid }).lean().exec();
@@ -30,5 +28,27 @@ export class ReactionsService {
       .exec();
     if (!res) throw new NotFoundException('Reaction not found');
     return { deleted: true, uuid };
+  }
+
+  async findAll(): Promise<Reaction[]> {
+    return this.reactionModel.find().exec();
+  }
+
+  async findById(id: string): Promise<Reaction> {
+    const reaction: Reaction | null = await this.reactionModel
+      .findOne({ uuid: id })
+      .exec();
+    if (!reaction) {
+      throw new NotFoundException(`No reaction with uuid ${id} found.`);
+    }
+    return reaction;
+  }
+
+  dispatch(reaction: Reaction, action_payload: string) {
+    const service_name: string = reaction.service_name;
+    switch (service_name) {
+      case 'discord':
+        return this.discord.dispatch(reaction, action_payload);
+    }
   }
 }

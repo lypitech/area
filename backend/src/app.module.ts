@@ -7,8 +7,9 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { LoginModule } from './login/login.module';
+import { ReactionModule } from './reaction/reaction.module';
+import { ReactionSelectionSeederService } from './setup/reactionSelection.seeder.service';
 import { AreaModule } from './area/area.module';
-import { ReactionsModule } from './reaction/reaction.module';
 import { ActionModule } from './action/action.module';
 
 @Module({
@@ -19,11 +20,11 @@ import { ActionModule } from './action/action.module';
     AuthModule,
     CommonModule,
     LoginModule,
+    ReactionModule,
     AreaModule,
-    ReactionsModule,
     ActionModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ReactionSelectionSeederService],
 })
 export class AppModule {}
