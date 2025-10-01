@@ -9,21 +9,26 @@ import { CommonModule } from './common/common.module';
 import { LoginModule } from './login/login.module';
 import { ReactionModule } from './reaction/reaction.module';
 import { ReactionSelectionSeederService } from './setup/reactionSelection.seeder.service';
-<<<<<<< HEAD
+import { ActionSelectionSeederService } from './setup/actionSelection.seeder.service';
 import { AreaModule } from './area/area.module';
 import { ActionModule } from './action/action.module';
-=======
 import {
   ReactionSelection,
   ReactionSelectionSchema,
 } from './reaction/schemas/reactionSelection.schema';
->>>>>>> dcd4c6df (fix(backend>reaction>setup): Fixed `UnknownDependenciesException`)
+import {
+  ActionSelection,
+  ActionSelectionSchema,
+} from './action/schemas/actionSelection.schema';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://mongo:27017/nestdb'),
     MongooseModule.forFeature([
-      { name: ReactionSelection.name, schema: ReactionSelectionSchema},
+      { name: ReactionSelection.name, schema: ReactionSelectionSchema },
+    ]),
+    MongooseModule.forFeature([
+      { name: ActionSelection.name, schema: ActionSelectionSchema },
     ]),
     ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
@@ -35,6 +40,10 @@ import {
     ActionModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ReactionSelectionSeederService],
+  providers: [
+    AppService,
+    ReactionSelectionSeederService,
+    ActionSelectionSeederService,
+  ],
 })
 export class AppModule {}
