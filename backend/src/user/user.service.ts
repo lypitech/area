@@ -53,4 +53,15 @@ export class UserService {
     });
     return user.save();
   }
+  async update(uuid: string, updateData: Partial<User>): Promise<User> {
+    const updatedUser = await this.userModel
+      .findOneAndUpdate( { uuid } , updateData, { new: true })
+      .exec();
+
+    if (!updatedUser) {
+      throw new NotFoundException(`User with ID ${uuid} not found`);
+    }
+
+    return updatedUser;
+  }
 }
