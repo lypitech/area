@@ -9,6 +9,8 @@ import { CommonModule } from './common/common.module';
 import { LoginModule } from './login/login.module';
 import { ReactionModule } from './reaction/reaction.module';
 import { ReactionSelectionSeederService } from './setup/reactionSelection.seeder.service';
+import { AreaModule } from './area/area.module';
+import { ActionModule } from './action/action.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { ReactionSelectionSeederService } from './setup/reactionSelection.seeder
     CommonModule,
     LoginModule,
     ReactionModule,
+    AreaModule,
+    ActionModule,
   ],
   controllers: [AppController],
   providers: [AppService, ReactionSelectionSeederService],
