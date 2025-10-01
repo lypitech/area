@@ -24,8 +24,8 @@ export class AreaController {
   }
 
   @Patch(':uuid/history')
-  pushHistory(@Param('uuid') uuid: string, @Body() body: any) {
-    return this.areaService.pushHistory(uuid, body);
+  appendHistory(@Param('uuid') uuid: string, @Body() body: any) {
+    return this.areaService.appendHistory(uuid, body);
   }
 
   @Get('action/:action_uuid')
