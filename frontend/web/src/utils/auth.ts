@@ -1,7 +1,9 @@
-import { useNavigate } from "react-router-dom";
-
-export default function logout() {
-    const nav = useNavigate();
+function logout() {
     localStorage.removeItem("token");
-    nav("/");
 };
+
+function isLoggedIn() {
+    return !!localStorage.getItem("token");
+};
+
+export { logout, isLoggedIn };
