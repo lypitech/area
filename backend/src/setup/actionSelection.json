@@ -1,0 +1,8 @@
+[
+  {
+  "service_name": "github",
+  "name": "Action on repository",
+  "description": "Creates a url for a github webhook, Specify the action using github",
+  "trigger_types": ["webhook"]
+  }
+]
