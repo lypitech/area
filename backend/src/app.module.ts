@@ -7,6 +7,8 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { LoginModule } from './login/login.module';
+import { AreaModule } from './area/area.module';
+import { ReactionsModule } from './reaction/reaction.module';
 import { ActionModule } from './action/action.module';
 
 @Module({
@@ -17,6 +19,8 @@ import { ActionModule } from './action/action.module';
     AuthModule,
     CommonModule,
     LoginModule,
+    AreaModule,
+    ReactionsModule,
     ActionModule,
   ],
   controllers: [AppController],
