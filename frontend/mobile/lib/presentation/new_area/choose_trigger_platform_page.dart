@@ -102,11 +102,10 @@ class PlatformCard extends ConsumerWidget {
     return ClickableFrame(
       padding: const EdgeInsets.all(20),
       onTap: () {
-        ref.read(areaModalProvider.notifier).setActionPlatform(PlatformModel(
-          uuid: platform.uuid,
-          name: platform.name,
-        ));
-        context.pop();
+        ref.read(areaModalProvider.notifier)
+          ..setActionPlatform(platform)
+          ..setTrigger(null);
+        // context.pop();
       },
       child: Stack(
         children: [
@@ -129,7 +128,6 @@ class PlatformCard extends ConsumerWidget {
                   fontSize: 20
                 ),
               ),
-              // Spacer(),
               Text(
                 '${platform.actions.length} available',
                 style: textTheme.bodyMedium,
