@@ -1,3 +1,4 @@
+import type { ActionSelectionType } from './schemas/actionSelection.schema';
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ActionService } from './action.service';
 import { Action } from './schemas/action.schemas';
@@ -24,5 +25,25 @@ export class ActionController {
   @Delete(':uuid')
   remove(@Param('uuid') uuid: string) {
     return this.actionService.remove(uuid);
+  }
+
+  @Get('selection')
+  getAllSelection() {
+    return this.actionService.getAllSelection();
+  }
+
+  @Get('selection/:uuid')
+  getSelectionByUUID(@Param('uuid') uuid: string) {
+    return this.actionService.getSelectionByUUID(uuid);
+  }
+
+  @Post('selection')
+  createSelection(@Body() body: ActionSelectionType) {
+    return this.actionService.createActionSelection(body);
+  }
+
+  @Delete('selection/:uuid')
+  removeSelection(@Param('uuid') uuid: string) {
+    return this.actionService.removeSelection(uuid);
   }
 }
