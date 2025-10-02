@@ -69,10 +69,10 @@ class _ChooseTriggerPlatformPageState extends ConsumerState<ChooseTriggerPlatfor
 
 class PlatformCard extends ConsumerWidget {
 
-  final String name;
+  final PlatformModel platform;
 
   const PlatformCard({
-    required this.name,
+    required this.platform,
     super.key
   });
 
@@ -84,8 +84,8 @@ class PlatformCard extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       onTap: () {
         ref.read(areaModalProvider.notifier).setActionPlatform(PlatformModel(
-          uuid: '--',
-          name: name,
+          uuid: platform.uuid,
+          name: platform.name,
         ));
         context.pop();
       },
@@ -105,14 +105,14 @@ class PlatformCard extends ConsumerWidget {
               ),
               Gap(5),
               Text(
-                name,
+                platform.name,
                 style: textTheme.titleMedium?.copyWith(
                   fontSize: 20
                 ),
               ),
               // Spacer(),
               Text(
-                '-- available',
+                '${platform.actions.length} available',
                 style: textTheme.bodyMedium,
               )
             ],
