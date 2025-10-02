@@ -3,11 +3,17 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Reaction } from './schemas/reaction.schema';
 import { DiscordReactionService } from './services/discord.service';
+import {
+  ReactionSelection,
+  ReactionSelectionType,
+} from 'src/reaction/schemas/reactionSelection.schema';
 
 @Injectable()
 export class ReactionService {
   constructor(
     @InjectModel(Reaction.name) private reactionModel: Model<Reaction>,
+    @InjectModel(ReactionSelection.name)
+    private reactionSelectionModel: Model<ReactionSelection>,
     @Inject(DiscordReactionService) private discord: DiscordReactionService,
   ) {}
 
@@ -21,7 +27,7 @@ export class ReactionService {
     return saved.toObject();
   }
 
-  async delete(uuid: string): Promise<{ deleted: true; uuid: string }> {
+  async remove(uuid: string): Promise<{ deleted: true; uuid: string }> {
     const res = await this.reactionModel
       .findOneAndDelete({ uuid })
       .lean()
@@ -30,18 +36,25 @@ export class ReactionService {
     return { deleted: true, uuid };
   }
 
-  async findAll(): Promise<Reaction[]> {
+  async getAll(): Promise<Reaction[]> {
     return this.reactionModel.find().exec();
   }
 
-  async findById(id: string): Promise<Reaction> {
-    const reaction: Reaction | null = await this.reactionModel
-      .findOne({ uuid: id })
-      .exec();
-    if (!reaction) {
-      throw new NotFoundException(`No reaction with uuid ${id} found.`);
-    }
-    return reaction;
+  getAllSelection() {
+    return this.reactionSelectionModel.find().exec();
+  }
+
+  getSelectionByUUID(uuid: string) {
+    return this.reactionSelectionModel.findOne({ uuid: uuid }).exec();
+  }
+
+  createSelection(data: ReactionSelectionType) {
+    const newActionSelection = new this.reactionSelectionModel(data);
+    return newActionSelection.save();
+  }
+
+  async removeSelection(uuid: string): Promise<ReactionSelection | null> {
+    return this.reactionSelectionModel.findOneAndDelete({ uuid: uuid }).exec();
   }
 
   dispatch(reaction: Reaction, action_payload: string) {
