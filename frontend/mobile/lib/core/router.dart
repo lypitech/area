@@ -1,4 +1,4 @@
-import 'package:area/data/provider/auth_state_provider.dart';
+import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/presentation/auth/login_page.dart';
 import 'package:area/presentation/auth/registration/register_page.dart';
 import 'package:area/presentation/error_page.dart';
