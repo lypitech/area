@@ -1,10 +1,11 @@
+import 'package:area/data/provider/area_modal_provider.dart';
 import 'package:area/layout/main_page_layout.dart';
+import 'package:area/model/platform_model.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/clickable_frame.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -66,7 +67,7 @@ class _ChooseTriggerPlatformPageState extends ConsumerState<ChooseTriggerPlatfor
 
 }
 
-class PlatformCard extends StatelessWidget {
+class PlatformCard extends ConsumerWidget {
 
   final String name;
 
@@ -76,11 +77,18 @@ class PlatformCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
 
     return ClickableFrame(
       padding: const EdgeInsets.all(20),
+      onTap: () {
+        ref.read(areaModalProvider.notifier).setActionPlatform(PlatformModel(
+          uuid: '--',
+          name: name,
+        ));
+        context.pop();
+      },
       child: Stack(
         children: [
           Column(
