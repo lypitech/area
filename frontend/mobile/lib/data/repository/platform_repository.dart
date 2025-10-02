@@ -7,10 +7,10 @@ class PlatformRepository {
   final PlatformApi api;
   final PlatformLocalDataSource local;
 
-  PlatformRepository(
-    this.api,
-    this.local
-  );
+  PlatformRepository({
+    required this.api,
+    required this.local
+  });
 
   Future<List<PlatformModel>> getPlatforms({
     bool forceRefresh = false

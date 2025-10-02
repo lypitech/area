@@ -12,8 +12,8 @@ final platformApiProvider = Provider((ref) => PlatformApi(ref.read(dioProvider))
 final platformLocalProvider = Provider((ref) => PlatformLocalDataSource(ref.read(hiveBoxProvider)));
 
 final platformRepositoryProvider = Provider((ref) => PlatformRepository(
-  ref.read(platformApiProvider),
-  ref.read(platformLocalProvider),
+  api: ref.read(platformApiProvider),
+  local: ref.read(platformLocalProvider),
 ));
 
 class PlatformsNotifier extends AsyncNotifier<List<PlatformModel>> {
