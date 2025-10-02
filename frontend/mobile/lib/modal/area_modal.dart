@@ -37,19 +37,19 @@ class AreaModalNotifier extends StateNotifier<AreaModal> {
 
   AreaModalNotifier() : super(AreaModal());
 
-  void setActionPlatform(PlatformModel platform) {
+  void setActionPlatform(PlatformModel? platform) {
     state = state.copyWith(actionPlatform: platform);
   }
 
-  void setTrigger(TriggerModel trigger) {
+  void setTrigger(TriggerModel? trigger) {
     state = state.copyWith(trigger: trigger);
   }
 
-  void setReactionPlatform(PlatformModel platform) {
+  void setReactionPlatform(PlatformModel? platform) {
     state = state.copyWith(reactionPlatform: platform);
   }
 
-  void setAction(ActionModel action) {
+  void setAction(ActionModel? action) {
     state = state.copyWith(action: action);
   }
 
