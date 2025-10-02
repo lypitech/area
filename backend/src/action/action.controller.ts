@@ -37,14 +37,13 @@ export class ActionController {
     return this.actionService.getSelectionByUUID(uuid);
   }
 
-  @Post()
+  @Post('selection')
   createSelection(@Body() body: ActionSelectionType) {
     return this.actionService.createActionSelection(body);
   }
 
-  @Delete(':uuid')
+  @Delete('selection/:uuid')
   removeSelection(@Param('uuid') uuid: string) {
     return this.actionService.removeSelection(uuid);
   }
-
 }
