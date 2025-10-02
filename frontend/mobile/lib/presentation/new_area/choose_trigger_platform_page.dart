@@ -1,4 +1,5 @@
 import 'package:area/data/provider/area_modal_provider.dart';
+import 'package:area/data/provider/platform_provider.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/platform_model.dart';
 import 'package:area/widget/appbar_button.dart';
@@ -24,8 +25,6 @@ class _ChooseTriggerPlatformPageState extends ConsumerState<ChooseTriggerPlatfor
 
   final _searchBarController = TextEditingController();
 
-  final List<String> _platforms = ["Spotify", "Instagram", "X (formerly Twitter)", "TikTok", "Google", "GitHub", "Snapchat", "Discord"];
-
   @override
   void dispose() {
     _searchBarController.dispose();
@@ -34,6 +33,8 @@ class _ChooseTriggerPlatformPageState extends ConsumerState<ChooseTriggerPlatfor
 
   @override
   Widget build(BuildContext context) {
+    final platforms = ref.watch(platformsProvider);
+
     return MainPageLayout(
       title: 'Choose a platform',
       leading: AppbarButton(
@@ -48,19 +49,31 @@ class _ChooseTriggerPlatformPageState extends ConsumerState<ChooseTriggerPlatfor
           controller: _searchBarController,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
-        Wrap(
-          spacing: 20,
-          runSpacing: 20,
-          children: _platforms
-            .map((name) {
-              final width = (MediaQuery.of(context).size.width / 2) - 20 - 10;
-              return SizedBox(
-                width: width,
-                child: PlatformCard(name: name),
-              );
-            })
-            .toList(),
-        )
+        platforms.when(
+          data: (platformsList) {
+            return Wrap(
+              spacing: 20,
+              runSpacing: 20,
+              children: platformsList
+                .map((e) {
+                  final width = (MediaQuery.of(context).size.width / 2) - 20 - 10;
+                  return SizedBox(
+                    width: width,
+                    child: PlatformCard(platform: e),
+                  );
+                })
+                .toList(),
+            );
+          },
+          error: (error, _) {
+            return Center(child: Text('Error: $error')); // todo: better ui lol
+          },
+          loading: () {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        ),
       ]
     );
   }
