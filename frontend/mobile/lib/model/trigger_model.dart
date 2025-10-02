@@ -12,4 +12,20 @@ class TriggerModel {
     this.requiredParams = const [],
   });
 
+  factory TriggerModel.fromJson(Map<String, dynamic> json) {
+    return TriggerModel(
+      uuid: json['uuid'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      requiredParams: List<String>.from(json['requiredParams'] ?? const []),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'uuid': uuid,
+    'name': name,
+    'description': description,
+    'requiredParams': requiredParams,
+  };
+
 }
