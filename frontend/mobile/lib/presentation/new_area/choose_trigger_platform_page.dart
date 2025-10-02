@@ -74,6 +74,12 @@ class _ChooseTriggerPlatformPageState extends ConsumerState<ChooseTriggerPlatfor
             );
           }
         ),
+        ElevatedButton(
+          onPressed: () {
+            ref.read(platformsProvider.notifier).refresh(forceRefresh: true);
+          },
+          child: Text('Refresh platforms (TMP)')
+        )
       ]
     );
   }
