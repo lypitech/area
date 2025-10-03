@@ -37,7 +37,7 @@ class _ANavbarState extends ConsumerState<ANavbar> {
       icon: Icons.add_box_outlined,
       iconEnabled: Icons.add_box,
       title: 'Add AREA',
-      route: '/newarea'
+      route: '/new_area'
     ),
     NavbarElementModel(
       icon: Icons.list_alt_rounded,

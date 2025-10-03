@@ -1,14 +1,21 @@
 import 'package:area/widget/a_appbar.dart';
+import 'package:area/widget/appbar_button.dart';
 import 'package:flutter/material.dart';
 
 class MainPageLayout extends StatelessWidget {
 
   final String? title;
   final List<Widget> children;
+  final AppbarButton? leading;
+  final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
 
   const MainPageLayout({
     this.title,
     required this.children,
+    this.leading,
+    this.floatingActionButton,
+    this.floatingActionButtonLocation,
     super.key
   });
 
@@ -17,7 +24,9 @@ class MainPageLayout extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AAppbar(),
+      appBar: AAppbar(
+        leading: leading,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -38,6 +47,8 @@ class MainPageLayout extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: floatingActionButton,
+      floatingActionButtonLocation: floatingActionButtonLocation,
     );
   }
 
