@@ -6,20 +6,45 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
-//import { DatabaseModule } from './database/database.module';
 import { LoginModule } from './login/login.module';
+import { ReactionModule } from './reaction/reaction.module';
+import { ReactionSelectionSeederService } from './setup/reactionSelection.seeder.service';
+import { ActionSelectionSeederService } from './setup/actionSelection.seeder.service';
+import { AreaModule } from './area/area.module';
+import { ActionModule } from './action/action.module';
+import {
+  ReactionSelection,
+  ReactionSelectionSchema,
+} from './reaction/schemas/reactionSelection.schema';
+import {
+  ActionSelection,
+  ActionSelectionSchema,
+} from './action/schemas/actionSelection.schema';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://mongo:27017/nestdb'),
+    MongooseModule.forFeature([
+      { name: ReactionSelection.name, schema: ReactionSelectionSchema },
+    ]),
+    MongooseModule.forFeature([
+      { name: ActionSelection.name, schema: ActionSelectionSchema },
+    ]),
     ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
     AuthModule,
     CommonModule,
-    //DatabaseModule,
+    backend
     LoginModule,
+    ReactionModule,
+    AreaModule,
+    ActionModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    ReactionSelectionSeederService,
+    ActionSelectionSeederService,
+  ],
 })
 export class AppModule {}
