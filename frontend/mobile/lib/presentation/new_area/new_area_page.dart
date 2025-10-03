@@ -44,7 +44,7 @@ class NewAreaPage extends ConsumerWidget {
             ? areaModal.trigger!.name
             : 'Choose a trigger',
           subtitle: areaModal.actionPlatform != null
-            ? areaModal.actionPlatform!.name
+            ? '${areaModal.actionPlatform!.name} (${areaModal.actionPlatform!.uuid})'
             : 'Choose a platform',
           onTap: () {
             context.pushNamed('choose_platform', pathParameters: { 'mode': 'action' });
@@ -79,7 +79,7 @@ class NewAreaPage extends ConsumerWidget {
             ? areaModal.action!.name
             : 'Choose an action',
           subtitle: areaModal.reactionPlatform != null
-            ? areaModal.reactionPlatform!.name
+            ? '${areaModal.reactionPlatform!.name} (${areaModal.reactionPlatform!.uuid})'
             : 'Choose a platform',
           onTap: () {
             context.pushNamed('choose_platform', pathParameters: { 'mode': 'reaction' });
