@@ -46,7 +46,8 @@ class AreactionCard extends StatelessWidget {
                 Text(
                   title,
                   style: textTheme.titleMedium?.copyWith(
-                    fontSize: 20
+                    fontSize: 20,
+                    height: 1.2
                   ),
                 )
               ],

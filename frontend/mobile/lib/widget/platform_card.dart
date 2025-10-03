@@ -39,13 +39,15 @@ class PlatformCard extends ConsumerWidget {
                 ),
                 child: Placeholder(), // TODO: Put platform icon
               ),
-              Gap(5),
+              Gap(10),
               Text(
                 platform.name,
                 style: textTheme.titleMedium?.copyWith(
-                    fontSize: 20
+                  fontSize: 20,
+                  height: 1.2
                 ),
               ),
+              Gap(5),
               Text(
                 '$available available',
                 style: textTheme.bodyMedium,
