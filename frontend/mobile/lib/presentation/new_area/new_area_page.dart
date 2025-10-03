@@ -34,7 +34,7 @@ class NewAreaPage extends ConsumerWidget {
             ? areaModal.actionPlatform!.name
             : 'Choose a platform',
           onTap: () {
-            // ...
+            context.pushNamed('choose_platform', pathParameters: { 'mode': 'action' });
           }
         ),
         Column(
@@ -69,7 +69,7 @@ class NewAreaPage extends ConsumerWidget {
             ? areaModal.reactionPlatform!.name
             : 'Choose a platform',
           onTap: () {
-            // ...
+            context.pushNamed('choose_platform', pathParameters: { 'mode': 'reaction' });
           }
         ),
       ]
