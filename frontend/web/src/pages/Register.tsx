@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
 import { register } from "../services/authServices";
 
 export default function Register() {
-  if (localStorage.getItem("token")) {
-    window.location.href = "/home";
-  }
-
   const navigate = useNavigate();
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/home");
+    }
+  }, [navigate]);
   const [profile_picture, setProfile_picture] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);

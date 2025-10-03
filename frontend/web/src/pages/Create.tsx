@@ -172,7 +172,7 @@ export default function Create() {
           {apps.map((app) => (
             <div key={app.service_name}>
               <button
-                className={`flex items-center gap-3 p-2 rounded-xl transition-all duration-150 outline outline-gray-200
+                className={`flex w-full items-center gap-3 p-2 rounded-xl transition-all duration-150 outline outline-gray-200
                 ${
                   app.connected
                     ? "bg-green-50 hover:shadow-xl"
