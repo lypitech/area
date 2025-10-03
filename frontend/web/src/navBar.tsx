@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import Icon from "./components/icons/icons";
 import { Button } from "./components/Button";
@@ -7,9 +7,11 @@ import { isLoggedIn, logout } from "./utils/auth";
 export default function NavBar() {
   const nav = useNavigate();
   const position = useLocation();
-  if (!localStorage.getItem("token")) {
-    nav("/");
-  }
+  useEffect(() => {
+    if (!localStorage.getItem("token") && position.pathname !== "/register") {
+      nav("/");
+    }
+  }, [nav]);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -22,6 +24,10 @@ export default function NavBar() {
     setOpen(false);
   };
 
+  const handleLogout = () => {
+    logout();
+    nav("/");
+  };
   const isActive = (path: string) => {
     return path === position.pathname;
   };
@@ -137,7 +143,7 @@ export default function NavBar() {
             </Button>
 
             <Button
-              onClick={() => logout()}
+              onClick={() => handleLogout()}
               className={`flex items-center ${
                 open ? "justify-start gap-3 w-full" : "justify-center w-10 h-10"
               } rounded-lg  hover:bg-gray-100 hover:scale-[101%] transition`}

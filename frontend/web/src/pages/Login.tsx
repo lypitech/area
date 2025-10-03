@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authServices";
 
 export default function Login() {
-  if (localStorage.getItem("token")) {
-    window.location.href = "/home";
-  }
-
   const navigate = useNavigate();
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/home");
+    }
+  }, [navigate]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
