@@ -1,4 +1,6 @@
+import 'package:area/model/action_model.dart';
 import 'package:area/model/platform_model.dart';
+import 'package:area/model/trigger_model.dart';
 import 'package:dio/dio.dart';
 
 class PlatformApi {
@@ -27,11 +29,30 @@ class PlatformApi {
     return [
       PlatformModel(
         uuid: '0656281f-78da-4e4f-9a63-1a53b8ed7f5c',
-        name: 'Spotify'
+        name: 'Spotify',
+        triggers: [
+          TriggerModel(
+            uuid: 'd8439871-a4d6-427b-97c8-e067e6563d53',
+            name: 'Liked a new song',
+            description: 'This trigger triggers every time a new song is added to the liked songs.'
+          ),
+          TriggerModel(
+            uuid: '79ec0ede-cb08-4254-a774-49e91ae29129',
+            name: 'Posted a new song',
+            description: 'This trigger triggers every time a new song is posted.'
+          ),
+        ],
       ),
       PlatformModel(
         uuid: 'fa6cee13-c1f8-4264-9b10-c5f981685f8a',
-        name: 'Instagram'
+        name: 'Instagram',
+        actions: [
+          ActionModel(
+            uuid: '92i3cbec-e6c3-4522-aa7a-4d493dbf0c41',
+            name: 'Post a new story',
+            description: 'This actions creates a new story.'
+          )
+        ]
       ),
       PlatformModel(
         uuid: 'f3594d07-5059-4052-995c-0d3bad61e2b0',
