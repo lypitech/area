@@ -29,13 +29,23 @@ export class AreaService {
     return result.deletedCount === 1;
   }
 
-  async pushHistory(
-    area_uuid: string,
-    item: { timestamp: string; status: string },
-  ): Promise<void> {
+  async appendHistory(area_uuid: string, status: string) {
+    const timestamp = new Date().toISOString();
     await this.areaModel.updateOne(
       { uuid: area_uuid },
-      { $push: { history: item } },
+      { $push: { history: { timestamp, status } } },
     );
+  }
+
+  findEnabledByActionUUID(action_uuid: string) {
+    const now = new Date();
+    return this.areaModel
+      .find({
+        action_uuid,
+        enable: true,
+        $or: [{ disabled_until: null }, { disabled_until: { $lte: now } }],
+      })
+      .lean()
+      .exec();
   }
 }

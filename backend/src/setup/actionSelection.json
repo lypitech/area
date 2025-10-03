@@ -1,8 +1,15 @@
 [
   {
-  "service_name": "github",
-  "name": "Action on repository",
-  "description": "Creates a url for a github webhook, Specify the action using github",
-  "trigger_types": ["webhook"]
+    "service_name": "github",
+    "name": "Push on repository",
+    "description": "trigger when a push is made on the given repository",
+    "parameters": [
+      {
+        "name": "repository",
+        "type": "string",
+        "description": "the full name of the repository (e.g., user/repo)"
+      }
+    ],
+    "trigger_types": ["webhook"]
   }
 ]

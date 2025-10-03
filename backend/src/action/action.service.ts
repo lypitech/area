@@ -1,6 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Action, ActionDocument } from './schemas/action.schema';
+import { AreaService } from '../area/area.service';
+import { ReactionService } from '../reaction/reaction.service';
+import { GithubService } from './services/github/github.service';
 import { Action, ActionDocument } from './schemas/action.schemas';
 import {
   ActionSelection,
@@ -11,6 +19,9 @@ import {
 export class ActionService {
   constructor(
     @InjectModel(Action.name) private actionModel: Model<ActionDocument>,
+    private readonly githubService: GithubService,
+    private readonly areaService: AreaService,
+    private readonly reactionService: ReactionService,
     @InjectModel(ActionSelection.name)
     private actionSelectionModel: Model<ActionSelection>,
   ) {}
@@ -28,10 +39,70 @@ export class ActionService {
     return newAction.save();
   }
 
+  async createActionWithWebhook(action: Partial<Action>, parameters: any) {
+    // Save the action in the database
+    const createdAction = await this.createAction(action);
+
+    // Configure the webhook using the parameters
+    if (action.service_name === 'github') {
+      await this.githubService.configureWebhook(parameters);
+    }
+
+    return createdAction;
+  }
+
   async remove(uuid: string): Promise<Action | null> {
     return this.actionModel.findOneAndDelete({ uuid }).exec();
   }
 
+  async fire(uuid: string, token: string, payload: any) {
+    const action = await this.actionModel
+      .findOne({ uuid })
+      .select('+token')
+      .lean()
+      .exec();
+
+    if (!action) throw new NotFoundException('Action not found');
+    if (!token || token !== action.token) {
+      throw new UnauthorizedException('Invalid action token');
+    }
+
+    // get area enabled linked to this action
+    const areas = await this.areaService.findEnabledByActionUUID(uuid);
+    if (!areas.length) return { fired: true, areas: 0, results: [] };
+
+    const action_payload = JSON.stringify(payload ?? {});
+
+    // for each area, get reaction and dispatch it
+    const results: Array<
+      | { area_uuid: string; ok: true; result: any }
+      | { area_uuid: string; ok: false; error: string }
+    > = [];
+    for (const area of areas) {
+      try {
+        const reaction = await this.reactionService.findById(
+          area.reaction_uuid,
+        );
+        const res = await this.reactionService.dispatch(
+          reaction,
+          action_payload,
+        );
+        results.push({ area_uuid: area.uuid, ok: true, result: res });
+        await this.areaService.appendHistory(area.uuid, 'OK');
+      } catch (e: any) {
+        results.push({
+          area_uuid: area.uuid,
+          ok: false,
+          error: e?.message ?? 'error',
+        });
+        await this.areaService.appendHistory(
+          area.uuid,
+          `ERROR: ${e?.message ?? 'unknown'}`,
+        );
+      }
+    }
+
+    return { fired: true, areas: areas.length, results };
   getAllSelection() {
     return this.actionSelectionModel.find().exec();
   }

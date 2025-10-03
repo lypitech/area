@@ -1,7 +1,16 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Headers,
+} from '@nestjs/common';
 import type { ActionSelectionType } from './schemas/actionSelection.schema';
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ActionService } from './action.service';
-import { Action } from './schemas/action.schemas';
+import { Action } from './schemas/action.schema';
 
 @Controller('actions')
 export class ActionController {
@@ -18,8 +27,9 @@ export class ActionController {
   }
 
   @Post()
-  create(@Body() body: Partial<Action>) {
-    return this.actionService.createAction(body);
+  async create(@Body() body: { action: Partial<Action>; parameters: any }) {
+    const { action, parameters } = body;
+    return this.actionService.createActionWithWebhook(action, parameters);
   }
 
   @Delete(':uuid')
@@ -27,6 +37,13 @@ export class ActionController {
     return this.actionService.remove(uuid);
   }
 
+  @Post(':uuid/fire')
+  async fire(
+    @Param('uuid') uuid: string,
+    @Headers('x-action-token') token: string,
+    @Body() payload: any,
+  ) {
+    return this.actionService.fire(uuid, token, payload);
   @Get('selection')
   getAllSelection() {
     return this.actionService.getAllSelection();

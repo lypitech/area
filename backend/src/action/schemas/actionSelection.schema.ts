@@ -1,9 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 import { v4 as uuid_v4 } from 'uuid';
 
-@Schema()
-export class ActionSelection extends Document {
+export type ActionSelectionDocument = HydratedDocument<ActionSelection>;
+
+const TRIGGER_TYPES = ['webhook'] as const;
+type TriggerType = (typeof TRIGGER_TYPES)[number];
+
+@Schema({ timestamps: true })
+export class ActionSelection {
   @Prop({ required: true, unique: true, default: uuid_v4 })
   uuid!: string;
 
@@ -16,8 +21,17 @@ export class ActionSelection extends Document {
   @Prop({ required: true })
   description!: string;
 
-  @Prop({ required: true })
-  trigger_types: string[]; // list of the available trigger types
+  @Prop({ required: true, type: [String], enum: TRIGGER_TYPES })
+  trigger_types!: TriggerType[];
+
+  @Prop({ required: true, type: [{ type: Object }] })
+  parameters!: Array<{
+    name: string;
+    type: string;
+    description?: string;
+    required?: boolean;
+    [key: string]: any;
+  }>;
 }
 
 export interface ActionSelectionType {
@@ -25,7 +39,14 @@ export interface ActionSelectionType {
   service_name: string;
   name: string;
   description: string;
-  trigger_types: string[];
+  trigger_types: TriggerType[];
+  parameters: Array<{
+    name: string;
+    type: string;
+    description?: string;
+    required?: boolean;
+    [key: string]: any;
+  }>;
 }
 
 export const ActionSelectionSchema =
