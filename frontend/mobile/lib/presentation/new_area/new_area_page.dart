@@ -1,4 +1,5 @@
 import 'package:area/data/provider/area_modal_provider.dart';
+import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/area_model.dart';
 import 'package:area/widget/appbar_button.dart';
@@ -17,9 +18,10 @@ class NewAreaPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
     final areaModal = ref.watch(areaModalProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return MainPageLayout(
-      title: 'New AREA',
+      title: l10n.new_area_title,
       leading: AppbarButton(
         icon: Icons.arrow_back_ios_rounded,
         onTap: () {
@@ -61,7 +63,7 @@ class NewAreaPage extends ConsumerWidget {
           // todo: Create AREA
         },
         label: Text(
-          'Create',
+          l10n.create_area,
           style: textTheme.titleLarge?.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.w600
@@ -73,10 +75,10 @@ class NewAreaPage extends ConsumerWidget {
         AreactionCard(
           title: areaModal.trigger != null
             ? areaModal.trigger!.name
-            : 'Choose a trigger',
+            : l10n.choose_trigger,
           subtitle: areaModal.actionPlatform != null
             ? '${areaModal.actionPlatform!.name} (${areaModal.actionPlatform!.uuid})'
-            : 'Choose a platform',
+            : l10n.choose_platform,
           onTap: () {
             context.pushNamed('choose_platform', pathParameters: { 'mode': 'action' });
           }
@@ -85,7 +87,7 @@ class NewAreaPage extends ConsumerWidget {
           spacing: 5,
           children: [
             Text(
-              'When',
+              l10n.new_area_when,
               style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w500
               ),
@@ -98,7 +100,7 @@ class NewAreaPage extends ConsumerWidget {
               ),
             ),
             Text(
-              'Then',
+              l10n.new_area_then,
               style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w500
               ),
@@ -108,10 +110,10 @@ class NewAreaPage extends ConsumerWidget {
         AreactionCard(
           title: areaModal.action != null
             ? areaModal.action!.name
-            : 'Choose an action',
+            : l10n.choose_action,
           subtitle: areaModal.reactionPlatform != null
             ? '${areaModal.reactionPlatform!.name} (${areaModal.reactionPlatform!.uuid})'
-            : 'Choose a platform',
+            : l10n.choose_platform,
           onTap: () {
             context.pushNamed('choose_platform', pathParameters: { 'mode': 'reaction' });
           }

@@ -1,4 +1,5 @@
 import 'package:area/data/provider/area_modal_provider.dart';
+import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/platform_model.dart';
 import 'package:area/presentation/new_area/choose_platform_page.dart';
@@ -37,8 +38,11 @@ class _ChooseTriggerActionPageState extends ConsumerState<ChooseTriggerActionPag
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final mode = widget.mode;
-    final title = 'Choose a${mode == ChoosePlatformPageMode.triggers ? ' trigger' : 'n action'}';
+    final title = mode == ChoosePlatformPageMode.triggers
+      ? l10n.choose_trigger
+      : l10n.choose_action;
 
     return MainPageLayout(
       title: title,

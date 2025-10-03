@@ -1,5 +1,6 @@
 import 'package:area/data/provider/area_modal_provider.dart';
 import 'package:area/data/provider/platform_provider.dart';
+import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/platform_card.dart';
@@ -43,9 +44,10 @@ class _ChoosePlatformPageState extends ConsumerState<ChoosePlatformPage> {
   @override
   Widget build(BuildContext context) {
     final platforms = ref.watch(platformsProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return MainPageLayout(
-      title: 'Choose a platform',
+      title: l10n.choose_platform,
       leading: AppbarButton(
         icon: Icons.arrow_back_ios_rounded,
         onTap: () {
