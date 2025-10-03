@@ -1,11 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const app: INestApplication = await NestFactory.create(AppModule);
-  const port: string | undefined = '8080';
+  const port = process.env.PORT || 3000;
 
   app.enableCors({
     origin: 'http://localhost:5173',
@@ -15,9 +15,9 @@ async function bootstrap() {
   });
 
   app.use('/action/github', bodyParser.raw({ type: '*/*' }));
+  app.use('/hook/github', bodyParser.raw({ type: '*/*' }));
   app.use(bodyParser.json());
 
-  const port = process.env.PORT || 3000;
   app.useGlobalFilters(new HttpExceptionFilter());
   await app.listen(port);
 }

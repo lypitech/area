@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -9,7 +10,6 @@ import { Action, ActionDocument } from './schemas/action.schema';
 import { AreaService } from '../area/area.service';
 import { ReactionService } from '../reaction/reaction.service';
 import { GithubService } from './services/github/github.service';
-import { Action, ActionDocument } from './schemas/action.schemas';
 import {
   ActionSelection,
   ActionSelectionType,
@@ -17,6 +17,8 @@ import {
 
 @Injectable()
 export class ActionService {
+  private readonly logger = new Logger(ActionService.name);
+
   constructor(
     @InjectModel(Action.name) private actionModel: Model<ActionDocument>,
     private readonly githubService: GithubService,
@@ -40,10 +42,7 @@ export class ActionService {
   }
 
   async createActionWithWebhook(action: Partial<Action>, parameters: any) {
-    // Save the action in the database
     const createdAction = await this.createAction(action);
-
-    // Configure the webhook using the parameters
     if (action.service_name === 'github') {
       await this.githubService.configureWebhook(parameters);
     }
@@ -80,9 +79,12 @@ export class ActionService {
     > = [];
     for (const area of areas) {
       try {
-        const reaction = await this.reactionService.findById(
+        const reaction = await this.reactionService.getByUUID(
           area.reaction_uuid,
         );
+        if (!reaction) {
+          throw new NotFoundException('Reaction not found');
+        }
         const res = await this.reactionService.dispatch(
           reaction,
           action_payload,
@@ -101,8 +103,9 @@ export class ActionService {
         );
       }
     }
-
     return { fired: true, areas: areas.length, results };
+  }
+
   getAllSelection() {
     return this.actionSelectionModel.find().exec();
   }
