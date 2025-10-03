@@ -8,6 +8,6 @@ import { UserService } from '../user/user.service';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   providers: [UserService],
-  exports: [UserService], // <-- nécessaire
+  exports: [UserService],
 })
 export class HookModule {}
