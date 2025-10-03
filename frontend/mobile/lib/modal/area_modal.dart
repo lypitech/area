@@ -31,6 +31,13 @@ class AreaModal {
     );
   }
 
+  bool isComplete() {
+    return actionPlatform != null
+      && trigger != null
+      && reactionPlatform != null
+      && action != null;
+  }
+
 }
 
 class AreaModalNotifier extends StateNotifier<AreaModal> {
