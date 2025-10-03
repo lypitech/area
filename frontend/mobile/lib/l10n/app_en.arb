@@ -37,8 +37,26 @@
   "validator_password_small_letter": "Small letter",
   "validator_password_special_char": "Special character",
 
+  "search": "Search",
+
   "home_page_title": "Home",
   "discover_page_title": "Discover",
   "my_areas_page_title": "My AREAs",
-  "profile_page_title": "Profile"
+  "profile_page_title": "Profile",
+
+  "new_area_title": "New AREA",
+  "new_area_when": "When",
+  "new_area_then": "Then",
+  "choose_platform": "Choose a platform",
+  "choose_trigger": "Choose a trigger",
+  "choose_action": "Choose an action",
+  "x_available": "{x} available",
+  "@x_available": {
+    "placeholders": {
+      "x": {
+        "type": "int"
+      }
+    }
+  },
+  "create_area": "Create"
 }
