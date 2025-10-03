@@ -7,11 +7,15 @@ class MainPageLayout extends StatelessWidget {
   final String? title;
   final List<Widget> children;
   final AppbarButton? leading;
+  final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
 
   const MainPageLayout({
     this.title,
     required this.children,
     this.leading,
+    this.floatingActionButton,
+    this.floatingActionButtonLocation,
     super.key
   });
 
@@ -43,6 +47,8 @@ class MainPageLayout extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: floatingActionButton,
+      floatingActionButtonLocation: floatingActionButtonLocation,
     );
   }
 
