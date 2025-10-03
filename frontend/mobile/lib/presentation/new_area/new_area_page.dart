@@ -25,6 +25,19 @@ class NewAreaPage extends ConsumerWidget {
           context.pop();
         }
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          // todo: Create AREA
+        },
+        label: Text(
+          'Create',
+          style: textTheme.titleLarge?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w600
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       children: [
         AreactionCard(
           title: areaModal.trigger != null
