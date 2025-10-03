@@ -1,5 +1,6 @@
 import 'package:area/data/provider/area_modal_provider.dart';
 import 'package:area/layout/main_page_layout.dart';
+import 'package:area/model/area_model.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/areaction_card.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,36 @@ class NewAreaPage extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
+          if (!areaModal.isComplete()) {
+            // fixme: tmp
+            showDialog(
+              context: context,
+              builder: (_) {
+                return AlertDialog(
+                  title: Text('Please fill everything up.'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('or consequences')
+                    ]
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () {
+                        context.pop();
+                      },
+                      child: Text('OK')
+                    )
+                  ],
+                );
+              }
+            );
+            return;
+          }
+
+          final area = AreaModel.fromModal(areaModal);
+
           // todo: Create AREA
         },
         label: Text(
