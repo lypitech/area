@@ -22,4 +22,14 @@ export class LoginController {
   ) {
     return this.loginService.login(email, password);
   }
+
+  @Post('refresh')
+  async refresh(@Body('refresh_token') refreshToken: string) {
+    return this.loginService.refreshToken(refreshToken);
+  }
+
+  @Post('logout')
+  async logout(@Body('userId') userId: string) {
+    return this.loginService.logout(userId);
+  }
 }

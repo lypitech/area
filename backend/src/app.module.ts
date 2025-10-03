@@ -34,6 +34,7 @@ import {
     UserModule,
     AuthModule,
     CommonModule,
+    backend
     LoginModule,
     ReactionModule,
     AreaModule,

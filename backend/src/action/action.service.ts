@@ -9,6 +9,11 @@ import { Action, ActionDocument } from './schemas/action.schema';
 import { AreaService } from '../area/area.service';
 import { ReactionService } from '../reaction/reaction.service';
 import { GithubService } from './services/github/github.service';
+import { Action, ActionDocument } from './schemas/action.schemas';
+import {
+  ActionSelection,
+  ActionSelectionType,
+} from './schemas/actionSelection.schema';
 
 @Injectable()
 export class ActionService {
@@ -17,6 +22,8 @@ export class ActionService {
     private readonly githubService: GithubService,
     private readonly areaService: AreaService,
     private readonly reactionService: ReactionService,
+    @InjectModel(ActionSelection.name)
+    private actionSelectionModel: Model<ActionSelection>,
   ) {}
 
   async getAll() {
@@ -96,5 +103,20 @@ export class ActionService {
     }
 
     return { fired: true, areas: areas.length, results };
+  getAllSelection() {
+    return this.actionSelectionModel.find().exec();
+  }
+
+  getSelectionByUUID(uuid: string) {
+    return this.actionSelectionModel.findOne({ uuid: uuid }).exec();
+  }
+
+  createActionSelection(data: ActionSelectionType) {
+    const newActionSelection = new this.actionSelectionModel(data);
+    return newActionSelection.save();
+  }
+
+  async removeSelection(uuid: string): Promise<ActionSelection | null> {
+    return this.actionSelectionModel.findOneAndDelete({ uuid: uuid }).exec();
   }
 }

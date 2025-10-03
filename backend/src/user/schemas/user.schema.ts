@@ -23,6 +23,9 @@ export class User extends Document {
   @Prop({ required: false, default: '' })
   profilePicture?: string;
 
+  @Prop({ required: false, default: null })
+  refreshToken?: string;
+
   /*  @Prop({
       type: [{ type: mongoose_schema.Types.ObjectId, ref: 'Oauth' }],
       default: [],
