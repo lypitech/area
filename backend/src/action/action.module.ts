@@ -15,7 +15,7 @@ import { GithubModule } from './services/github/github.module';
   imports: [
     MongooseModule.forFeature([
       { name: Action.name, schema: ActionSchema },
-      { name: ActionSelection.name, schema: ActionSelectionSchema }, // <-- AJOUT
+      { name: ActionSelection.name, schema: ActionSelectionSchema },
     ]),
     ReactionModule,
     AreaModule,
