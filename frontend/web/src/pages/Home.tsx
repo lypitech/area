@@ -5,18 +5,22 @@ const features = [
   {
     title: "Automate your tasks",
     desc: "Create workflows like Zapier/IFTTT.",
+    destination: "/create",
   },
-  { title: "Connect your apps", desc: "Slack, Discord, Gmail and more." },
   {
-    title: "Intuitive interface",
-    desc: "Drag-and-drop to build your scenario.",
+    title: "Connect your apps",
+    desc: "Slack, Discord, Gmail and more.",
+    destination: "/apps",
+  },
+  {
+    title: "View your Areas",
+    desc: "See all the areas you have created.",
+    destination: "/area",
   },
 ];
 
 export default function Home() {
   const nav = useNavigate();
-
-  const goToWorkflows = () => nav("/workflows");
 
   return (
     <div className="relative w-full h-full">
@@ -35,7 +39,9 @@ export default function Home() {
               Build and automate your own workflows.
             </p>
             <Button
-              onClick={goToWorkflows}
+              onClick={() => {
+                nav("/create");
+              }}
               className="mt-8 inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-semibold rounded-lg shadow hover:scale-105 transition"
             >
               Start
@@ -53,11 +59,10 @@ export default function Home() {
               key={f.title}
               role="button"
               tabIndex={0}
-              onClick={goToWorkflows}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") goToWorkflows();
+              onClick={() => {
+                nav(f.destination);
               }}
-              className="p-6 bg-white rounded-2xl shadow-black shadow-md hover:shadow-xl hover:scale-105 cursor-pointer"
+              className="p-6 bg-white rounded-2xl shadow-black shadow-md transition-all duration-100 ease-in-out hover:shadow-xl hover:scale-105 cursor-pointer"
               aria-label={f.title}
             >
               <h3 className="text-lg font-semibold mb-2">{f.title}</h3>
