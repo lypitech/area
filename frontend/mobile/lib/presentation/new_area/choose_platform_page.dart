@@ -1,30 +1,38 @@
 import 'package:area/data/provider/area_modal_provider.dart';
 import 'package:area/data/provider/platform_provider.dart';
 import 'package:area/layout/main_page_layout.dart';
-import 'package:area/model/platform_model.dart';
 import 'package:area/widget/appbar_button.dart';
-import 'package:area/widget/clickable_frame.dart';
 import 'package:area/widget/platform_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class ChooseTriggerPlatformPage extends ConsumerStatefulWidget {
+enum ChoosePlatformPageMode {
 
-  const ChooseTriggerPlatformPage({
+  triggers,
+  actions;
+
+}
+
+class ChoosePlatformPage extends ConsumerStatefulWidget {
+
+  final ChoosePlatformPageMode mode;
+
+  const ChoosePlatformPage({
+    required this.mode,
     super.key
   });
 
   @override
-  ConsumerState<ChooseTriggerPlatformPage> createState() => _ChooseTriggerPlatformPageState();
+  ConsumerState<ChoosePlatformPage> createState() => _ChoosePlatformPageState();
 
 }
 
-class _ChooseTriggerPlatformPageState extends ConsumerState<ChooseTriggerPlatformPage> {
+class _ChoosePlatformPageState extends ConsumerState<ChoosePlatformPage> {
 
   final _searchBarController = TextEditingController();
+  static const double spacing = 20;
 
   @override
   void dispose() {
@@ -53,21 +61,36 @@ class _ChooseTriggerPlatformPageState extends ConsumerState<ChooseTriggerPlatfor
         platforms.when(
           data: (platformsList) {
             return Wrap(
-              spacing: 20,
-              runSpacing: 20,
+              spacing: spacing,
+              runSpacing: spacing,
               children: platformsList
                 .map((e) {
-                  final width = (MediaQuery.of(context).size.width / 2) - 20 - 10;
+                  final width = (MediaQuery.of(context).size.width / 2) - spacing - (spacing / 2);
+
                   return SizedBox(
                     width: width,
                     child: PlatformCard(
                       platform: e,
-                      available: e.triggers.length,
+                      available: widget.mode == ChoosePlatformPageMode.triggers
+                        ? e.triggers.length
+                        : e.actions.length,
                       onTap: () {
-                        ref.read(areaModalProvider.notifier)
-                          ..setActionPlatform(e)
-                          ..setTrigger(null);
-                        // context.pop();
+                        final modal = ref.read(areaModalProvider.notifier);
+                        String mode = '';
+
+                        if (widget.mode == ChoosePlatformPageMode.triggers) {
+                          modal.setActionPlatform(e);
+                          modal.setTrigger(null);
+                          mode = 'action';
+                        }
+
+                        else if (widget.mode == ChoosePlatformPageMode.actions) {
+                          modal.setReactionPlatform(e);
+                          modal.setAction(null);
+                          mode = 'reaction';
+                        }
+
+                        context.pushNamed('choose_trigger_action', pathParameters: { 'mode': mode }, extra: e);
                       },
                     ),
                   );
