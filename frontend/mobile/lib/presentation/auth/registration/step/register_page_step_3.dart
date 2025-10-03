@@ -1,4 +1,3 @@
-import 'package:area/core/constant/limits.dart';
 import 'package:area/core/constant/regexes.dart';
 import 'package:area/data/provider/register_modal_provider.dart';
 import 'package:area/l10n/app_localizations.dart';

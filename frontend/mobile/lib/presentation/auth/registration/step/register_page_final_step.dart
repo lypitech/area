@@ -1,10 +1,7 @@
 import 'package:area/l10n/app_localizations.dart';
-import 'package:area/layout/register_page_layout.dart';
-import 'package:area/widget/a_appbar.dart';
 import 'package:area/widget/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gap/gap.dart';
 
 class RegisterPageFinalStep extends ConsumerStatefulWidget {
 

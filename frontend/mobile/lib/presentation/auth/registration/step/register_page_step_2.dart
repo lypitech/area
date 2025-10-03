@@ -6,7 +6,6 @@ import 'package:area/layout/register_page_layout.dart';
 import 'package:area/widget/a_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gap/gap.dart';
 
 class RegisterPageStep2 extends ConsumerStatefulWidget {
 

@@ -1,4 +1,3 @@
-import 'package:area/data/provider/area_modal_provider.dart';
 import 'package:area/model/platform_model.dart';
 import 'package:area/widget/clickable_frame.dart';
 import 'package:flutter/material.dart';
