@@ -1,26 +1,51 @@
-interface user {
-    uuid: string;
-    name: string;
-    email: string;
-    password: string;
-    profile_picture: string;
-    OAuth_id: string;
-    Area: [string];
+interface User {
+  uuid: string;
+  nickname: string;
+  username: string; // lowercase, numbers, '_'
+  password: string;
+  email: string; // email format
+  profile_picture: string | null; // URL
+  OAuth_id: string | null; // UUID
+  Area: string[];
 }
 
-interface action {
-    uuid: string;
-    service_name: string;
-    name: string;
-    description: string;
+// To show available actions
+interface ActionSelection {
+  uuid: string;
+  service_name: string;
+  name: string;
+  description: string;
+  trigger_types: string[];
 }
 
-interface reaction {
-    uuid: string;
-    service_name: string;
-    name: string;
-    description: string;
-    schema_input: string;
+// To show available reactions
+interface ReactionSelection {
+  uuid: string;
+  service_name: string;
+  name: string;
+  description: string;
+  schema_input: string; // JSON string
+}
+
+interface Action {
+  uuid: string;
+  service_name: string;
+  name: string;
+  description: string;
+  area_uuid: string;
+  service_resource_id: string | null;
+  token: string;
+  oauth_token_id: string | null;
+  trigger_type: "webhook" | "polling";
+}
+
+interface Reaction {
+  uuid: string;
+  service_name: string;
+  name: string;
+  service_resource_id: string | null;
+  description: string;
+  payload: string;
 }
 
 interface AreaHistory {
@@ -41,4 +66,19 @@ interface Area {
   history: AreaHistory[];
 }
 
-export type { user, action, reaction, Area };
+interface OAuth {
+  uuid: string;
+  service_name: string;
+  token: string;
+}
+
+export type {
+  User,
+  Action,
+  Reaction,
+  Area,
+  AreaHistory,
+  ActionSelection,
+  ReactionSelection,
+  OAuth,
+};
