@@ -26,7 +26,7 @@ export class GithubService {
     }
 
     const baseUrl =
-      this.configService.get<string>('BASE_URL') || 'http://localhost:3000';
+      this.configService.get<string>('BASE_URL') || 'http://localhost:8080';
     const callbackUrl = `${baseUrl}/hooks/github/${actionId}`;
 
     const data = {
