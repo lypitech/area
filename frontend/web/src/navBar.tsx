@@ -3,17 +3,42 @@ import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import Icon from "./components/icons/icons";
 import { Button } from "./components/Button";
 import { isLoggedIn, logout } from "./utils/auth";
+import { API_ROUTES } from "./config/api";
 
 export default function NavBar() {
   const nav = useNavigate();
   const position = useLocation();
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  // Redirect to login if not logged in
   useEffect(() => {
-    if (!localStorage.getItem("token") && position.pathname !== "/register") {
+    if (!isLoggedIn() && position.pathname !== "/register") {
       nav("/");
     }
   }, [nav]);
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
+
+  // Refresh token
+  useEffect(() => {
+    console.log("Refreshing token");
+    const refreshToken = localStorage.getItem("refresh_token");
+    if (refreshToken) {
+      const res = fetch(API_ROUTES.auth.refresh, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+
+      res
+        .then((res) => res.json())
+        .then((data) => {
+          localStorage.setItem("access_token", data.access_token);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [nav]);
 
   // Handle hover open/close only if not locked
   const handleMouseEnter = () => {
@@ -28,6 +53,7 @@ export default function NavBar() {
     logout();
     nav("/");
   };
+
   const isActive = (path: string) => {
     return path === position.pathname;
   };
@@ -69,7 +95,7 @@ export default function NavBar() {
               onClick={() => nav("/create")}
               className={`flex items-center ${
                 open ? "justify-start gap-3 w-full" : "justify-center w-10 h-10"
-              } rounded-lg bg-black hover:bg-neutral-700 hover:scale-[101%] transition               ${
+              } rounded-lg bg-black hover:bg-neutral-700 hover:scale-[101%] transition ${
                 isActive("/create")
                   ? "outline-neutral-600 outline-2"
                   : "outline outline-gray-200"
@@ -84,7 +110,7 @@ export default function NavBar() {
               onClick={() => nav("/area")}
               className={`flex items-center ${
                 open ? "justify-start gap-3 w-full" : "justify-center w-10 h-10"
-              } rounded-lg  hover:bg-gray-100 hover:scale-[101%] transition               ${
+              } rounded-lg  hover:bg-gray-100 hover:scale-[101%] transition ${
                 isActive("/area")
                   ? "outline-black outline-2"
                   : "outline outline-gray-200"
@@ -99,7 +125,7 @@ export default function NavBar() {
               onClick={() => nav("/apps")}
               className={`flex items-center ${
                 open ? "justify-start gap-3 w-full" : "justify-center w-10 h-10"
-              } rounded-lg  hover:bg-gray-100 hover:scale-[101%] transition               ${
+              } rounded-lg  hover:bg-gray-100 hover:scale-[101%] transition ${
                 isActive("/apps")
                   ? "outline-black outline-2"
                   : "outline outline-gray-200"
@@ -118,7 +144,7 @@ export default function NavBar() {
               onClick={() => nav("/settings")}
               className={`flex items-center ${
                 open ? "justify-start gap-3 w-full" : "justify-center w-10 h-10"
-              } rounded-lg  hover:bg-gray-100 hover:scale-[101%] transition               ${
+              } rounded-lg  hover:bg-gray-100 hover:scale-[101%] transition ${
                 isActive("/settings")
                   ? "outline-black outline-2"
                   : "outline outline-gray-200"
@@ -132,7 +158,7 @@ export default function NavBar() {
               onClick={() => nav("/profile")}
               className={`flex items-center ${
                 open ? "justify-start gap-3 w-full" : "justify-center w-10 h-10"
-              } rounded-lg  hover:bg-gray-100 hover:scale-[101%] transition               ${
+              } rounded-lg  hover:bg-gray-100 hover:scale-[101%] transition ${
                 isActive("/profile")
                   ? "outline-black outline-2"
                   : "outline outline-gray-200"
