@@ -8,8 +8,8 @@ import axios from 'axios';
 @Injectable()
 export class GithubService {
   constructor(
-    private configService: ConfigService,
-    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly configService: ConfigService,
+    @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
   async configureWebhook(parameters: {
@@ -17,17 +17,21 @@ export class GithubService {
     owner: string;
     userId: string;
     actionId: string;
-  }) {
-    const { repo, owner, userId, actionId } = parameters;
+    actionToken: string;
+  }): Promise<{ id?: number; raw?: any }> {
+    const { repo, owner, userId, actionId, actionToken } = parameters;
 
-    const user = await this.userModel.findById(userId);
+    const user = await this.userModel.findOne({ uuid: userId }).lean().exec();
     if (!user || !user.githubToken) {
       throw new UnauthorizedException('GitHub authentication required');
     }
 
     const baseUrl =
       this.configService.get<string>('BASE_URL') || 'http://localhost:8080';
-    const callbackUrl = `${baseUrl}/hooks/github/${actionId}`;
+
+    const callbackUrl =
+      `${baseUrl.replace(/\/$/, '')}/hooks/github/${actionId}` +
+      `?token=${encodeURIComponent(actionToken)}`;
 
     const data = {
       name: 'web',
@@ -36,12 +40,14 @@ export class GithubService {
       config: {
         url: callbackUrl,
         content_type: 'json',
+        secret: actionToken,
       },
     };
 
     const headers = {
-      Authorization: `Bearer ${user.githubToken}`,
+      Authorization: `token ${user.githubToken}`,
       'Content-Type': 'application/json',
+      Accept: 'application/vnd.github+json',
     };
 
     try {
@@ -50,9 +56,13 @@ export class GithubService {
         data,
         { headers },
       );
-      return response.data;
-    } catch (error) {
-      throw new Error(`Failed to configure GitHub webhook: ${error.message}`);
+      return { id: response.data?.id, raw: response.data };
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ??
+        error?.message ??
+        'unknown GitHub error';
+      throw new Error(`Failed to configure GitHub webhook: ${message}`);
     }
   }
 }
