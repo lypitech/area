@@ -20,6 +20,7 @@ import {
   ActionSelection,
   ActionSelectionSchema,
 } from './action/schemas/actionSelection.schema';
+import { HookModule } from './hook/hook.module';
 
 @Module({
   imports: [
@@ -34,11 +35,12 @@ import {
     UserModule,
     AuthModule,
     CommonModule,
-    backend
+    //backend,
     LoginModule,
     ReactionModule,
     AreaModule,
     ActionModule,
+    HookModule,
   ],
   controllers: [AppController],
   providers: [
