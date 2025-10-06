@@ -1,4 +1,3 @@
-import type { ReactionSelectionType } from './schemas/reactionSelection.schema';
 import {
   Body,
   Controller,
@@ -32,25 +31,5 @@ export class ReactionController {
   @Delete(':uuid')
   remove(@Param('uuid') uuid: string) {
     return this.reactionsService.remove(uuid);
-  }
-
-  @Get('selection')
-  getAllSelection() {
-    return this.reactionsService.getAllSelection();
-  }
-
-  @Get('selection/:uuid')
-  getSelectionByUUID(@Param('uuid') uuid: string) {
-    return this.reactionsService.getSelectionByUUID(uuid);
-  }
-
-  @Post('selection')
-  createSelection(@Body() body: ReactionSelectionType) {
-    return this.reactionsService.createSelection(body);
-  }
-
-  @Delete('selection/:uuid')
-  removeSelection(@Param('uuid') uuid: string) {
-    return this.reactionsService.removeSelection(uuid);
   }
 }

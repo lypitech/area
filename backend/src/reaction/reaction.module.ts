@@ -9,6 +9,8 @@ import { ReactionService } from './reaction.service';
 import { Reaction, ReactionSchema } from './schemas/reaction.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DiscordReactionService } from './services/discord.service';
+import { SelectionController } from './selection/selection.controller';
+import { SelectionService } from './selection/selection.service';
 
 @Module({
   imports: [
@@ -20,8 +22,8 @@ import { DiscordReactionService } from './services/discord.service';
       { name: ReactionSelection.name, schema: ReactionSelectionSchema },
     ]),
   ],
-  controllers: [ReactionController],
-  providers: [ReactionService, DiscordReactionService],
+  controllers: [ReactionController, SelectionController],
+  providers: [ReactionService, DiscordReactionService, SelectionService],
   exports: [ReactionService],
 })
 export class ReactionModule {}
