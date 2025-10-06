@@ -21,19 +21,16 @@ export class Action {
   @Prop()
   description?: string;
 
-  @Prop({ required: true, index: true })
-  area_uuid!: string;
-
   @Prop({ default: null, type: String })
   service_resource_id?: string | null;
 
-  @Prop({ required: true, select: false })
+  @Prop({ required: true, select: false, default: () => uuidv4() })
   token!: string;
 
   @Prop({ default: null, type: String })
   oauth_token_id?: string | null;
 
-  @Prop({ required: true, enum: TriggerTypes })
+  @Prop({ required: true, enum: TriggerTypes, default: 'webhook' })
   trigger_type!: TriggerType;
 }
 

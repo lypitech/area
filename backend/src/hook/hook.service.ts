@@ -1,35 +1,44 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ActionService } from '../action/action.service';
-import { User } from '../user/schemas/user.schema';
 
 @Injectable()
 export class HookService {
   private readonly logger = new Logger(HookService.name);
 
-  constructor(private actionService: ActionService) {}
+  constructor(private readonly actionService: ActionService) {}
 
   async handleGithubWebhook(
     payload: any,
     actionId: string,
-    user: User,
-  ): Promise<void> {
+    token: string,
+    event?: string,
+  ) {
     try {
-      this.logger.log(`Received GitHub webhook for action ${actionId}`);
+      this.logger.log(
+        `Received GitHub webhook for action ${actionId} (event: ${
+          event ?? 'unknown'
+        })`,
+      );
 
-      if (!payload || !payload.repository) {
-        throw new Error('Invalid webhook payload');
-      }
+      const repository = payload?.repository?.name;
+      const owner =
+        payload?.repository?.owner?.login || payload?.repository?.owner?.name;
 
-      await this.actionService.fire(actionId, user.githubToken, {
-        repository: payload.repository.name,
-        owner: payload.repository.owner.login,
-        event: 'push',
-        payload: payload,
+      const result = await this.actionService.fire(actionId, token, {
+        repository,
+        owner,
+        event: event ?? 'push',
+        payload,
       });
 
       this.logger.log(`Successfully processed webhook for action ${actionId}`);
-    } catch (error) {
-      this.logger.error(`Failed to process webhook: ${error.message}`);
+      return result;
+    } catch (error: any) {
+      this.logger.error(
+        `Failed to process webhook for action ${actionId}: ${
+          error?.message ?? error
+        }`,
+      );
       throw error;
     }
   }

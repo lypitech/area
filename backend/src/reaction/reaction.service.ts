@@ -41,10 +41,14 @@ export class ReactionService {
   }
 
   dispatch(reaction: Reaction, action_payload: string) {
-    const service_name: string = reaction.service_name;
+    const service_name: string = (reaction as any).service_name;
     switch (service_name) {
       case 'discord':
         return this.discord.dispatch(reaction, action_payload);
+      default:
+        throw new NotFoundException(
+          `Unsupported reaction service '${service_name}'`,
+        );
     }
   }
 }
