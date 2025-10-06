@@ -85,9 +85,9 @@ export class ActionService {
         if (!reaction) {
           throw new NotFoundException('Reaction not found');
         }
-        const res = await this.reactionService.dispatch(
-          reaction,
-          action_payload,
+        const res = this.reactionService.dispatch(
+            reaction,
+            action_payload
         );
         results.push({ area_uuid: area.uuid, ok: true, result: res });
         await this.areaService.appendHistory(area.uuid, 'OK');
@@ -104,22 +104,5 @@ export class ActionService {
       }
     }
     return { fired: true, areas: areas.length, results };
-  }
-
-  getAllSelection() {
-    return this.actionSelectionModel.find().exec();
-  }
-
-  getSelectionByUUID(uuid: string) {
-    return this.actionSelectionModel.findOne({ uuid: uuid }).exec();
-  }
-
-  createActionSelection(data: ActionSelectionType) {
-    const newActionSelection = new this.actionSelectionModel(data);
-    return newActionSelection.save();
-  }
-
-  async removeSelection(uuid: string): Promise<ActionSelection | null> {
-    return this.actionSelectionModel.findOneAndDelete({ uuid: uuid }).exec();
   }
 }

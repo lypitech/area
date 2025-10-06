@@ -44,24 +44,4 @@ export class ActionController {
   ) {
     return this.actionService.fire(uuid, token, payload);
   }
-
-  @Get('selection')
-  getAllSelection() {
-    return this.actionService.getAllSelection();
-  }
-
-  @Get('selection/:uuid')
-  getSelectionByUUID(@Param('uuid') uuid: string) {
-    return this.actionService.getSelectionByUUID(uuid);
-  }
-
-  @Post('selection')
-  createSelection(@Body() body: ActionSelectionType) {
-    return this.actionService.createActionSelection(body);
-  }
-
-  @Delete('selection/:uuid')
-  removeSelection(@Param('uuid') uuid: string) {
-    return this.actionService.removeSelection(uuid);
-  }
 }
