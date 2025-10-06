@@ -3,6 +3,7 @@ import 'package:area/model/platform_model.dart';
 import 'package:area/presentation/auth/login_page.dart';
 import 'package:area/presentation/auth/registration/register_page.dart';
 import 'package:area/presentation/error_page.dart';
+import 'package:area/presentation/init_page.dart';
 import 'package:area/presentation/main_page.dart';
 import 'package:area/presentation/new_area/choose_platform_page.dart';
 import 'package:area/presentation/new_area/choose_trigger_action_page.dart';
@@ -12,27 +13,16 @@ import 'package:go_router/go_router.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    initialLocation: '/init',
     errorBuilder: (_, _) => ErrorPage(),
-    redirect: (_, state) {
-      final loggedIn = ref.watch(authStateProvider);
-
-      if (loggedIn == null) {
-        return null;
-      }
-
-      // Not logged in: send to login page
-      if (!loggedIn && state.matchedLocation != '/login') {
-        return '/login';
-      }
-
-      // Already logged in: redirect to homepage
-      if (loggedIn && state.matchedLocation == '/login') {
-        return '/';
-      }
-
-      return null;
-    },
     routes: [
+      // ---------- INIT ----------
+      GoRoute(
+        name: 'init',
+        path: '/init',
+        builder: (_, _) => InitPage(),
+      ),
+
       // ---------- AUTH ----------
       GoRoute(
         name: 'login',

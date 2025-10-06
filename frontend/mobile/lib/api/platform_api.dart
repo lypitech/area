@@ -18,8 +18,8 @@ class PlatformApi {
      */
 
     /*
-    final resp = await _dio.get('/platforms');
-    final list = resp.data as List<dynamic>;
+    final response = await _dio.get('/platforms');
+    final list = response.data as List<dynamic>;
 
     return list
       .map((e) => PlatformModel.fromJson(Map<String, dynamic>.from(e)))
