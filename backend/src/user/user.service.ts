@@ -34,6 +34,16 @@ export class UserService {
     return user;
   }
 
+  async findByToken(
+    refreshToken: string
+  ): Promise<User> {
+    const user: User | null = await this.userModel.findOne({ refreshToken: refreshToken });
+    if (!user) {
+      throw new NotFoundException(`No user with refreshToken ${refreshToken}`);
+    }
+    return user;
+  }
+
   async createNew(
     email: string,
     password: string,
