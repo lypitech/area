@@ -1,10 +1,13 @@
 import 'package:area/core/constant/constants.dart';
+import 'package:area/core/constant/regexes.dart';
+import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/widget/a_text_field.dart';
 import 'package:area/widget/clickable_frame.dart';
 import 'package:area/widget/logo.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,22 +22,27 @@ class LoginPage extends ConsumerWidget {
     super.key
   });
 
-  void _login(WidgetRef ref) async {
+  void _login(BuildContext context, WidgetRef ref) async {
     if (_authFormKey.currentState != null &&
         !_authFormKey.currentState!.validate()) {
       return;
     }
 
-    // try {
-    //   await ref.read(authServiceProvider).login(
-    //     _emailFieldController.text,
-    //     _passwordFieldController.text,
-    //   );
-    //   ref.read(authStateProvider.notifier).state = true;
-    // } catch (e) {
-    //   print(e);
-    //   Fluttertoast.showToast(msg: 'Login failed: $e');
-    // }
+    try {
+      final authNotifier = ref.read(authNotifierProvider.notifier);
+
+      await authNotifier.login(
+        email: _emailFieldController.text,
+        password: _passwordFieldController.text
+      );
+
+      if (context.mounted) {
+        context.goNamed('/');
+      }
+    } catch (e) {
+      // Login failed for some reasons.
+      Fluttertoast.showToast(msg: 'login failed lol\n$e');
+    }
   }
 
   @override
