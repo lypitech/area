@@ -43,11 +43,40 @@ export class ActionService {
 
   async createActionWithWebhook(action: Partial<Action>, parameters: any) {
     const createdAction = await this.createAction(action);
-    if (action.service_name === 'github') {
-      await this.githubService.configureWebhook(parameters);
+
+    if (
+      createdAction.service_name === 'github' &&
+      createdAction.trigger_type === 'webhook'
+    ) {
+      const owner = parameters?.owner;
+      const repo = parameters?.repo;
+      const userId = parameters?.userId;
+
+      if (!owner || !repo || !userId) {
+        this.logger.warn(
+          `[createActionWithWebhook] Missing GitHub parameters for action ${createdAction.uuid}: owner, repo, userId are required`,
+        );
+      } else {
+        const res = await this.githubService.configureWebhook({
+          owner,
+          repo,
+          userId,
+          actionId: createdAction.uuid,
+          actionToken: createdAction.token, // secret + token de tir
+        });
+
+        if (res?.id != null) {
+          await this.actionModel
+            .updateOne(
+              { uuid: createdAction.uuid },
+              { $set: { service_resource_id: String(res.id) } },
+            )
+            .exec();
+        }
+      }
     }
 
-    return createdAction;
+    return this.getByUUID(createdAction.uuid);
   }
 
   async remove(uuid: string): Promise<Action | null> {
@@ -66,17 +95,15 @@ export class ActionService {
       throw new UnauthorizedException('Invalid action token');
     }
 
-    // get area enabled linked to this action
     const areas = await this.areaService.findEnabledByActionUUID(uuid);
     if (!areas.length) return { fired: true, areas: 0, results: [] };
 
     const action_payload = JSON.stringify(payload ?? {});
-
-    // for each area, get reaction and dispatch it
     const results: Array<
       | { area_uuid: string; ok: true; result: any }
       | { area_uuid: string; ok: false; error: string }
     > = [];
+
     for (const area of areas) {
       try {
         const reaction = await this.reactionService.getByUUID(
@@ -105,6 +132,8 @@ export class ActionService {
     }
     return { fired: true, areas: areas.length, results };
   }
+
+  // --- Selections ---
 
   getAllSelection() {
     return this.actionSelectionModel.find().exec();
