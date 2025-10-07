@@ -42,15 +42,15 @@ class _InitPageState extends ConsumerState<InitPage> {
     }
 
     switch (authState.status) {
-      case AuthState.authenticated:
-        context.replace('/');
+      case AuthStatus.authenticated:
+        context.go('/');
         break;
-      case AuthState.unauthenticated:
+      case AuthStatus.unauthenticated:
         // context.go('/login');
         // break;
-      case AuthState.unknown:
+      case AuthStatus.unknown:
       default:
-        context.replace('/login');
+        context.go('/login');
         break;
     }
   }
