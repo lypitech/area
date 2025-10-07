@@ -1,9 +1,10 @@
-import 'package:area/data/provider/auth_provider.dart';
+import 'package:area/model/area_model.dart';
 import 'package:area/model/platform_model.dart';
 import 'package:area/presentation/auth/login_page.dart';
 import 'package:area/presentation/auth/registration/register_page.dart';
 import 'package:area/presentation/error_page.dart';
 import 'package:area/presentation/init_page.dart';
+import 'package:area/presentation/main/area_details_page.dart';
 import 'package:area/presentation/main_page.dart';
 import 'package:area/presentation/new_area/choose_platform_page.dart';
 import 'package:area/presentation/new_area/choose_trigger_action_page.dart';
@@ -77,6 +78,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                 ],
               ),
             ],
+          ),
+          GoRoute(
+            name: 'area_details',
+            path: 'area_details',
+            builder: (_, state) {
+              return AreaDetailsPage(
+                area: state.extra as AreaModel
+              );
+            },
           ),
         ],
       ),
