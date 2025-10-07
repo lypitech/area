@@ -1,3 +1,4 @@
+import 'package:area/core/constant/constants.dart';
 import 'package:area/model/action_model.dart';
 import 'package:area/model/trigger_model.dart';
 
@@ -17,23 +18,23 @@ class PlatformModel {
     this.actions = const [],
   });
 
-  factory PlatformModel.fromJson(Map<String, dynamic> json) {
+  factory PlatformModel.fromJson(JsonData data) {
     return PlatformModel(
-      uuid: json['uuid'] as String,
-      name: json['name'] as String,
-      iconBase64: json['iconBase64'] as String? ?? '',
-      triggers: (json['triggers'] as List<dynamic>?)
+      uuid: data['uuid'] as String,
+      name: data['name'] as String,
+      iconBase64: data['iconBase64'] as String? ?? '',
+      triggers: (data['triggers'] as List<dynamic>?)
           ?.map((e) => TriggerModel.fromJson(Map<String, dynamic>.from(e)))
           .toList()
         ?? [],
-      actions: (json['actions'] as List<dynamic>?)
+      actions: (data['actions'] as List<dynamic>?)
           ?.map((e) => ActionModel.fromJson(Map<String, dynamic>.from(e)))
           .toList()
         ?? [],
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonData toJson() => {
     'uuid': uuid,
     'name': name,
     'iconBase64': iconBase64,
