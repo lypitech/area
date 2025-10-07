@@ -10,6 +10,7 @@ import Settings from "./pages/Settings";
 import Create from "./pages/Create";
 import AppLogin from "./pages/AppLogin";
 import AppDetails from "./pages/AppDetails";
+import Callback from "./pages/Callback";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
       { path: "create", element: <Create /> },
       { path: "app-login/:appName", element: <AppLogin /> },
       { path: "settings", element: <Settings /> },
+      { path: "callback", element: <Callback /> },
     ],
   },
 ]);
