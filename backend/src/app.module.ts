@@ -8,28 +8,29 @@ import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { LoginModule } from './login/login.module';
 import { ReactionModule } from './reaction/reaction.module';
-import { ReactionSelectionSeederService } from './setup/reactionSelection.seeder.service';
-import { ActionSelectionSeederService } from './setup/actionSelection.seeder.service';
+import { ReactionListSeederService } from './list/setup/reactionList.seeder.service';
+import { ActionListSeederService } from './list/setup/actionList.seeder.service';
 import { AreaModule } from './area/area.module';
 import { ActionModule } from './action/action.module';
 import {
-  ReactionSelection,
-  ReactionSelectionSchema,
-} from './reaction/schemas/reactionSelection.schema';
+  ReactionList,
+  ReactionListSchema,
+} from './list/schemas/reactionList.schema';
 import {
-  ActionSelection,
-  ActionSelectionSchema,
-} from './action/schemas/actionSelection.schema';
+  ActionList,
+  ActionListSchema,
+} from './list/schemas/actionList.schema';
 import { HookModule } from './hook/hook.module';
+import { ListModule } from './list/list.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://mongo:27017/nestdb'),
     MongooseModule.forFeature([
-      { name: ReactionSelection.name, schema: ReactionSelectionSchema },
+      { name: ReactionList.name, schema: ReactionListSchema },
     ]),
     MongooseModule.forFeature([
-      { name: ActionSelection.name, schema: ActionSelectionSchema },
+      { name: ActionList.name, schema: ActionListSchema },
     ]),
     ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
@@ -41,12 +42,13 @@ import { HookModule } from './hook/hook.module';
     AreaModule,
     ActionModule,
     HookModule,
+    ListModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    ReactionSelectionSeederService,
-    ActionSelectionSeederService,
+    ReactionListSeederService,
+    ActionListSeederService,
   ],
 })
 export class AppModule {}
