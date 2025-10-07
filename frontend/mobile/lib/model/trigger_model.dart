@@ -1,3 +1,5 @@
+import 'package:area/core/constant/constants.dart';
+
 class TriggerModel {
 
   final String uuid;
@@ -12,7 +14,7 @@ class TriggerModel {
     this.requiredParams = const [],
   });
 
-  factory TriggerModel.fromJson(Map<String, dynamic> json) {
+  factory TriggerModel.fromJson(JsonData json) {
     return TriggerModel(
       uuid: json['uuid'] as String,
       name: json['name'] as String,
@@ -21,7 +23,7 @@ class TriggerModel {
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonData toJson() => {
     'uuid': uuid,
     'name': name,
     'description': description,

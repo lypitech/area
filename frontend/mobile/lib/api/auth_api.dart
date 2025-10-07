@@ -23,13 +23,31 @@ class AuthApi {
     return response.data as JsonData;
   }
 
+  Future<JsonData> register({
+    required String email,
+    required String password,
+    required String nickname,
+    required String username,
+  }) async {
+    final response = await dio.post(
+      '/login/register',
+      data: {
+        'email': email,
+        'password': password,
+        'nickname': nickname,
+        'username': username,
+      },
+    );
+    return response.data as JsonData;
+  }
+
   Future<JsonData> refresh({
     required String refreshToken
   }) async {
     final response = await dio.post(
       '/login/refresh',
       data: {
-        'refreshToken': refreshToken
+        'refresh_token': refreshToken
       }
     );
     return response.data as JsonData;
@@ -41,9 +59,16 @@ class AuthApi {
     await dio.post(
       '/login/logout',
       data: {
-        'refreshToken': refreshToken
+        'refresh_token': refreshToken
       }
     );
+  }
+
+  Future<JsonData> getUser({
+    required String refreshToken
+  }) async {
+    final response = await dio.get('/users/getuser/$refreshToken');
+    return response.data as JsonData;
   }
 
 }

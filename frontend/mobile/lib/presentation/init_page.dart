@@ -1,4 +1,5 @@
 import 'package:area/data/provider/auth_provider.dart';
+import 'package:area/data/provider/platform_provider.dart';
 import 'package:area/widget/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,6 +33,8 @@ class _InitPageState extends ConsumerState<InitPage> {
 
     _initialized = true;
 
+    ref.read(platformsProvider.notifier).refresh(forceRefresh: true);
+
     final authNotifier = ref.read(authNotifierProvider.notifier);
     await authNotifier.checkAuth();
 
@@ -42,15 +45,14 @@ class _InitPageState extends ConsumerState<InitPage> {
     }
 
     switch (authState.status) {
-      case AuthState.authenticated:
-        context.replace('/');
+      case AuthStatus.authenticated:
+        context.go('/');
         break;
-      case AuthState.unauthenticated:
+      case AuthStatus.unauthenticated:
         // context.go('/login');
         // break;
-      case AuthState.unknown:
-      default:
-        context.replace('/login');
+      case AuthStatus.unknown:
+        context.go('/login');
         break;
     }
   }
