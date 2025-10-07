@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:area/api/auth_api.dart';
+import 'package:area/core/constant/constants.dart';
+import 'package:area/model/user_model.dart';
 import 'package:area/service/auth_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -58,7 +60,7 @@ class AuthInterceptor extends Interceptor {
             return;
           }
 
-          requestOptions.extra['retried'] = true; // To avoid infinite loop$s
+          requestOptions.extra['retried'] = true; // To avoid infinite loops
 
           final newOptions = Options(
             method: requestOptions.method,
@@ -114,7 +116,7 @@ enum AuthStatus {
 class AuthState {
 
   final AuthStatus status;
-  final Map<String, dynamic>? user;
+  final UserModel? user;
 
   AuthState._({
     required this.status,
@@ -122,7 +124,10 @@ class AuthState {
   });
 
   factory AuthState.unknown() => AuthState._(status: AuthStatus.unknown);
-  factory AuthState.authenticated(Map<String, dynamic>? user) => AuthState._(status: AuthStatus.authenticated, user: user);
+  factory AuthState.authenticated(JsonData? user) => AuthState._(
+    status: AuthStatus.authenticated,
+    user: user == null ? null : UserModel.fromJson(user)
+  );
   factory AuthState.unauthenticated() => AuthState._(status: AuthStatus.unauthenticated);
 
 }
@@ -142,7 +147,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String password
   }) async {
     try {
-      final tokens = await api.login(email: email, password: password);
+      final tokens = await api.login(
+        email: email,
+        password: password
+      );
+
       final access = tokens['access_token'] as String?;
       final refresh = tokens['refresh_token'] as String?;
 
@@ -154,6 +163,41 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final user = await api.getUser(refreshToken: refresh);
       await service.saveTokens(accessToken: access, refreshToken: refresh);
       state = AuthState.authenticated(user);
+    } catch (e) {
+      state = AuthState.unauthenticated();
+      rethrow;
+    }
+  }
+
+  Future<void> register({
+    required String email,
+    required String password,
+    required String nickname,
+    required String username,
+  }) async {
+    try {
+      await api.register(
+        email: email,
+        password: password,
+        nickname: nickname,
+        username: username,
+      );
+
+      final loginResponse = await api.login(
+        email: email,
+        password: password,
+      );
+
+      final access = loginResponse['access_token'] as String?;
+      final refresh = loginResponse['refresh_token'] as String?;
+
+      if (access != null && refresh != null) {
+        await service.saveTokens(accessToken: access, refreshToken: refresh);
+        final user = await api.getUser(refreshToken: refresh);
+        state = AuthState.authenticated(user);
+      } else {
+        throw Exception('Invalid login response after register (register may have been unsuccessful)');
+      }
     } catch (e) {
       state = AuthState.unauthenticated();
       rethrow;
@@ -182,29 +226,55 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// Called at app start to initialize auth state (see InitPage)
   Future<void> checkAuth() async {
-    final access = await service.getAccessToken();
-    final refresh = await service.getRefreshToken();
+    try {
+      final refresh = await service.getRefreshToken();
 
-    if (access != null) {
-      state = AuthState.authenticated({});
-      return;
-    }
-
-    if (refresh != null) {
-      final ok = await service.refreshIfNeeded();
-
-      if (ok) {
-        final refresh = await service.getRefreshToken();
-
-        if (refresh != null) {
-          final user = await api.getUser(refreshToken: refresh);
-          state = AuthState.authenticated(user);
-          return;
-        }
+      print("CHECKAUTH: refresh: $refresh");
+      if (refresh == null) {
+        print("CHECKAUTH: null, unauthenticated");
+        state = AuthState.unauthenticated();
+        return;
       }
-    }
 
-    state = AuthState.unauthenticated();
+      print("CHECKAUTH: not null, will try to get the user vro");
+
+      try {
+        final user = await api.getUser(refreshToken: refresh);
+        print("CHECKAUTH: user: $user");
+
+        state = AuthState.authenticated(user);
+        return;
+      } catch (e) {
+        print("CHECKAUTH: ok error, maybe the tokens are invalidated");
+
+        final refreshed = await service.refreshIfNeeded();
+        print("CHECKAUTH: refreshed tokens");
+
+        if (refreshed) {
+          print("CHECKAUTH: nice the tokens are refreshed");
+
+          final newRefreshToken = await service.getRefreshToken();
+
+          if (newRefreshToken != null) {
+            print("CHECKAUTH: ok nice will authenticate");
+
+            final user = await api.getUser(refreshToken: newRefreshToken);
+            state = AuthState.authenticated(user);
+            return;
+          }
+        }
+        print("CHECKAUTH: tokens are invalid now, unlogging");
+
+        await service.clearTokens();
+        state = AuthState.unauthenticated();
+      }
+    } catch (e) {
+      state = AuthState.unauthenticated();
+    }
+  }
+
+  UserModel? getUser() {
+    return state.user;
   }
 
 }
