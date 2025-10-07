@@ -1,26 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
-
-// Types (temporary)
-type ActionSelection = {
-  uuid: string;
-  service_name: string;
-  name: string;
-  description: string;
-  trigger_types: string[];
-};
-
-type ReactionSelection = {
-  uuid: string;
-  service_name: string;
-  name: string;
-  description: string;
-  schema_input: string;
-};
+import type { ActionSelection, ReactionSelection } from "../types/index";
+import { API_ROUTES } from "../config/api";
+import { githubLogin } from "../services/OAuth/OAuths/githubServices";
+import OAuthParser from "../services/OAuth/oauthParser";
 
 type AppState = {
   service_name: string;
-  logo: string;
+  logo?: string;
   connected: boolean;
   actions?: ActionSelection[];
   reactions?: ReactionSelection[];
@@ -36,91 +23,89 @@ export default function Create() {
   const [selectedReaction, setSelectedReaction] =
     useState<ReactionSelection | null>(null);
 
-  // Apps
-  const [apps, setApps] = useState<AppState[]>([
-    {
-      service_name: "Discord",
-      logo: "/src/assets/logos/discord.png",
-      connected: false,
-    },
-    {
-      service_name: "Gmail",
-      logo: "/src/assets/logos/gmail_240.png",
-      connected: false,
-    },
-    {
-      service_name: "GitHub",
-      logo: "/src/assets/logos/github_240.png",
-      connected: false,
-    },
-  ]);
+  const [apps, setApps] = useState<AppState[]>([]);
 
-  // Whiteboard blocks (responsive positions en %)
-  const blocks = [
-    { id: "action", label: "Action", top: 40, left: 15 },
-    { id: "reaction", label: "Reaction", top: 40, left: 60 },
-  ];
+  // --- Fetch all action/reaction selections ---
+  useEffect(() => {
+    const fetchSelections = async () => {
+      try {
+        const [actionsRes, reactionsRes] = await Promise.all([
+          fetch(API_ROUTES.selection.actions, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }),
+          fetch(API_ROUTES.selection.reactions, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }),
+        ]);
+
+        if (!actionsRes.ok || !reactionsRes.ok)
+          throw new Error("Failed to fetch selections");
+
+        const actions: ActionSelection[] = await actionsRes.json();
+        const reactions: ReactionSelection[] = await reactionsRes.json();
+
+        console.log(actions);
+        console.log(reactions);
+
+        // Créer la liste unique des services
+        const serviceNames = Array.from(
+          new Set([
+            ...actions.map((a) => a.service_name),
+            ...reactions.map((r) => r.service_name),
+          ])
+        );
+
+        // Associer actions et reactions à chaque service
+        const appsData: AppState[] = serviceNames.map((service) => ({
+          service_name: service,
+          connected: false,
+          actions: actions.filter((a) => a.service_name === service),
+          reactions: reactions.filter((r) => r.service_name === service),
+        }));
+
+        setApps(appsData);
+      } catch (err) {
+        console.error("Error fetching selections:", err);
+      }
+    };
+
+    fetchSelections();
+  }, []);
 
   const handleAppClick = (app: AppState) => {
-    const token = localStorage.getItem(`token_${app.service_name}`);
+    const token = localStorage.getItem(`${app.service_name}_access_token`);
     if (!token) {
-      window.location.href = `/app-login/${app.service_name}`;
+      if (OAuthParser(app.service_name) == "unknown") {
+        alert("Unknown service");
+        return;
+      }
       return;
     }
 
-    // If connected, show blocks
-    if (selectedBlock === "action") {
-      const actions: ActionSelection[] = [
-        {
-          uuid: "1",
-          service_name: app.service_name,
-          name: "Message Received",
-          description: "Trigger on message received",
-          trigger_types: ["webhook"],
-        },
-        {
-          uuid: "2",
-          service_name: app.service_name,
-          name: "New Channel",
-          description: "Trigger on new channel",
-          trigger_types: ["polling"],
-        },
-      ];
-      setApps((prev) =>
-        prev.map((a) =>
-          a.service_name === app.service_name ? { ...a, actions } : a
-        )
-      );
-    } else if (selectedBlock === "reaction") {
-      const reactions: ReactionSelection[] = [
-        {
-          uuid: "1",
-          service_name: app.service_name,
-          name: "Send Message",
-          description: "Send a message",
-          schema_input: "{}",
-        },
-        {
-          uuid: "2",
-          service_name: app.service_name,
-          name: "Create Repo",
-          description: "Create a repo",
-          schema_input: "{}",
-        },
-      ];
-      setApps((prev) =>
-        prev.map((a) =>
-          a.service_name === app.service_name ? { ...a, reactions } : a
-        )
-      );
-    }
+    setApps((prev) =>
+      prev.map((a) =>
+        a.service_name === app.service_name ? { ...a, connected: true } : a
+      )
+    );
   };
 
   const saveArea = () => {
     if (!selectedAction || !selectedReaction) return;
     console.log("Saving AREA:", { selectedAction, selectedReaction });
-    // TODO: POST to back
+
+    // TODO: POST areas
   };
+
+  const blocks = [
+    { id: "action", label: "Action", top: 40, left: 15 },
+    { id: "reaction", label: "Reaction", top: 40, left: 60 },
+  ];
 
   return (
     <div className="relative w-full h-screen bg-accent flex">
@@ -180,36 +165,40 @@ export default function Create() {
                 }`}
                 onClick={() => handleAppClick(app)}
               >
-                <img
-                  src={app.logo}
-                  alt={app.service_name}
-                  className="w-10 h-10 object-contain"
-                />
+                {/* Logo temporairement omis */}
+                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-lg font-bold">
+                  {app.service_name[0]}
+                </div>
                 <span className="font-semibold">{app.service_name}</span>
               </button>
 
-              {/* Actions / Reactions */}
-              {app.connected && selectedBlock === "action" && app.actions && (
-                <div className="ml-4 mt-2 flex flex-col gap-2">
-                  {app.actions.map((act) => (
-                    <Button
-                      key={act.uuid}
-                      onClick={() => setSelectedAction(act)}
-                      className={`p-2 rounded hover:bg-gray-100 ${
-                        selectedAction?.uuid === act.uuid
-                          ? "bg-blue-50 shadow"
-                          : ""
-                      }`}
-                    >
-                      {act.name}
-                    </Button>
-                  ))}
-                </div>
-              )}
+              {/* Actions */}
+              {app.connected &&
+                selectedBlock === "action" &&
+                app.actions &&
+                app.actions.length > 0 && (
+                  <div className="ml-4 mt-2 flex flex-col gap-2">
+                    {app.actions.map((act) => (
+                      <Button
+                        key={act.uuid}
+                        onClick={() => setSelectedAction(act)}
+                        className={`p-2 rounded hover:bg-gray-100 ${
+                          selectedAction?.uuid === act.uuid
+                            ? "bg-blue-50 shadow"
+                            : ""
+                        }`}
+                      >
+                        {act.name}
+                      </Button>
+                    ))}
+                  </div>
+                )}
 
+              {/* Reactions */}
               {app.connected &&
                 selectedBlock === "reaction" &&
-                app.reactions && (
+                app.reactions &&
+                app.reactions.length > 0 && (
                   <div className="ml-4 mt-2 flex flex-col gap-2">
                     {app.reactions.map((react) => (
                       <Button
