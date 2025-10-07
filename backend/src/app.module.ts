@@ -8,28 +8,28 @@ import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { LoginModule } from './login/login.module';
 import { ReactionModule } from './reaction/reaction.module';
-import { ReactionSelectionSeederService } from './setup/reactionSelection.seeder.service';
-import { ActionSelectionSeederService } from './setup/actionSelection.seeder.service';
+import { ListSeederService } from './list/setup/List.seeder.service';
 import { AreaModule } from './area/area.module';
 import { ActionModule } from './action/action.module';
 import {
-  ReactionSelection,
-  ReactionSelectionSchema,
-} from './reaction/schemas/reactionSelection.schema';
-import {
-  ActionSelection,
-  ActionSelectionSchema,
-} from './action/schemas/actionSelection.schema';
+  ReactionList,
+  ReactionListSchema,
+} from './list/schemas/reactionList.schema';
+import { ActionList, ActionListSchema } from './list/schemas/actionList.schema';
 import { HookModule } from './hook/hook.module';
+import { ListModule } from './list/list.module';
+import {
+  ServiceList,
+  ServiceListSchema,
+} from './list/schemas/serviceList.schema';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://mongo:27017/nestdb'),
     MongooseModule.forFeature([
-      { name: ReactionSelection.name, schema: ReactionSelectionSchema },
-    ]),
-    MongooseModule.forFeature([
-      { name: ActionSelection.name, schema: ActionSelectionSchema },
+      { name: ReactionList.name, schema: ReactionListSchema },
+      { name: ActionList.name, schema: ActionListSchema },
+      { name: ServiceList.name, schema: ServiceListSchema },
     ]),
     ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
@@ -41,12 +41,9 @@ import { HookModule } from './hook/hook.module';
     AreaModule,
     ActionModule,
     HookModule,
+    ListModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    ReactionSelectionSeederService,
-    ActionSelectionSeederService,
-  ],
+  providers: [AppService, ListSeederService],
 })
 export class AppModule {}

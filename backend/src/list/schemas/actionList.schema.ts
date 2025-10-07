@@ -2,13 +2,13 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { v4 as uuid_v4 } from 'uuid';
 
-export type ActionSelectionDocument = HydratedDocument<ActionSelection>;
+export type ActionListDocument = HydratedDocument<ActionList>;
 
 const TRIGGER_TYPES = ['webhook'] as const;
 type TriggerType = (typeof TRIGGER_TYPES)[number];
 
 @Schema({ timestamps: true })
-export class ActionSelection {
+export class ActionList {
   @Prop({ required: true, unique: true, default: uuid_v4 })
   uuid!: string;
 
@@ -34,7 +34,7 @@ export class ActionSelection {
   }>;
 }
 
-export interface ActionSelectionType {
+export interface ActionListType {
   uuid?: string;
   service_name: string;
   name: string;
@@ -49,5 +49,4 @@ export interface ActionSelectionType {
   }>;
 }
 
-export const ActionSelectionSchema =
-  SchemaFactory.createForClass(ActionSelection);
+export const ActionListSchema = SchemaFactory.createForClass(ActionList);
