@@ -11,9 +11,9 @@ import { AreaService } from '../area/area.service';
 import { ReactionService } from '../reaction/reaction.service';
 import { GithubService } from './services/github/github.service';
 import {
-  ActionSelection,
-  ActionSelectionType,
-} from './schemas/actionSelection.schema';
+  ActionList,
+  ActionListType,
+} from '../list/schemas/actionList.schema';
 
 @Injectable()
 export class ActionService {
@@ -24,8 +24,6 @@ export class ActionService {
     private readonly githubService: GithubService,
     private readonly areaService: AreaService,
     private readonly reactionService: ReactionService,
-    @InjectModel(ActionSelection.name)
-    private actionSelectionModel: Model<ActionSelection>,
   ) {}
 
   async getAll() {

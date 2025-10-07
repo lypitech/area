@@ -7,7 +7,6 @@ import {
   Post,
   Headers,
 } from '@nestjs/common';
-import type { ActionSelectionType } from './schemas/actionSelection.schema';
 import { ActionService } from './action.service';
 import { Action } from './schemas/action.schema';
 
@@ -18,26 +17,6 @@ export class ActionController {
   @Get()
   getAll() {
     return this.actionService.getAll();
-  }
-
-  @Get('selection')
-  getAllSelection() {
-    return this.actionService.getAllSelection();
-  }
-
-  @Get('selection/:uuid')
-  getSelectionByUUID(@Param('uuid') uuid: string) {
-    return this.actionService.getSelectionByUUID(uuid);
-  }
-
-  @Post('selection')
-  createSelection(@Body() body: ActionSelectionType) {
-    return this.actionService.createActionSelection(body);
-  }
-
-  @Delete('selection/:uuid')
-  removeSelection(@Param('uuid') uuid: string) {
-    return this.actionService.removeSelection(uuid);
   }
 
   @Get(':uuid')
