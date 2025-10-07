@@ -76,9 +76,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }) async {
     try {
       final response = await api.login(email: email, password: password);
-      final access = response['accessToken'] as String?;
-      final refresh = response['refreshToken'] as String?;
       final user = response['user'] as Map<String, dynamic>?;
+      final access = tokens['access_token'] as String?;
+      final refresh = tokens['refresh_token'] as String?;
 
       if (access != null && refresh != null) {
         await service.saveTokens(accessToken: access, refreshToken: refresh);
