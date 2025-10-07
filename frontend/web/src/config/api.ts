@@ -8,9 +8,9 @@ export const API_ROUTES = {
     logout: `${API_BASE_URL}/login/logout`,
   },
 
-  selection: {
-    actions: `${API_BASE_URL}/action/list`,
-    reactions: `${API_BASE_URL}/reaction/list`,
+  list: {
+    actions: `${API_BASE_URL}/list/actions`,
+    reactions: `${API_BASE_URL}/list/reactions`,
   },
 
   user: {

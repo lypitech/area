@@ -12,13 +12,13 @@ export default function Callback() {
     }
   }, [githubToken]);
 
-  if (loading)
+  if (loading && !githubToken)
     return (
       <div className="flex items-center justify-center w-full h-full">
         <Loader />
       </div>
     );
-  if (error)
+  if (error && !githubToken)
     return (
       <div className="w-full h-full flex flex-col items-center justify-center">
         <p className="text-4xl font-bold">Failed to connect to Github</p>

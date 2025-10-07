@@ -7,7 +7,7 @@ import { githubLogin } from "./OAuths/githubServices";
 
 function OAuthParser(serviceName: string) {
     switch (serviceName) {
-        case "github":
+        case "Github":
             return githubLogin();
         default:
             return "unknown";

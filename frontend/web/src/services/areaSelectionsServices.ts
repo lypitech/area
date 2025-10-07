@@ -16,11 +16,11 @@ export type AppState = {
 export async function fetchSelections(): Promise<AppState[]> {
   try {
     const [actionsRes, reactionsRes] = await Promise.all([
-      fetch(API_ROUTES.selection.actions, {
+      fetch(API_ROUTES.list.actions, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       }),
-      fetch(API_ROUTES.selection.reactions, {
+      fetch(API_ROUTES.list.reactions, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       }),

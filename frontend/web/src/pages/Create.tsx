@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import type { ActionSelection, ReactionSelection } from "../types/index";
-import { API_ROUTES } from "../config/api";
-import { githubLogin } from "../services/OAuth/OAuths/githubServices";
 import OAuthParser from "../services/OAuth/oauthParser";
+import { fetchSelections } from "../services/areaSelectionsServices";
 
 type AppState = {
   service_name: string;
@@ -27,55 +26,12 @@ export default function Create() {
 
   // --- Fetch all action/reaction selections ---
   useEffect(() => {
-    const fetchSelections = async () => {
-      try {
-        const [actionsRes, reactionsRes] = await Promise.all([
-          fetch(API_ROUTES.selection.actions, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }),
-          fetch(API_ROUTES.selection.reactions, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }),
-        ]);
-
-        if (!actionsRes.ok || !reactionsRes.ok)
-          throw new Error("Failed to fetch selections");
-
-        const actions: ActionSelection[] = await actionsRes.json();
-        const reactions: ReactionSelection[] = await reactionsRes.json();
-
-        console.log(actions);
-        console.log(reactions);
-
-        // Créer la liste unique des services
-        const serviceNames = Array.from(
-          new Set([
-            ...actions.map((a) => a.service_name),
-            ...reactions.map((r) => r.service_name),
-          ])
-        );
-
-        // Associer actions et reactions à chaque service
-        const appsData: AppState[] = serviceNames.map((service) => ({
-          service_name: service,
-          connected: false,
-          actions: actions.filter((a) => a.service_name === service),
-          reactions: reactions.filter((r) => r.service_name === service),
-        }));
-
-        setApps(appsData);
-      } catch (err) {
-        console.error("Error fetching selections:", err);
-      }
+    const fetchApps = async () => {
+      const apps = await fetchSelections();
+      setApps(apps);
     };
 
-    fetchSelections();
+    fetchApps();
   }, []);
 
   const handleAppClick = (app: AppState) => {

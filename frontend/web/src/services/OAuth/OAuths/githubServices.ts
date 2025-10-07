@@ -5,8 +5,8 @@ import { getUser } from "../../userServices";
 
 export function githubLogin() {
   const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
-  const redirectUri = "http://localhost:5173/callback";
-  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user`;
+  const redirectUri = "http://localhost:8081/callback";
+  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=repo%20admin:repo_hook%20delete_repo%20admin:org_hook%20admin:public_key%20workflow%20write:packages%20delete:packages%20read:org%20user`;
   window.location.href = githubAuthUrl;
 }
 
@@ -62,7 +62,7 @@ export function useGitHubToken() {
     };
 
     fetchToken();
-  }, [params, user]);
+  }, [user]);
 
   return { data, loading, error };
 }
