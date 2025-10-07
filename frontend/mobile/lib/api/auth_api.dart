@@ -29,7 +29,7 @@ class AuthApi {
     final response = await dio.post(
       '/login/refresh',
       data: {
-        'refreshToken': refreshToken
+        'refresh_token': refreshToken
       }
     );
     return response.data as JsonData;
@@ -41,7 +41,7 @@ class AuthApi {
     await dio.post(
       '/login/logout',
       data: {
-        'refreshToken': refreshToken
+        'refresh_token': refreshToken
       }
     );
   }
