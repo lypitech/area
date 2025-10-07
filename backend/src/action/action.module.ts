@@ -6,6 +6,7 @@ import { ActionController } from './action.controller';
 import { ReactionModule } from 'src/reaction/reaction.module';
 import { AreaModule } from 'src/area/area.module';
 import { GithubModule } from './services/github/github.module';
+import { IntervalTriggerService } from './services/interval/interval.service';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { GithubModule } from './services/github/github.module';
     GithubModule,
   ],
   controllers: [ActionController],
-  providers: [ActionService],
+  providers: [ActionService, IntervalTriggerService],
   exports: [ActionService],
 })
 export class ActionModule {}

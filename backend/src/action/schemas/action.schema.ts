@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export type ActionDocument = HydratedDocument<Action>;
 
-export const TriggerTypes = ['webhook', 'polling'] as const;
+export const TriggerTypes = ['webhook', 'polling', 'interval'] as const;
 export type TriggerType = (typeof TriggerTypes)[number];
 
 @Schema({ timestamps: true, versionKey: false })
@@ -32,6 +32,8 @@ export class Action {
 
   @Prop({ required: true, enum: TriggerTypes, default: 'webhook' })
   trigger_type!: TriggerType;
+
+  @Prop({ default: 5 }) every_minutes?: number;
 }
 
 export const ActionSchema = SchemaFactory.createForClass(Action);
