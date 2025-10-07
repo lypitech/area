@@ -2,8 +2,9 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import Icon from "./components/icons/icons";
 import { Button } from "./components/Button";
-import { isLoggedIn, logout } from "./utils/auth";
-import { API_ROUTES } from "./config/api";
+import { isLoggedIn } from "./utils/auth";
+import { refreshToken } from "./services/authServices";
+import { logout } from "./services/authServices";
 
 export default function NavBar() {
   const nav = useNavigate();
@@ -21,22 +22,10 @@ export default function NavBar() {
   // Refresh token
   useEffect(() => {
     console.log("Refreshing token");
-    const refreshToken = localStorage.getItem("refresh_token");
-    if (refreshToken) {
-      const res = fetch(API_ROUTES.auth.refresh, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refresh_token: refreshToken }),
-      });
-
-      res
-        .then((res) => res.json())
-        .then((data) => {
-          localStorage.setItem("access_token", data.access_token);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    try {
+      refreshToken();
+    } catch (err: any) {
+      console.error("Error refreshing token:", err);
     }
   }, [nav]);
 

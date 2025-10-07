@@ -5,5 +5,15 @@ export const API_ROUTES = {
     register: `${API_BASE_URL}/login/register`,
     login: `${API_BASE_URL}/login`,
     refresh: `${API_BASE_URL}/login/refresh`,
+    logout: `${API_BASE_URL}/login/logout`,
   },
+
+  selection: {
+    actions: `${API_BASE_URL}/action/list`,
+    reactions: `${API_BASE_URL}/reaction/list`,
+  },
+
+  user: {
+    getUser: `${API_BASE_URL}/users/getuser`,
+  }
 };

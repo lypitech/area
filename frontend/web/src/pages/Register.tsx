@@ -3,18 +3,20 @@ import { Button } from "../components/Button";
 import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
 import { register } from "../services/authServices";
+import { isLoggedIn } from "../utils/auth";
 import logo from "../assets/logo.png";
 
 export default function Register() {
   const navigate = useNavigate();
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      navigate("/home");
-    }
-  }, [navigate]);
   const [profile_picture, setProfile_picture] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isLoggedIn()) {
+      navigate("/home");
+    }
+  }, [navigate]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
