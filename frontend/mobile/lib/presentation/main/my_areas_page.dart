@@ -34,7 +34,7 @@ class MyAreasPage extends StatelessWidget {
             ),
             ClickableFrame(
               onTap: () {
-                context.push('/newarea');
+                context.push('/new_area');
               },
               borderRadius: 10,
               child: Padding(
