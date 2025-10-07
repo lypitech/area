@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
+import logo from "../assets/logo.png";
 
 const features = [
   {
@@ -27,10 +28,7 @@ export default function Home() {
       {/* Hero */}
       <section className="text-white bg-black py-24">
         <div className="max-w-5xl mx-auto flex flex-col gap-6 px-4 text-center">
-          <img
-            src="/src/assets/logo.png"
-            className="rounded-xl shadow w-24 h-24 mx-auto"
-          />
+          <img src={logo} className="rounded-xl shadow w-24 h-24 mx-auto" />
           <div>
             <h1 className="text-4xl md:text-5xl font-extrabold">
               Welcome to AREA
