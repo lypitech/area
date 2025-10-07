@@ -36,18 +36,19 @@ export class UserService {
 
   async getuser(
     refreshToken: string
-  ): Promise<User> {
-  if (!refreshToken) {
-    throw new UnauthorizedException('Invalid refresh token');
-  }
-  const users = await this.userModel.find({});
-  for (const user of users) {
-    if (user.refreshToken && await bcrypt.compare(refreshToken, user.refreshToken)) {
-      return user;
+  ): Promise<Partial<User>> {
+    if (!refreshToken) {
+      throw new UnauthorizedException('Invalid refresh token');
     }
+    const users = await this.userModel.find({});
+    for (const user of users) {
+      if (user.refreshToken && await bcrypt.compare(refreshToken, user.refreshToken)) {
+        const { uuid, nickname, username, email, profilePicture } = user.toObject();
+        return { uuid, nickname, username, email, profilePicture };
+      }
+    }
+    throw new NotFoundException('No user found with this refresh token');
   }
-  throw new NotFoundException('No user found with this refresh token');
-}
 
   async createNew(
     email: string,
