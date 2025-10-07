@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Reaction } from 'src/reaction/schemas/reaction.schema';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class DiscordReactionService {
@@ -19,25 +20,38 @@ export class DiscordReactionService {
     }
   }
 
-  sendMessage(reaction: Reaction, action_payload: string) {
-    const payload: string = action_payload;
-    let url: string;
-    if (!reaction.service_resource_id) {
+  async sendMessage(reaction: Reaction, action_payload: string) {
+    if (reaction.service_resource_id == null) {
       throw new HttpException(
         'Service Resource not found.',
         HttpStatus.NOT_FOUND,
       );
     }
-    if (reaction.service_resource_id?.startsWith(this._base_url)) {
-      url = reaction.service_resource_id;
-    } else {
-      url = this._base_url + reaction.service_resource_id;
+
+    // si `action_payload` est déjà un message string, garde-le
+    const message =
+      typeof action_payload === 'string'
+        ? { content: action_payload }
+        : { content: String(action_payload) };
+
+    const url = reaction.service_resource_id;
+    console.log(`Sending ${JSON.stringify(message)} to ${url}`);
+
+    try {
+      const res = await firstValueFrom(
+        this.httpService.post(url, message, {
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 10_000,
+        }),
+      );
+      // Discord renvoie souvent 204 No Content sur succès
+      console.log('Discord webhook response status:', res.status);
+      return { ok: true, status: res.status };
+    } catch (e: any) {
+      const status = e?.response?.status ?? 500;
+      const data = e?.response?.data;
+      console.error('Discord webhook error:', status, data);
+      throw new HttpException(`Discord webhook error: ${status}`, status);
     }
-    console.log(`Sending ${payload} to ${url}`);
-    const message = {
-      content: payload,
-    };
-    console.log('Message:', message);
-    this.httpService.post(url, message);
   }
 }

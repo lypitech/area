@@ -40,16 +40,14 @@ export class ReactionService {
     return this.reactionModel.find().exec();
   }
 
-  dispatch(reaction: Reaction, action_payload: string) {
-    console.log('Dispatching reaction', reaction, action_payload);
-    const service_name: string = (reaction as any).service_name;
-    switch (service_name) {
+  async dispatch(reaction: Reaction, action_payload: string) {
+    const service = (reaction as any).service_name?.toLowerCase();
+    switch (service) {
       case 'discord':
-        console.log('Dispatching to Discord');
         return this.discord.dispatch(reaction, action_payload);
       default:
         throw new NotFoundException(
-          `Unsupported reaction service '${service_name}'`,
+          `Unsupported reaction service '${service}'`,
         );
     }
   }

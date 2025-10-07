@@ -65,7 +65,10 @@ export class IntervalTriggerService implements OnModuleInit, OnModuleDestroy {
               area.reaction_uuid,
             );
             if (!reaction) throw new Error('Reaction not found');
-            const res = this.reactionService.dispatch(reaction, action_payload);
+            const res = await this.reactionService.dispatch(
+              reaction,
+              action_payload,
+            );
             await this.areaService.appendHistory(area.uuid, 'OK (interval)');
             this.logger.debug(`Interval fired area=${area.uuid} ok`);
           } catch (e: any) {
