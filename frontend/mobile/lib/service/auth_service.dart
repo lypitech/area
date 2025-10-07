@@ -62,12 +62,11 @@ class AuthService {
     try {
       final data = await api.refresh(refreshToken: refreshToken);
       final newAccess = data['access_token'] as String?;
-      final newRefresh = data['refresh_token'] as String? ?? refreshToken;
 
       if (newAccess != null) {
         await saveTokens(
           accessToken: newAccess,
-          refreshToken: newRefresh
+          refreshToken: refreshToken
         );
         _refreshCompleter!.complete();
         _refreshCompleter = null;
