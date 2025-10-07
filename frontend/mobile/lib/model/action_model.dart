@@ -1,3 +1,5 @@
+import 'package:area/core/constant/constants.dart';
+
 class ActionModel {
 
   final String uuid;
@@ -12,7 +14,7 @@ class ActionModel {
     this.requiredParams = const [],
   });
 
-  factory ActionModel.fromJson(Map<String, dynamic> json) {
+  factory ActionModel.fromJson(JsonData json) {
     return ActionModel(
       uuid: json['uuid'] as String,
       name: json['name'] as String,
@@ -21,7 +23,7 @@ class ActionModel {
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  JsonData toJson() => {
     'uuid': uuid,
     'name': name,
     'description': description,
