@@ -1,7 +1,9 @@
+import 'package:area/data/provider/registration_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/widget/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterPageFinalStep extends ConsumerStatefulWidget {
 
@@ -18,19 +20,33 @@ class _RegisterPageFinalStepState extends ConsumerState<RegisterPageFinalStep> {
 
   @override
   void initState() {
-    Future.delayed(
-      const Duration(seconds: 3),
-      () {
-        // ...
-      }
-    );
     super.initState();
+    ref.read(registrationProvider.future);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
+
+    ref.listen<AsyncValue<void>>(registrationProvider, (_, state) {
+      state.when(
+        data: (_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.go('/');
+          });
+        },
+        error: (e, _) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Registration failed: $e')),
+            );
+            context.go('/login');
+          });
+        },
+        loading: () {},
+      );
+    });
 
     return PopScope(
       canPop: false,
