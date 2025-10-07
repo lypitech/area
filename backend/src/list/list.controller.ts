@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ListService } from './list.service';
-import type { ReactionListType } from './schemas/reactionList.schema';
+import type { ServiceListType } from './schemas/serviceList.schema';
 
-@Controller('list/service')
+@Controller('services')
 export class ListController {
   constructor(private readonly listService: ListService) {}
 
@@ -17,7 +17,7 @@ export class ListController {
   }
 
   @Post()
-  create(@Body() body: string) {
+  create(@Body() body: ServiceListType) {
     return this.listService.create(body);
   }
 

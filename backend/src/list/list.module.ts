@@ -11,12 +11,14 @@ import {
   ReactionListSchema,
 } from './schemas/reactionList.schema';
 import { ActionList, ActionListSchema } from './schemas/actionList.schema';
+import { ServiceList, ServiceListSchema } from './schemas/serviceList.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: ReactionList.name, schema: ReactionListSchema },
       { name: ActionList.name, schema: ActionListSchema },
+      { name: ServiceList.name, schema: ServiceListSchema },
     ]),
   ],
   controllers: [ListController, ReactionListController, ActionListController],
