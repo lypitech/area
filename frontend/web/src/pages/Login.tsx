@@ -4,6 +4,7 @@ import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authServices";
 import { isLoggedIn } from "../utils/auth";
+import logo from "../assets/logo.png";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function Login() {
     <div className="relative flex items-center justify-center min-h-screen">
       {/* Logo */}
       <div className="absolute flex flex-row items-center gap-4 inset-4 w-12 h-12">
-        <img src="/src/assets/logo.png" className="rounded-xl shadow" />
+        <img src={logo} className="rounded-xl shadow" />
         <p className="text-3xl font-bold">Area</p>
       </div>
 
