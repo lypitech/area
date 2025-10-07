@@ -20,8 +20,6 @@ export class AuthService {
 
         const tokenData = await tokenResponse.json();
 
-        console.log('GitHub token data:', tokenData);
-
         const accessToken = tokenData.access_token;
         if (!accessToken) {
             throw new Error('GitHub OAuth failed: no access token returned');
@@ -35,8 +33,6 @@ export class AuthService {
         });
 
         const user = await userResponse.json();
-
-        console.log('GitHub user:', user);
 
         return { user, accessToken };
     }
