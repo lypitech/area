@@ -1,6 +1,6 @@
 [
   {
-    "service_name": "github",
+    "service_name": "Github",
     "name": "Push on repository",
     "description": "trigger when a push is made on the given repository",
     "parameters": [
