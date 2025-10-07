@@ -49,7 +49,9 @@ export class LoginService {
     });
 
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
-    await this.userService.update(user.uuid, { refreshToken: hashedRefreshToken });
+    await this.userService.update(user.uuid, {
+      refreshToken: hashedRefreshToken
+    });
 
     return {
       access_token: accessToken,
