@@ -24,12 +24,16 @@ export class LoginController {
   }
 
   @Post('refresh')
-  async refresh(@Body('refresh_token') refreshToken: string) {
+  async refresh(
+    @Body('refresh_token') refreshToken: string
+  ) {
     return this.loginService.refreshToken(refreshToken);
   }
 
   @Post('logout')
-  async logout(@Body('userId') userId: string) {
+  async logout(
+    @Body('userId') userId: string
+  ) {
     return this.loginService.logout(userId);
   }
 }

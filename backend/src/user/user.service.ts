@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
@@ -32,6 +32,22 @@ export class UserService {
       throw new NotFoundException(`No user with email ${email}`);
     }
     return user;
+  }
+
+  async getuser(
+    refreshToken: string
+  ): Promise<Partial<User>> {
+    if (!refreshToken) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+    const users = await this.userModel.find({});
+    for (const user of users) {
+      if (user.refreshToken && await bcrypt.compare(refreshToken, user.refreshToken)) {
+        const { uuid, nickname, username, email, profilePicture } = user.toObject();
+        return { uuid, nickname, username, email, profilePicture };
+      }
+    }
+    throw new NotFoundException('No user found with this refresh token');
   }
 
   async createNew(
