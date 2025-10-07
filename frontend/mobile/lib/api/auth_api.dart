@@ -46,4 +46,11 @@ class AuthApi {
     );
   }
 
+  Future<JsonData> getUser({
+    required String refreshToken
+  }) async {
+    final response = await dio.get('/users/getuser/$refreshToken');
+    return response.data as JsonData;
+  }
+
 }
