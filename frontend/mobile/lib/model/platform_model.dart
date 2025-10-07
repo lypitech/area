@@ -22,11 +22,11 @@ class PlatformModel {
       uuid: json['uuid'] as String,
       name: json['name'] as String,
       iconBase64: json['iconBase64'] as String? ?? '',
-      triggers: (json['triggers'] as List<dynamic>?)
+      triggers: (json['actions'] as List<dynamic>?)
           ?.map((e) => TriggerModel.fromJson(Map<String, dynamic>.from(e)))
           .toList()
         ?? [],
-      actions: (json['actions'] as List<dynamic>?)
+      actions: (json['reactions'] as List<dynamic>?)
           ?.map((e) => ActionModel.fromJson(Map<String, dynamic>.from(e)))
           .toList()
         ?? [],
@@ -37,8 +37,8 @@ class PlatformModel {
     'uuid': uuid,
     'name': name,
     'iconBase64': iconBase64,
-    'triggers': triggers.map((t) => t.toJson()).toList(),
-    'actions': actions.map((a) => a.toJson()).toList(),
+    'actions': triggers.map((t) => t.toJson()).toList(),
+    'reactions': actions.map((a) => a.toJson()).toList(),
   };
 
 }
