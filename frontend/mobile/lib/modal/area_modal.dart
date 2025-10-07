@@ -5,12 +5,14 @@ import 'package:flutter_riverpod/legacy.dart';
 
 class AreaModal {
 
+  String? title;
   PlatformModel? actionPlatform;
   TriggerModel? trigger;
   PlatformModel? reactionPlatform;
   ActionModel? action;
 
   AreaModal({
+    this.title,
     this.actionPlatform,
     this.trigger,
     this.reactionPlatform,
@@ -18,12 +20,14 @@ class AreaModal {
   });
 
   AreaModal copyWith({
+    String? title,
     PlatformModel? actionPlatform,
     TriggerModel? trigger,
     PlatformModel? reactionPlatform,
     ActionModel? action,
   }) {
     return AreaModal(
+      title: title ?? this.title,
       actionPlatform: actionPlatform ?? this.actionPlatform,
       trigger: trigger ?? this.trigger,
       reactionPlatform: reactionPlatform ?? this.reactionPlatform,
@@ -32,7 +36,8 @@ class AreaModal {
   }
 
   bool isComplete() {
-    return actionPlatform != null
+    return title != null
+      && actionPlatform != null
       && trigger != null
       && reactionPlatform != null
       && action != null;
@@ -43,6 +48,10 @@ class AreaModal {
 class AreaModalNotifier extends StateNotifier<AreaModal> {
 
   AreaModalNotifier() : super(AreaModal());
+
+  void setTitle(String? title) {
+    state = state.copyWith(title: title);
+  }
 
   void setActionPlatform(PlatformModel? platform) {
     state = state.copyWith(actionPlatform: platform);

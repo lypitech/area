@@ -5,12 +5,14 @@ import 'package:area/model/trigger_model.dart';
 
 class AreaModel {
 
-  PlatformModel actionPlatform;
-  TriggerModel trigger;
-  PlatformModel reactionPlatform;
-  ActionModel action;
+  final String title;
+  final PlatformModel actionPlatform;
+  final TriggerModel trigger;
+  final PlatformModel reactionPlatform;
+  final ActionModel action;
 
   AreaModel({
+    required this.title,
     required this.actionPlatform,
     required this.trigger,
     required this.reactionPlatform,
@@ -23,6 +25,7 @@ class AreaModel {
     }
 
     return AreaModel(
+      title: modal.title!,
       actionPlatform: modal.actionPlatform!,
       trigger: modal.trigger!,
       reactionPlatform: modal.reactionPlatform!,
