@@ -1,8 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
-    async exchangeGithubCode(code: string) {
+    constructor(
+        private readonly userService: UserService,
+    ) {}
+    async exchangeGithubCode(
+        code: string,
+        uuid: string
+    ) {
         const client_id = process.env.GITHUB_CLIENT_ID;
         const client_secret = process.env.GITHUB_CLIENT_SECRET;
 
@@ -33,6 +40,10 @@ export class AuthService {
         });
 
         const user = await userResponse.json();
+
+        await this.userService.update(uuid, {
+            githubToken: accessToken,
+        });
 
         return { user, accessToken };
     }

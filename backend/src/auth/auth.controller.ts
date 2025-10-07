@@ -6,7 +6,10 @@ export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
     @Post('github')
-    async githubAuth(@Body('code') code: string) {
-        return this.authService.exchangeGithubCode(code);
+    async githubAuth(
+        @Body('code') code: string,
+        @Body('uuid') uuid: string
+    ) {
+        return this.authService.exchangeGithubCode(code, uuid);
     }
 }
