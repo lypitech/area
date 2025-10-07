@@ -4,7 +4,7 @@ import { UserService } from './user.service';
 @Controller('users')
 export class UserController {
     constructor(private readonly userService: UserService) {}
-    @Get('getuser')
+    @Get('getuser/:refreshtoken')
     getuser(
         @Param('refreshtoken') refreshtoken: string)
     {
