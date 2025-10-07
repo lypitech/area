@@ -1,19 +1,19 @@
 import { OnApplicationBootstrap, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
-  ActionSelection,
-  ActionSelectionType,
-} from 'src/action/schemas/actionSelection.schema';
+  ActionList,
+  ActionListType,
+} from 'src/list/schemas/actionList.schema';
 import { Model } from 'mongoose';
 import * as fs from 'fs';
 import path from 'node:path';
 
 @Injectable()
-export class ActionSelectionSeederService implements OnApplicationBootstrap {
-  private readonly logger = new Logger('ActionSeeder');
+export class ActionListSeederService implements OnApplicationBootstrap {
+  private readonly logger = new Logger('ActionListSeeder');
   constructor(
-    @InjectModel(ActionSelection.name)
-    private readonly actionSelection: Model<ActionSelection>,
+    @InjectModel(ActionList.name)
+    private readonly actionListModel: Model<ActionList>,
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
@@ -21,13 +21,11 @@ export class ActionSelectionSeederService implements OnApplicationBootstrap {
   }
 
   private async populate() {
-    const filePath = path.join('src', 'setup', 'actionSelection.json');
+    const filePath = path.join('src', 'list', 'setup', 'actionList.json');
     const rawFile: string = fs.readFileSync(filePath, 'utf-8');
-    const actions: ActionSelectionType[] = JSON.parse(
-      rawFile,
-    ) as ActionSelectionType[];
+    const actions: ActionListType[] = JSON.parse(rawFile) as ActionListType[];
     for (const action of actions) {
-      await this.actionSelection.updateOne(
+      await this.actionListModel.updateOne(
         { service_name: action.service_name, name: action.name },
         { $set: action },
         { upsert: true },
