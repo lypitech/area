@@ -11,5 +11,19 @@
       }
     ],
     "trigger_types": ["webhook"]
+  },
+
+  {
+    "service_name": "Area",
+    "name": "Every x minutes",
+    "description": "trigger every x minutes",
+    "parameters": [
+      {
+        "name": "every_minutes",
+        "type": "number",
+        "description": "the interval in minutes (default is 5)"
+      }
+    ],
+    "trigger_types": ["Polling"]
   }
 ]

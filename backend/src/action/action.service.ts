@@ -10,10 +10,8 @@ import { Action, ActionDocument } from './schemas/action.schema';
 import { AreaService } from '../area/area.service';
 import { ReactionService } from '../reaction/reaction.service';
 import { GithubService } from './services/github/github.service';
-import {
-  ActionList,
-  ActionListType,
-} from '../list/schemas/actionList.schema';
+import { ActionList, ActionListType } from '../list/schemas/actionList.schema';
+import { IntervalTriggerService } from './services/interval/interval.service';
 
 @Injectable()
 export class ActionService {
@@ -24,6 +22,7 @@ export class ActionService {
     private readonly githubService: GithubService,
     private readonly areaService: AreaService,
     private readonly reactionService: ReactionService,
+    private readonly intervalTrigger: IntervalTriggerService,
   ) {}
 
   async getAll() {
@@ -60,7 +59,7 @@ export class ActionService {
           repo,
           userId,
           actionId: createdAction.uuid,
-          actionToken: createdAction.token, // secret + token de tir
+          actionToken: createdAction.token,
         });
 
         if (res?.id != null) {
@@ -74,11 +73,40 @@ export class ActionService {
       }
     }
 
+    if (
+      createdAction.service_name === 'Area' &&
+      createdAction.trigger_type === 'interval'
+    ) {
+      const every =
+        createdAction.every_minutes ?? parameters?.every_minutes ?? 5;
+
+      await this.actionModel
+        .updateOne(
+          { uuid: createdAction.uuid },
+          {
+            $set: {
+              every_minutes: every,
+            },
+          },
+        )
+        .exec();
+
+      // Enregistrer l’interval
+      const finalAction = await this.getByUUID(createdAction.uuid);
+      await this.intervalTrigger.registerInterval(createdAction.uuid, every);
+    }
+
     return this.getByUUID(createdAction.uuid);
   }
 
   async remove(uuid: string): Promise<Action | null> {
-    return this.actionModel.findOneAndDelete({ uuid }).exec();
+    const removed = await this.actionModel.findOneAndDelete({ uuid }).exec();
+
+    if (removed?.trigger_type === 'interval') {
+      this.intervalTrigger.unregisterInterval(uuid);
+    }
+
+    return removed;
   }
 
   async fire(uuid: string, token: string, payload: any) {
@@ -110,10 +138,7 @@ export class ActionService {
         if (!reaction) {
           throw new NotFoundException('Reaction not found');
         }
-        const res = this.reactionService.dispatch(
-            reaction,
-            action_payload
-        );
+        const res = this.reactionService.dispatch(reaction, action_payload);
         results.push({ area_uuid: area.uuid, ok: true, result: res });
         await this.areaService.appendHistory(area.uuid, 'OK');
       } catch (e: any) {

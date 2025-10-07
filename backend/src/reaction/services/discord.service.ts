@@ -9,8 +9,10 @@ export class DiscordReactionService {
 
   dispatch(reaction: Reaction, action_payload: string) {
     const reaction_name: string = reaction.name;
+    console.log('Reaction name:', reaction_name);
     switch (reaction_name) {
       case 'send message':
+        console.log('send message function called');
         return this.sendMessage(reaction, action_payload);
       default:
         return; // TODO: Throw custom exceptions
@@ -32,6 +34,10 @@ export class DiscordReactionService {
       url = this._base_url + reaction.service_resource_id;
     }
     console.log(`Sending ${payload} to ${url}`);
-    this.httpService.post(url, payload);
+    const message = {
+      content: payload,
+    };
+    console.log('Message:', message);
+    this.httpService.post(url, message);
   }
 }

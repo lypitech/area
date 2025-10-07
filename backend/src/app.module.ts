@@ -22,10 +22,12 @@ import {
   ServiceList,
   ServiceListSchema,
 } from './list/schemas/serviceList.schema';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://mongo:27017/nestdb'),
+    ScheduleModule.forRoot(),
     MongooseModule.forFeature([
       { name: ReactionList.name, schema: ReactionListSchema },
       { name: ActionList.name, schema: ActionListSchema },

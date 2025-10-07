@@ -41,9 +41,11 @@ export class ReactionService {
   }
 
   dispatch(reaction: Reaction, action_payload: string) {
+    console.log('Dispatching reaction', reaction, action_payload);
     const service_name: string = (reaction as any).service_name;
     switch (service_name) {
       case 'discord':
+        console.log('Dispatching to Discord');
         return this.discord.dispatch(reaction, action_payload);
       default:
         throw new NotFoundException(
