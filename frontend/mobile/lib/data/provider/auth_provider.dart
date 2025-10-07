@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:area/api/auth_api.dart';
-import 'package:area/data/provider/dio_provider.dart';
 import 'package:area/service/auth_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -18,9 +19,75 @@ final authDioProvider = Provider<Dio>((ref) {
   return dio;
 });
 
-final authApiProvider = Provider<AuthApi>((ref) {
-  final dio = ref.read(dioProvider);
+class AuthInterceptor extends Interceptor {
 
+  final Ref ref;
+
+  AuthInterceptor({
+    required this.ref
+  });
+
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    try {
+      final authService = ref.read(authServiceProvider);
+      final access = await authService.getAccessToken();
+
+      if (access != null) {
+        options.headers['Authorization'] = 'Bearer $access';
+      }
+    } catch (_) {}
+
+    handler.next(options);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    final requestOptions = err.requestOptions;
+
+    // If 401, try to refresh
+    if (err.response?.statusCode == 401 && requestOptions.extra['retried'] != true) {
+      try {
+        final authService = ref.read(authServiceProvider);
+        final refreshed = await authService.refreshIfNeeded();
+
+        if (refreshed) {
+          final newAccess = await authService.getAccessToken();
+
+          if (newAccess == null) {
+            return;
+          }
+
+          requestOptions.extra['retried'] = true; // To avoid infinite loop$s
+
+          final newOptions = Options(
+            method: requestOptions.method,
+            headers: {
+              ...requestOptions.headers,
+              'Authorization': 'Bearer $newAccess',
+            },
+          );
+
+          final dio = ref.read(authDioProvider);
+          final response = await dio.request(
+            requestOptions.path,
+            data: requestOptions.data,
+            queryParameters: requestOptions.queryParameters,
+            options: newOptions,
+          );
+
+          return handler.resolve(response);
+        }
+      } catch (_) {}
+    }
+
+    handler.next(err);
+  }
+
+}
+
+final authApiProvider = Provider<AuthApi>((ref) {
+  final dio = ref.read(authDioProvider);
   return AuthApi(dio: dio);
 });
 
@@ -75,18 +142,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String password
   }) async {
     try {
-      final response = await api.login(email: email, password: password);
-      final user = response['user'] as Map<String, dynamic>?;
+      final tokens = await api.login(email: email, password: password);
       final access = tokens['access_token'] as String?;
       final refresh = tokens['refresh_token'] as String?;
 
-      if (access != null && refresh != null) {
-        await service.saveTokens(accessToken: access, refreshToken: refresh);
-        state = AuthState.authenticated(user);
-      } else {
+      if (access == null || refresh == null) {
         state = AuthState.unauthenticated();
-        throw Exception('Invalid login response');
+        throw Exception('Invalid login response (missing tokens response)');
       }
+
+      final user = await api.getUser(refreshToken: refresh);
+      await service.saveTokens(accessToken: access, refreshToken: refresh);
+      state = AuthState.authenticated(user);
     } catch (e) {
       state = AuthState.unauthenticated();
       rethrow;
@@ -96,14 +163,21 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> logout() async {
     final refresh = await service.getRefreshToken();
 
+    state = AuthState.unauthenticated();
+
     if (refresh != null) {
-      try {
-        await api.logout(refreshToken: refresh);
-      } catch (_) {}
+      unawaited(_safeLogout(refresh));
     }
 
     await service.clearTokens();
-    state = AuthState.unauthenticated();
+  }
+
+  Future<void> _safeLogout(String refreshToken) async {
+    try {
+      await api.logout(refreshToken: refreshToken);
+    } catch (e) {
+      print("Error while logging out: $e");
+    }
   }
 
   /// Called at app start to initialize auth state (see InitPage)
@@ -120,8 +194,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final ok = await service.refreshIfNeeded();
 
       if (ok) {
-        state = AuthState.authenticated({});
-        return;
+        final refresh = await service.getRefreshToken();
+
+        if (refresh != null) {
+          final user = await api.getUser(refreshToken: refresh);
+          state = AuthState.authenticated(user);
+          return;
+        }
       }
     }
 
