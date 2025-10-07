@@ -1,3 +1,4 @@
+import 'package:area/core/constant/constants.dart';
 import 'package:area/modal/area_modal.dart';
 import 'package:area/model/action_model.dart';
 import 'package:area/model/platform_model.dart';
@@ -31,6 +32,26 @@ class AreaModel {
       reactionPlatform: modal.reactionPlatform!,
       action: modal.action!
     );
+  }
+
+  factory AreaModel.fromJson(JsonData data) {
+    return AreaModel(
+      title: data['title'],
+      actionPlatform: PlatformModel.fromJson(data['action_platform']),
+      trigger: TriggerModel.fromJson(data['trigger']),
+      reactionPlatform: PlatformModel.fromJson(data['reaction_platform']),
+      action: ActionModel.fromJson(data['action'])
+    );
+  }
+
+  JsonData toJson() {
+    return {
+      'title': title,
+      'action_platform': actionPlatform.toJson(),
+      'trigger': trigger.toJson(),
+      'reaction_platform': reactionPlatform.toJson(),
+      'action': action.toJson()
+    };
   }
 
 }
