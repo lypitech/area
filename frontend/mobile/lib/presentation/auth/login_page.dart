@@ -37,7 +37,7 @@ class LoginPage extends ConsumerWidget {
       );
 
       if (context.mounted) {
-        context.goNamed('/');
+        context.go('/');
       }
     } catch (e) {
       // Login failed for some reasons.
