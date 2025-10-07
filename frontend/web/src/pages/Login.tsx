@@ -3,11 +3,12 @@ import { Button } from "../components/Button";
 import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authServices";
+import { isLoggedIn } from "../utils/auth";
 
 export default function Login() {
   const navigate = useNavigate();
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    if (isLoggedIn()) {
       navigate("/home");
     }
   }, [navigate]);
