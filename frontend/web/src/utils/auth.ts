@@ -1,15 +1,12 @@
-function logout() {
-  console.log("Logging out");
-  const refresh_token = localStorage.getItem("refresh_token");
-  if (!refresh_token) return;
-
+function clearLocalStorage() {
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
+  localStorage.removeItem("github_access_token");
+  console.log("Local storage cleared");
 }
-
 
 function isLoggedIn() {
     return !!localStorage.getItem("access_token");
 };
 
-export { logout, isLoggedIn };
+export { clearLocalStorage, isLoggedIn };
