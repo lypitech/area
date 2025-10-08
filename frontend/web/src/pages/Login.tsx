@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
+import { login } from "../services/authServices";
+import { isLoggedIn } from "../utils/auth";
+import logo from "../assets/logo.png";
 
 export default function Login() {
-  // Check if user is already logged in
-  if (localStorage.getItem("token")) {
-    window.location.href = "/home";
-  }
-
   const navigate = useNavigate();
+  useEffect(() => {
+    if (isLoggedIn()) {
+      navigate("/home");
+    }
+  }, [navigate]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,35 +24,15 @@ export default function Login() {
     setLoading(true);
     setError(null);
 
-    const payload = {
-      email,
-      password,
-    };
-
     try {
-      const response = await fetch("http://localhost:3000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const data = await login(email, password);
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Login success:", data);
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
 
-        localStorage.setItem("token", data.token);
-
-        navigate("/home");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Login failed");
-        console.error("Login failed:", errorData);
-      }
-    } catch (err) {
-      console.error("Network error:", err);
-      setError("Unable to connect to the server.");
+      navigate("/home");
+    } catch (err: any) {
+      setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -59,7 +42,7 @@ export default function Login() {
     <div className="relative flex items-center justify-center min-h-screen">
       {/* Logo */}
       <div className="absolute flex flex-row items-center gap-4 inset-4 w-12 h-12">
-        <img src="/src/assets/logo.png" className="rounded-xl shadow" />
+        <img src={logo} className="rounded-xl shadow" />
         <p className="text-3xl font-bold">Area</p>
       </div>
 
@@ -111,16 +94,14 @@ export default function Login() {
           </div>
 
           {/* Error message */}
-          {error && (
-            <p className="text-red-500 text-sm text-center">Login failed</p>
-          )}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           {/* Submit button */}
           <Button
             className="w-full bg-black text-white font-semibold hover:opacity-90 transition"
             disabled={loading}
           >
-            Sign in
+            {loading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
 
