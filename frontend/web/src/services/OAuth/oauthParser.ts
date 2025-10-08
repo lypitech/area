@@ -9,6 +9,8 @@ function OAuthParser(serviceName: string) {
     switch (serviceName) {
         case "Github":
             return githubLogin();
+        case "Discord":
+            return "none";
         default:
             return "unknown";
     }

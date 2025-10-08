@@ -1,161 +1,98 @@
-import { useState } from "react";
-import Input from "../components/Input";
+import { useEffect, useState } from "react";
+import { getAreas } from "../services/areaServices";
+import type { Area } from "../types";
 
-type Area = {
-  uuid: string;
-  name: string;
-  description: string;
-  creation_date: string;
-  enable: boolean;
-  action: { service_name: string; logo: string };
-  reaction: { service_name: string; logo: string };
-};
+export default function Apps() {
+  const [areas, setAreas] = useState<Area[]>([]);
+  const [loading, setLoading] = useState(true);
 
-// Example dummy data
-const dummyAreas: Area[] = [
-  {
-    uuid: "1",
-    name: "Discord → Gmail",
-    description: "Send Gmail when a Discord message is posted",
-    creation_date: "2025-10-01",
-    enable: true,
-    action: { service_name: "Discord", logo: "/src/assets/logos/discord.png" },
-    reaction: {
-      service_name: "Gmail",
-      logo: "/src/assets/logos/gmail_240.png",
-    },
-  },
-  {
-    uuid: "2",
-    name: "GitHub → Discord",
-    description: "Notify Slack when a new GitHub issue is opened",
-    creation_date: "2025-09-28",
-    enable: true,
-    action: {
-      service_name: "GitHub",
-      logo: "/src/assets/logos/github_240.png",
-    },
-    reaction: {
-      service_name: "discord",
-      logo: "/src/assets/logos/discord.png",
-    },
-  },
-  {
-    uuid: "3",
-    name: "0°C → Gmail",
-    description: "Send an email when temperature is below 0°C",
-    creation_date: "2025-09-20",
-    enable: false,
-    action: { service_name: "Weather", logo: "/src/assets/logos/weather.png" },
-    reaction: {
-      service_name: "Gmail",
-      logo: "/src/assets/logos/gmail_240.png",
-    },
-  },
-];
+  useEffect(() => {
+    const fetchAreas = async () => {
+      try {
+        const data = await getAreas();
+        setAreas(data || []);
+      } catch (error) {
+        console.error("Error while loading areas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-export default function Areas() {
-  const [search, setSearch] = useState("");
+    fetchAreas();
+  }, []);
 
-  const filteredAreas = dummyAreas.filter((area) =>
-    area.name.toLowerCase().includes(search.toLowerCase())
-  );
+  if (loading) {
+    return (
+      <div className="p-6">
+        <p className="text-gray-600">Loading automations...</p>
+      </div>
+    );
+  }
+
+  if (areas.length === 0) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-4">My Areas</h1>
+        <p className="text-gray-500">No automations created yet.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 bg-accent min-h-screen">
-      {/* Search Bar */}
-      <div className="flex justify-center mb-6">
-        <Input
-          iconName="search"
-          placeholder="Search Areas..."
-          value={search}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setSearch(e.target.value)
-          }
-          inputClass="max-w-lg w-full"
-        />
-      </div>
+      <h1 className="text-3xl font-bold mb-8">My Automations</h1>
 
-      {/* Area Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredAreas.length === 0 && (
-          <p className="text-center col-span-full text-gray-500">
-            No areas found
-          </p>
-        )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        {areas.map((area) => {
+          const isDisabled =
+            !area.enable ||
+            (area.disabled_until && new Date(area.disabled_until) > new Date());
 
-        {filteredAreas.map((area) => (
-          <div
-            key={area.uuid}
-            className={`bg-white rounded-2xl p-4 shadow hover:shadow-lg transition cursor-pointer flex flex-col justify-between`}
-          >
-            <div>
-              {/* Name */}
-              <h3 className="text-lg font-bold">{area.name}</h3>
-              {/* Description */}
-              <p className="text-gray-600 mt-2">{area.description}</p>
+          return (
+            <div
+              key={area.uuid}
+              className={`rounded-2xl shadow-lg border transition p-6 flex flex-col justify-between ${
+                isDisabled
+                  ? "bg-gray-100 border-gray-300"
+                  : "bg-white hover:shadow-xl border-gray-200"
+              }`}
+            >
+              <div>
+                {/* Header */}
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-xl font-semibold text-gray-800 truncate">
+                    {area.name}
+                  </h3>
 
-              {/* Workflow preview */}
-              <div className="flex items-center justify-between mt-4">
-                {/* Action */}
-                <div className="flex flex-col items-center">
-                  <img
-                    src={area.action.logo}
-                    alt={area.action.service_name}
-                    className="w-12 h-12 object-contain"
-                  />
-                  <span className="text-xs mt-1">
-                    {area.action.service_name}
+                  <span
+                    className={`px-3 py-1 text-xs rounded-full font-semibold ${
+                      isDisabled
+                        ? "bg-gray-300 text-gray-700"
+                        : "bg-green-100 text-green-700"
+                    }`}
+                  >
+                    {isDisabled ? "Disabled" : "Active"}
                   </span>
                 </div>
 
-                {/* Connector arrow */}
-                <div className="flex-1 mx-2 h-1 relative">
-                  <div className="absolute top-1/2 left-0 w-full border-t border-gray-300 transform -translate-y-1/2" />
-                  <div className="absolute top-1/2 right-0 -translate-y-1/2">
-                    <svg
-                      className="w-4 h-4 text-gray-500"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 12h14m0 0l-4-4m4 4l-4 4"
-                      />
-                    </svg>
-                  </div>
-                </div>
+                {/* Description */}
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                  {area.description || "No description provided"}
+                </p>
 
-                {/* Reaction */}
-                <div className="flex flex-col items-center">
-                  <img
-                    src={area.reaction.logo}
-                    alt={area.reaction.service_name}
-                    className="w-12 h-12 object-contain"
-                  />
-                  <span className="text-xs mt-1">
-                    {area.reaction.service_name}
-                  </span>
+                {/* Info section */}
+                <div className="text-xs text-gray-500 space-y-1">
+                  <p>
+                    <span className="font-medium text-gray-700">
+                      Created on:
+                    </span>{" "}
+                    {new Date(area.creation_date).toLocaleDateString("en-US")}
+                  </p>
                 </div>
               </div>
             </div>
-
-            {/* Footer */}
-            <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
-              <span>{area.creation_date}</span>
-              <span
-                className={`px-2 py-1 rounded-full text-white text-xs ${
-                  area.enable ? "bg-green-500" : "bg-red-500"
-                }`}
-              >
-                {area.enable ? "Enabled" : "Disabled"}
-              </span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
