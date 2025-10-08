@@ -57,7 +57,7 @@ export class IntervalTriggerService implements OnModuleInit, OnModuleDestroy {
           await this.areaService.findEnabledByActionUUID(actionUuid);
         if (!areas?.length) return;
 
-        const action_payload = `Tick @ ${new Date().toISOString()} (ts=${Date.now()}) Pierre suce`;
+        const action_payload = `Tick @ ${new Date().toISOString()} (ts=${Date.now()})`;
 
         for (const area of areas) {
           try {
