@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+  # --- Build Flutter APK ---
+  flutter-build:
+    build:
+      context: ./frontend/mobile
+      dockerfile: Dockerfile
+      args:
+        - API_URL=http://10.56.82.29
+        - API_KEY=${API_KEY:-default_key}
+    volumes:
+      - ./frontend/mobile/output:/output
+    container_name: flutter_apk_builder
+    network_mode: "host"
+
+  # --- Frontend (React) ---
+  frontend:
+    build:
+      context: ./frontend/web
+      dockerfile: Dockerfile
+    container_name: react-frontend
+    ports:
+      - "8081:8081"
+    environment:
+      - NODE_ENV=production
+    stdin_open: true
+    tty: true
+
+  # --- Backend (NestJS) ---
+  nest-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nestjs-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/nestdb
+    command: npm run start:dev
+    depends_on:
+      - mongo
+
+  # --- MongoDB ---
+  mongo:
+    image: mongo:6
+    command: ["--quiet", "--logpath", "/data/db/mongo.log", "--logappend"]
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
