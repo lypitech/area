@@ -9,6 +9,6 @@ RUN npm ci --include=dev
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 8080
 
 CMD ["npx", "ts-node", "-r", "tsconfig-paths/register", "src/main.ts"]

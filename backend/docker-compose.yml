@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: nestjs-backend
     ports:
-      - "3000:3000"
+      - "8080:8080"
     volumes:
       - .:/app
     environment:
@@ -17,6 +17,7 @@ services:
 
   mongo:
     image: mongo:6
+    command: ["--quiet", "--logpath", "/data/db/mongo.log", "--logappend"]
     container_name: mongodb
     ports:
       - "27017:27017"
