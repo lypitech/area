@@ -15,7 +15,7 @@ interface ActionSelection {
   service_name: string;
   name: string;
   description: string;
-  trigger_types: string[];
+  trigger_types: string;
 }
 
 // To show available reactions
@@ -31,12 +31,13 @@ interface Action {
   uuid: string;
   service_name: string;
   name: string;
+  every_minutes: number;
   description: string;
   area_uuid: string;
   service_resource_id: string | null;
   token: string;
   oauth_token_id: string | null;
-  trigger_type: "webhook" | "polling";
+  trigger_type: "webhook" | "polling" | "interval";
 }
 
 interface Reaction {
