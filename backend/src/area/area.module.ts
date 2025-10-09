@@ -4,14 +4,17 @@ import { Area, AreaSchema } from './schemas/area.schema';
 import { AreaService } from './area.service';
 import { AreaController } from './area.controller';
 import { Trigger, TriggerSchema } from 'src/trigger/schemas/trigger.schema';
-import { Reaction, ResponseSchema } from 'src/response/schemas/response.schema';
+import {
+  ReactionInstance,
+  ResponseSchema,
+} from 'src/response/schemas/response.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Area.name, schema: AreaSchema }]),
-    MongooseModule.forFeature([{ name: Trigger.name, schema: TriggerSchema }]),
     MongooseModule.forFeature([
-      { name: Reaction.name, schema: ResponseSchema },
+      { name: Area.name, schema: AreaSchema },
+      { name: Trigger.name, schema: TriggerSchema },
+      { name: ReactionInstance.name, schema: ResponseSchema },
     ]),
   ],
   controllers: [AreaController],

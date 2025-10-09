@@ -4,8 +4,6 @@ import { Model } from 'mongoose';
 import { Area } from './schemas/area.schema';
 import { Trigger } from 'src/trigger/schemas/trigger.schema';
 import { ReactionInstance } from 'src/response/schemas/response.schema';
-import { TriggerService } from '../trigger/trigger.service';
-import { ResponseService } from '../response/response.service';
 
 export type CreateAreaDto = {
   action_uuid: string;
@@ -22,10 +20,11 @@ export class AreaService {
   constructor(
     @InjectModel(Area.name) private areaModel: Model<Area>,
     @InjectModel(Trigger.name) private actionModel: Model<Trigger>,
+    @InjectModel(Trigger.name) private readonly triggerModel: Model<Trigger>,
     @InjectModel(ReactionInstance.name)
     private readonly reactionModel: Model<ReactionInstance>,
-    private readonly triggerService: TriggerService,
-    private readonly responseService: ResponseService,
+    @InjectModel(ReactionInstance.name)
+    private readonly reactionInstance: Model<ReactionInstance>,
   ) {}
 
   findByUUID(
@@ -54,7 +53,7 @@ export class AreaService {
     if (!area) {
       throw new NotFoundException(`No area with uuid ${uuid}.`);
     }
-    return this.triggerService.getByUUID(area.trigger_uuid);
+    return this.triggerModel.find({ uuid: area.trigger_uuid });
   }
 
   async findResponse(uuid: string, user_uuid: string | null) {
@@ -62,7 +61,7 @@ export class AreaService {
     if (!area) {
       throw new NotFoundException(`No area with uuid ${uuid}.`);
     }
-    return this.responseService.findByUUID(area.response_uuid);
+    return this.reactionInstance.find({ uuid: area.response_uuid });
   }
 
   async create(dto: CreateAreaDto): Promise<Area> {
