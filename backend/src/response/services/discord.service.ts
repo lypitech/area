@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { Reaction } from 'src/response/schemas/response.schema';
+import { ReactionInstance } from 'src/response/schemas/response.schema';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable()
@@ -8,7 +8,7 @@ export class DiscordReactionService {
   constructor(private readonly httpService: HttpService) {}
   private _base_url: string = 'https://discord.com/api/';
 
-  dispatch(reaction: Reaction, action_payload: string) {
+  dispatch(reaction: ReactionInstance, action_payload: string) {
     const reaction_name: string = reaction.name;
     console.log('Reaction name:', reaction_name);
     switch (reaction_name) {
@@ -20,7 +20,7 @@ export class DiscordReactionService {
     }
   }
 
-  async sendMessage(reaction: Reaction, action_payload: string) {
+  async sendMessage(reaction: ReactionInstance, action_payload: string) {
     if (reaction.service_resource_id == null) {
       throw new HttpException(
         'Service Resource not found.',
