@@ -7,9 +7,9 @@ import {
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Trigger, ActionDocument } from '../../schemas/trigger.schema';
-import { AreaService } from '../../../area/area.service';
-import { ResponseService } from '../../../response/response.service';
+import { Trigger } from 'src/trigger/schemas/trigger.schema';
+import { AreaService } from 'src/area/area.service';
+import { ResponseService } from 'src/response/response.service';
 
 @Injectable()
 export class IntervalTriggerService implements OnModuleInit, OnModuleDestroy {
@@ -17,13 +17,13 @@ export class IntervalTriggerService implements OnModuleInit, OnModuleDestroy {
 
   constructor(
     private readonly schedulerRegistry: SchedulerRegistry,
-    @InjectModel(Trigger.name) private actionModel: Model<ActionDocument>,
+    @InjectModel(Trigger.name) private triggerModel: Model<Trigger>,
     private readonly areaService: AreaService,
-    private readonly reactionService: ResponseService,
+    private readonly responseService: ResponseService,
   ) {}
 
   async onModuleInit() {
-    const actions = await this.actionModel
+    const actions = await this.triggerModel
       .find({ trigger_type: 'interval', enabled: true })
       .lean()
       .exec();
@@ -45,55 +45,55 @@ export class IntervalTriggerService implements OnModuleInit, OnModuleDestroy {
   async registerInterval(actionUuid: string, everyMinutes: number) {
     const name = `action-interval:${actionUuid}`;
 
-    try {
-      this.schedulerRegistry.deleteInterval(name);
-    } catch {}
-
-    const ms = Math.max(1, everyMinutes) * 60_000;
-
-    const cb = async () => {
-      try {
-        const areas =
-          await this.areaService.findEnabledByActionUUID(actionUuid);
-        if (!areas?.length) return;
-
-        const action_payload = `Tick @ ${new Date().toISOString()} (ts=${Date.now()}) Pierre suce`;
-
-        for (const area of areas) {
-          try {
-            const reaction = await this.reactionService.getByUUID(
-              area.reaction_uuid,
-            );
-            if (!reaction) throw new Error('Reaction not found');
-            const res = await this.reactionService.dispatch(
-              reaction,
-              action_payload,
-            );
-            await this.areaService.appendHistory(area.uuid, 'OK (interval)');
-            this.logger.debug(`Interval fired area=${area.uuid} ok`);
-          } catch (e: any) {
-            await this.areaService.appendHistory(
-              area.uuid,
-              `ERROR (interval): ${e?.message ?? 'unknown'}`,
-            );
-            this.logger.warn(
-              `Interval error area=${area.uuid}: ${e?.message ?? e}`,
-            );
-          }
-        }
-      } catch (e) {
-        this.logger.error(
-          `Interval tick failed for action=${actionUuid}: ${e}`,
-        );
-      }
-    };
-
-    const interval = setInterval(cb, ms);
-    this.schedulerRegistry.addInterval(name, interval);
-
-    this.logger.log(
-      `Registered interval for action=${actionUuid} every ${everyMinutes} min`,
-    );
+    // try {
+    //   this.schedulerRegistry.deleteInterval(name);
+    // } catch {}
+    //
+    // const ms = Math.max(1, everyMinutes) * 60_000;
+    //
+    // const cb = async () => {
+    //   try {
+    //     const areas =
+    //       await this.areaService.findEnabledByActionUUID(actionUuid);
+    //     if (!areas?.length) return;
+    //
+    //     const action_payload = `Tick @ ${new Date().toISOString()} (ts=${Date.now()}) Pierre suce`;
+    //
+    //     for (const area of areas) {
+    //       try {
+    //         const reaction = await this.responseService.findByUUID(
+    //           area.response_uuid,
+    //         );
+    //         if (!reaction) throw new Error('Reaction not found');
+    //         const res = await this.responseService.dispatch(
+    //           reaction,
+    //           action_payload,
+    //         );
+    //         await this.areaService.appendHistory(area.uuid, 'OK (interval)');
+    //         this.logger.debug(`Interval fired area=${area.uuid} ok`);
+    //       } catch (e: any) {
+    //         await this.areaService.appendHistory(
+    //           area.uuid,
+    //           `ERROR (interval): ${e?.message ?? 'unknown'}`,
+    //         );
+    //         this.logger.warn(
+    //           `Interval error area=${area.uuid}: ${e?.message ?? e}`,
+    //         );
+    //       }
+    //     }
+    //   } catch (e) {
+    //     this.logger.error(
+    //       `Interval tick failed for action=${actionUuid}: ${e}`,
+    //     );
+    //   }
+    // };
+    //
+    // const interval = setInterval(cb, ms);
+    // this.schedulerRegistry.addInterval(name, interval);
+    //
+    // this.logger.log(
+    //   `Registered interval for action=${actionUuid} every ${everyMinutes} min`,
+    // );
   }
 
   unregisterInterval(actionUuid: string) {
