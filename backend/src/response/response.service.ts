@@ -6,22 +6,26 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Reaction } from './schemas/reaction.schema';
+import { ReactionInstance } from './schemas/response.schema';
 import { DiscordReactionService } from './services/discord.service';
 
 @Injectable()
-export class ReactionService {
+export class ResponseService {
   constructor(
-    @InjectModel(Reaction.name) private reactionModel: Model<Reaction>,
+    @InjectModel(ReactionInstance.name) private reactionModel: Model<ReactionInstance>,
     @Inject(DiscordReactionService) private discord: DiscordReactionService,
   ) {}
-  private readonly logger = new ConsoleLogger(ReactionService.name);
+  private readonly logger = new ConsoleLogger(ResponseService.name);
 
-  async getByUUID(uuid: string): Promise<Reaction | null> {
+  async findAll(): Promise<ReactionInstance[]> {
+    return this.reactionModel.find().exec();
+  }
+
+  async findByUUID(uuid: string): Promise<ReactionInstance | null> {
     return this.reactionModel.findOne({ uuid }).lean().exec();
   }
 
-  async create(data: Partial<Reaction>): Promise<Reaction> {
+  async create(data: Partial<ReactionInstance>): Promise<ReactionInstance> {
     const doc = new this.reactionModel(data);
     const saved = await doc.save();
     return saved.toObject();
@@ -36,19 +40,13 @@ export class ReactionService {
     return { deleted: true, uuid };
   }
 
-  async getAll(): Promise<Reaction[]> {
-    return this.reactionModel.find().exec();
-  }
-
-  async dispatch(reaction: Reaction, action_payload: string) {
-    const service = (reaction as any).service_name?.toLowerCase();
-    switch (service) {
+  async dispatch(reaction: ReactionInstance, action_payload: string) {
+    const service_name = reaction.service_name.toLowerCase();
+    switch (service_name) {
       case 'discord':
         return this.discord.dispatch(reaction, action_payload);
       default:
-        throw new NotFoundException(
-          `Unsupported reaction service '${service}'`,
-        );
+        throw new NotFoundException(`Unsupported service '${service_name}'`);
     }
   }
 }

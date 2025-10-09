@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { Reaction } from 'src/reaction/schemas/reaction.schema';
+import { Reaction } from 'src/response/schemas/response.schema';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable()

@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuid_v4 } from 'uuid';
 
 @Schema({ timestamps: true, versionKey: false })
-export class Reaction {
+export class ReactionInstance {
   @Prop({ required: true, unique: true, default: () => uuid_v4() })
   uuid!: string;
 
@@ -22,4 +22,4 @@ export class Reaction {
   payload!: string;
 }
 
-export const ReactionSchema = SchemaFactory.createForClass(Reaction);
+export const ResponseSchema = SchemaFactory.createForClass(ReactionInstance);
