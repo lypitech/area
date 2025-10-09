@@ -1,23 +1,17 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  UseFilters,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { Oauth, OauthType } from './schema/Oauth.schema';
 import { Model } from 'mongoose';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class OauthService {
   constructor(
     private readonly userService: UserService,
     private readonly httpService: HttpService,
-    @Inject(Oauth) private readonly oauthModel: Model<Oauth>,
+    @InjectModel(Oauth.name) private readonly oauthModel: Model<Oauth>,
   ) {}
 
   async remove(uuid: string): Promise<Oauth | null> {
@@ -47,8 +41,7 @@ export class OauthService {
     return token;
   }
 
-  @UseFilters(new HttpExceptionFilter())
-  async getGithubToken(code: string, uuid: string) {
+  async getGithubToken(code: string, user_uuid: string) {
     const tokenResponse = await firstValueFrom(
       this.httpService.post(
         'https://github.com/login/oauth/access_token',
@@ -72,19 +65,14 @@ export class OauthService {
     if (!accessToken) {
       throw new Error('GitHub OAuth failed: no access token returned');
     }
+    const token = {
+      service_name: 'github',
+      token: accessToken,
+      refresh_token: tokenData.refreshToken,
+      token_type: tokenData.token_type,
+      expires_at: tokenData.expires_at,
+    };
 
-    const userResponse = await firstValueFrom(
-      this.httpService.get('https://api.github.com/user', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          Accept: 'application/json',
-        },
-      }),
-    );
-    const user = userResponse.data;
-
-    await this.userService.update(uuid, { githubToken: accessToken });
-
-    return { user, accessToken };
+    return this.addToken(user_uuid, token);
   }
 }
