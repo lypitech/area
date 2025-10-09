@@ -77,7 +77,6 @@ export class UserService {
     nickname: string,
     username: string,
     profilePicture: string = '',
-    //OAuth_ids: OAuth[] = [],
   ): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new this.userModel({
@@ -86,13 +85,12 @@ export class UserService {
       nickname: nickname,
       username: username,
       profilePicture: profilePicture,
-      //OAuth_ids: OAuth_ids,
     });
     return user.save();
   }
   async update(uuid: string, updateData: Partial<User>): Promise<User> {
     const updatedUser = await this.userModel
-      .findOneAndUpdate( { uuid } , updateData, { new: true })
+      .findOneAndUpdate({ uuid: uuid }, updateData, { new: true })
       .exec();
 
     if (!updatedUser) {
