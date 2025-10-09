@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ActionService } from './action.service';
 import type { ActionType } from '../schemas/action.schema';
 
-@Controller('list/actions')
+@Controller('actions')
 export class ActionController {
   constructor(private readonly actionService: ActionService) {}
 

@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import type { ReactionType } from 'src/list/schemas/reaction.schema';
 import { ReactionService } from './reaction.service';
 
-@Controller('list/reactions')
+@Controller('reactions')
 export class ReactionController {
   constructor(private readonly reactionList: ReactionService) {}
 
