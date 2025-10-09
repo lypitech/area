@@ -1,9 +1,12 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-//import { OAuth } from '../database/schemas/oauth.schema';
 
 @Injectable()
 export class UserService {
@@ -12,6 +15,24 @@ export class UserService {
   async findAll(): Promise<User[]> {
     const users: User[] = await this.userModel.find();
     return users;
+  }
+
+  removeOauthTokenByUUID(
+    oauth_token_uuid: string
+  ) {
+    return this.userModel.findOneAndUpdate(
+      { 'oauth_uuids.tokens': oauth_token_uuid },
+      { $pull: { oauth_uuids: { oauth_token_uuid } } },
+      { new: true },
+    );
+  }
+
+  createOauthToken(user_uuid: string, token_uuid: string) {
+    return this.userModel.findOneAndUpdate(
+      { uuid: user_uuid },
+      { $push: { oauth_uuids: { token_uuid } } },
+      { new: true },
+    );
   }
 
   async findByUUID(
@@ -34,7 +55,7 @@ export class UserService {
     return user;
   }
 
-  async getuser(
+  async getUser(
     refreshToken: string
   ): Promise<Partial<User>> {
     if (!refreshToken) {

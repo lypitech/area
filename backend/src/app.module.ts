@@ -4,13 +4,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
+import { OauthModule } from './oauth/oauthModule';
 import { CommonModule } from './common/common.module';
 import { LoginModule } from './login/login.module';
-import { ReactionModule } from './reaction/reaction.module';
+import { ResponseModule } from './response/response.module';
 import { ListSeederService } from './list/setup/List.seeder.service';
 import { AreaModule } from './area/area.module';
-import { ActionModule } from './action/action.module';
+import { TriggerModule } from './trigger/trigger.module';
 import {
   ReactionList,
   ReactionListSchema,
@@ -35,13 +35,12 @@ import { ScheduleModule } from '@nestjs/schedule';
     ]),
     ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
-    AuthModule,
+    OauthModule,
     CommonModule,
-    //backend,
     LoginModule,
-    ReactionModule,
+    ResponseModule,
     AreaModule,
-    ActionModule,
+    TriggerModule,
     HookModule,
     ListModule,
   ],

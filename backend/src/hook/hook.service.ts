@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ActionService } from '../action/action.service';
+import { TriggerService } from '../trigger/trigger.service';
 
 @Injectable()
 export class HookService {
   private readonly logger = new Logger(HookService.name);
 
-  constructor(private readonly actionService: ActionService) {}
+  constructor(private readonly actionService: TriggerService) {}
 
   async handleGithubWebhook(
     payload: any,
