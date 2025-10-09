@@ -51,6 +51,6 @@ export class AreaController {
 
   @Delete(':uuid')
   remove(@Param('uuid') uuid: string) {
-    return this.areaService.deleteByUUID(uuid);
+    return this.areaService.remove(uuid);
   }
 }

@@ -2,8 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Area } from './schemas/area.schema';
-import { Action } from 'src/action/schemas/action.schema';
-import { Reaction } from 'src/reaction/schemas/reaction.schema';
+import { Trigger } from 'src/trigger/schemas/trigger.schema';
+import { ReactionInstance } from 'src/response/schemas/response.schema';
+import { TriggerService } from '../trigger/trigger.service';
+import { ResponseService } from '../response/response.service';
 
 export type CreateAreaDto = {
   action_uuid: string;
@@ -19,11 +21,20 @@ export type CreateAreaDto = {
 export class AreaService {
   constructor(
     @InjectModel(Area.name) private areaModel: Model<Area>,
-    @InjectModel(Action.name) private actionModel: Model<Action>,
-    @InjectModel(Reaction.name) private reactionModel: Model<Reaction>,
+    @InjectModel(Trigger.name) private actionModel: Model<Trigger>,
+    @InjectModel(ReactionInstance.name)
+    private readonly reactionModel: Model<ReactionInstance>,
+    private readonly triggerService: TriggerService,
+    private readonly responseService: ResponseService,
   ) {}
 
-  findByUUID(uuid: string): Promise<Area | null> {
+  findByUUID(
+    uuid: string,
+    user_uuid: string | null = null,
+  ): Promise<Area | null> {
+    if (user_uuid) {
+      return this.areaModel.findOne({ uuid: uuid, user_uuid: user_uuid });
+    }
     return this.areaModel.findOne({ uuid }).exec();
   }
 
@@ -31,8 +42,27 @@ export class AreaService {
     return this.areaModel.find({ action_uuid }).lean().exec();
   }
 
-  findAll(): Promise<Area[]> {
+  findAll(user_uuid: string | null = null): Promise<Area[]> {
+    if (user_uuid) {
+      return this.areaModel.find({ user_uuid: user_uuid }).lean().exec();
+    }
     return this.areaModel.find().exec();
+  }
+
+  async findTrigger(uuid: string, user_uuid: string | null) {
+    const area = await this.findByUUID(uuid, user_uuid);
+    if (!area) {
+      throw new NotFoundException(`No area with uuid ${uuid}.`);
+    }
+    return this.triggerService.getByUUID(area.trigger_uuid);
+  }
+
+  async findResponse(uuid: string, user_uuid: string | null) {
+    const area = await this.findByUUID(uuid, user_uuid);
+    if (!area) {
+      throw new NotFoundException(`No area with uuid ${uuid}.`);
+    }
+    return this.responseService.findByUUID(area.response_uuid);
   }
 
   async create(dto: CreateAreaDto): Promise<Area> {
@@ -53,13 +83,13 @@ export class AreaService {
     }
 
     const areaData: Partial<Area> = {
-      action_uuid: dto.action_uuid,
-      reaction_uuid: dto.reaction_uuid,
+      trigger_uuid: dto.action_uuid,
+      response_uuid: dto.reaction_uuid,
       user_uuid: dto.user_uuid,
       name: dto.name,
       description: dto.description,
       creation_date: new Date().toISOString(),
-      enable: dto.enable ?? true,
+      enabled: dto.enable ?? true,
       disabled_until: dto.disabled_until ?? null,
       history: [],
     };
@@ -68,8 +98,8 @@ export class AreaService {
     return newArea.save();
   }
 
-  async deleteByUUID(uuid: string): Promise<boolean> {
-    const result = await this.areaModel.deleteOne({ uuid }).exec();
+  async remove(uuid: string): Promise<boolean> {
+    const result = await this.areaModel.deleteOne({ uuid });
     return result.deletedCount === 1;
   }
 
@@ -81,12 +111,12 @@ export class AreaService {
     );
   }
 
-  findEnabledByActionUUID(action_uuid: string) {
+  findEnabledByActionUUID(trigger_uuid: string) {
     const now = new Date();
     return this.areaModel
       .find({
-        action_uuid,
-        enable: true,
+        trigger_uuid: trigger_uuid,
+        enabled: true,
         $or: [{ disabled_until: null }, { disabled_until: { $lte: now } }],
       })
       .lean()

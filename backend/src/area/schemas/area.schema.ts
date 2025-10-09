@@ -7,10 +7,10 @@ export class Area {
   uuid!: string;
 
   @Prop({ required: true, index: true })
-  action_uuid!: string;
+  trigger_uuid!: string;
 
   @Prop({ required: true, index: true })
-  reaction_uuid!: string;
+  response_uuid!: string;
 
   @Prop({ required: true, index: true })
   user_uuid!: string;
@@ -25,7 +25,7 @@ export class Area {
   creation_date!: string;
 
   @Prop({ required: true, default: true })
-  enable!: boolean;
+  enabled!: boolean;
 
   @Prop({ type: Date, default: null })
   disabled_until?: Date | null;
