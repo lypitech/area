@@ -12,11 +12,14 @@ export class ReactionInstance {
   @Prop({ required: true })
   name!: string;
 
-  @Prop({ default: null })
-  service_resource_id?: string;
-
   @Prop()
   description?: string;
+
+  @Prop()
+  oauth_token?: string;
+
+  @Prop({ default: null })
+  service_resource_id?: string;
 
   @Prop({ required: true })
   payload!: string;

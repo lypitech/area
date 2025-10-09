@@ -25,7 +25,7 @@ export class Trigger {
   service_resource_id?: string | null;
 
   @Prop({ default: null, type: String })
-  oauth_token_id?: string | null;
+  oauth_token?: string | null;
 
   @Prop({ required: true, enum: TriggerTypes, default: 'webhook' })
   trigger_type!: TriggerType;
