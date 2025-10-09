@@ -7,9 +7,9 @@ import {
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Action, ActionDocument } from '../../schemas/action.schema';
+import { Trigger, ActionDocument } from '../../schemas/trigger.schema';
 import { AreaService } from '../../../area/area.service';
-import { ReactionService } from '../../../reaction/reaction.service';
+import { ResponseService } from '../../../response/response.service';
 
 @Injectable()
 export class IntervalTriggerService implements OnModuleInit, OnModuleDestroy {
@@ -17,9 +17,9 @@ export class IntervalTriggerService implements OnModuleInit, OnModuleDestroy {
 
   constructor(
     private readonly schedulerRegistry: SchedulerRegistry,
-    @InjectModel(Action.name) private actionModel: Model<ActionDocument>,
+    @InjectModel(Trigger.name) private actionModel: Model<ActionDocument>,
     private readonly areaService: AreaService,
-    private readonly reactionService: ReactionService,
+    private readonly reactionService: ResponseService,
   ) {}
 
   async onModuleInit() {
