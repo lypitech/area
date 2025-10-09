@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ReactionListController } from './reaction-list.controller';
+import { ActionController } from './action.controller';
 
 describe('SelectionController', () => {
-  let controller: ReactionListController;
+  let controller: ActionController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [ReactionListController],
+      controllers: [ActionController],
     }).compile();
 
-    controller = module.get<ReactionListController>(ReactionListController);
+    controller = module.get<ActionController>(ActionController);
   });
 
   it('should be defined', () => {

@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 import { v4 as uuid_v4 } from 'uuid';
 
 @Schema()
-export class ServiceList extends Document {
+export class Service extends Document {
   @Prop({ required: true, unique: true, default: uuid_v4 })
   uuid!: string;
 
@@ -17,11 +17,11 @@ export class ServiceList extends Document {
   reactions!: Record<string, any>;
 }
 
-export interface ServiceListType {
+export interface ServiceType {
   uuid?: string;
   name: string;
   actions: Record<string, any>[];
   reactions: Record<string, any>[];
 }
 
-export const ServiceListSchema = SchemaFactory.createForClass(ServiceList);
+export const ServiceSchema = SchemaFactory.createForClass(Service);

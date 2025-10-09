@@ -1,25 +1,22 @@
 import { OnApplicationBootstrap, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  ReactionList,
-  ReactionListType,
-} from 'src/list/schemas/reactionList.schema';
+import { Reaction, ReactionType } from 'src/list/schemas/reaction.schema';
 import { Model } from 'mongoose';
 import * as fs from 'fs';
 import path from 'node:path';
-import { ActionList, ActionListType } from '../schemas/actionList.schema';
-import { ServiceList, ServiceListType } from '../schemas/serviceList.schema';
+import { Action, ActionType } from '../schemas/action.schema';
+import { Service, ServiceType } from '../schemas/service.schema';
 
 @Injectable()
-export class ListSeederService implements OnApplicationBootstrap {
-  private readonly logger = new Logger('ListSeederService');
+export class SeederService implements OnApplicationBootstrap {
+  private readonly logger = new Logger('SeederService');
   constructor(
-    @InjectModel(ReactionList.name)
-    private readonly reactionListModel: Model<ReactionList>,
-    @InjectModel(ActionList.name)
-    private readonly actionListModel: Model<ActionList>,
-    @InjectModel(ServiceList.name)
-    private readonly serviceListModel: Model<ServiceList>,
+    @InjectModel(Reaction.name)
+    private readonly reactionModel: Model<Reaction>,
+    @InjectModel(Action.name)
+    private readonly actionModel: Model<Action>,
+    @InjectModel(Service.name)
+    private readonly serviceModel: Model<Service>,
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
@@ -29,11 +26,11 @@ export class ListSeederService implements OnApplicationBootstrap {
   }
 
   private async populate_actions() {
-    const filePath = path.join('src', 'list', 'setup', 'actionList.json');
+    const filePath = path.join('src', 'list', 'setup', 'actions.json');
     const rawFile: string = fs.readFileSync(filePath, 'utf-8');
-    const actions: ActionListType[] = JSON.parse(rawFile) as ActionListType[];
+    const actions: ActionType[] = JSON.parse(rawFile) as ActionType[];
     for (const action of actions) {
-      await this.actionListModel.updateOne(
+      await this.actionModel.updateOne(
         { service_name: action.service_name, name: action.name },
         { $set: action },
         { upsert: true },
@@ -45,13 +42,11 @@ export class ListSeederService implements OnApplicationBootstrap {
   }
 
   private async populate_reactions() {
-    const filePath = path.join('src', 'list', 'setup', 'reactionList.json');
+    const filePath = path.join('src', 'list', 'setup', 'reactions.json');
     const rawFile: string = fs.readFileSync(filePath, 'utf-8');
-    const reactions: ReactionListType[] = JSON.parse(
-      rawFile,
-    ) as ReactionListType[];
+    const reactions: ReactionType[] = JSON.parse(rawFile) as ReactionType[];
     for (const reaction of reactions) {
-      await this.reactionListModel.updateOne(
+      await this.reactionModel.updateOne(
         { service_name: reaction.service_name, name: reaction.name },
         { $set: reaction },
         { upsert: true },
@@ -63,13 +58,11 @@ export class ListSeederService implements OnApplicationBootstrap {
   }
 
   private async populate_services() {
-    const filePath = path.join('src', 'list', 'setup', 'serviceList.json');
+    const filePath = path.join('src', 'list', 'setup', 'services.json');
     const rawFile: string = fs.readFileSync(filePath, 'utf-8');
-    const services: ServiceListType[] = JSON.parse(
-      rawFile,
-    ) as ServiceListType[];
+    const services: ServiceType[] = JSON.parse(rawFile) as ServiceType[];
     for (const service of services) {
-      const actions = await this.actionListModel.find({
+      const actions: ActionType[] = await this.actionModel.find({
         service_name: service.name,
       });
       const actionList: object[] = [];
@@ -81,7 +74,7 @@ export class ListSeederService implements OnApplicationBootstrap {
         });
       }
       service.actions = actionList;
-      const reactions = await this.reactionListModel.find({
+      const reactions: ReactionType[] = await this.reactionModel.find({
         service_name: service.name,
       });
       const reactionList: object[] = [];
@@ -93,7 +86,7 @@ export class ListSeederService implements OnApplicationBootstrap {
         });
       }
       service.reactions = reactionList;
-      await this.serviceListModel.updateOne(
+      await this.serviceModel.updateOne(
         { name: service.name },
         { $set: service },
         { upsert: true },

@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 import { v4 as uuid_v4 } from 'uuid';
 
 @Schema()
-export class ReactionList extends Document {
+export class Reaction extends Document {
   @Prop({ required: true, unique: true, default: uuid_v4 })
   uuid!: string;
 
@@ -20,7 +20,7 @@ export class ReactionList extends Document {
   schema_input: string; // this field is required to be a json specifying expected infos for the service
 }
 
-export interface ReactionListType {
+export interface ReactionType {
   uuid?: string;
   service_name: string;
   name: string;
@@ -28,4 +28,4 @@ export interface ReactionListType {
   schema_input: string;
 }
 
-export const ReactionListSchema = SchemaFactory.createForClass(ReactionList);
+export const ReactionSchema = SchemaFactory.createForClass(Reaction);

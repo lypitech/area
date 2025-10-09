@@ -1,32 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import {
-  ActionList,
-  ActionListType,
-} from '../schemas/actionList.schema';
+import { Action, ActionType } from '../schemas/action.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 @Injectable()
-export class ActionListService {
+export class ActionService {
   constructor(
-    @InjectModel(ActionList.name)
-    private actionListModel: Model<ActionList>,
+    @InjectModel(Action.name)
+    private actionListModel: Model<Action>,
   ) {}
 
-  getAll(): Promise<ActionList[]> {
+  getAll(): Promise<Action[]> {
     return this.actionListModel.find().exec();
   }
 
-  getByUUID(uuid: string): Promise<ActionList | null> {
+  getByUUID(uuid: string): Promise<Action | null> {
     return this.actionListModel.findOne({ uuid: uuid }).lean().exec();
   }
 
-  create(data: ActionListType): Promise<ActionList> {
+  create(data: ActionType): Promise<Action> {
     const reaction = new this.actionListModel(data);
     return reaction.save();
   }
 
-  async remove(uuid: string): Promise<ActionList | null> {
+  async remove(uuid: string): Promise<Action | null> {
     return this.actionListModel.findOneAndDelete({ uuid: uuid }).exec();
   }
 }

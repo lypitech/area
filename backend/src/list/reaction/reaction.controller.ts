@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import type { ReactionListType } from 'src/list/schemas/reactionList.schema';
-import { ReactionListService } from './reaction-list.service';
+import type { ReactionType } from 'src/list/schemas/reaction.schema';
+import { ReactionService } from './reaction.service';
 
 @Controller('list/reactions')
-export class ReactionListController {
-  constructor(private readonly reactionList: ReactionListService) {}
+export class ReactionController {
+  constructor(private readonly reactionList: ReactionService) {}
 
   @Get()
   getAll() {
@@ -17,7 +17,7 @@ export class ReactionListController {
   }
 
   @Post()
-  create(@Body() body: ReactionListType) {
+  create(@Body() body: ReactionType) {
     return this.reactionList.create(body);
   }
 

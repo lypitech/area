@@ -8,20 +8,14 @@ import { OauthModule } from './oauth/oauth.module';
 import { CommonModule } from './common/common.module';
 import { LoginModule } from './login/login.module';
 import { ResponseModule } from './response/response.module';
-import { ListSeederService } from './list/setup/List.seeder.service';
+import { SeederService } from './list/setup/seeder.service';
 import { AreaModule } from './area/area.module';
 import { TriggerModule } from './trigger/trigger.module';
-import {
-  ReactionList,
-  ReactionListSchema,
-} from './list/schemas/reactionList.schema';
-import { ActionList, ActionListSchema } from './list/schemas/actionList.schema';
+import { Reaction, ReactionSchema } from './list/schemas/reaction.schema';
+import { Action, ActionSchema } from './list/schemas/action.schema';
 import { HookModule } from './hook/hook.module';
-import { ListModule } from './list/list.module';
-import {
-  ServiceList,
-  ServiceListSchema,
-} from './list/schemas/serviceList.schema';
+import { ServiceModule } from './list/service.module';
+import { Service, ServiceSchema } from './list/schemas/service.schema';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -29,9 +23,9 @@ import { ScheduleModule } from '@nestjs/schedule';
     MongooseModule.forRoot('mongodb://mongo:27017/nestdb'),
     ScheduleModule.forRoot(),
     MongooseModule.forFeature([
-      { name: ReactionList.name, schema: ReactionListSchema },
-      { name: ActionList.name, schema: ActionListSchema },
-      { name: ServiceList.name, schema: ServiceListSchema },
+      { name: Reaction.name, schema: ReactionSchema },
+      { name: Action.name, schema: ActionSchema },
+      { name: Service.name, schema: ServiceSchema },
     ]),
     ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
@@ -42,9 +36,9 @@ import { ScheduleModule } from '@nestjs/schedule';
     AreaModule,
     TriggerModule,
     HookModule,
-    ListModule,
+    ServiceModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ListSeederService],
+  providers: [AppService, SeederService],
 })
 export class AppModule {}
