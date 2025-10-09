@@ -1,16 +1,11 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  NotFoundException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Trigger } from './schemas/trigger.schema';
-import { AreaService } from '../area/area.service';
-import { ResponseService } from '../response/response.service';
 import { GithubService } from './services/github/github.service';
 import { IntervalTriggerService } from './services/interval/interval.service';
+import { AreaService } from '../area/area.service';
+import { ResponseService } from '../response/response.service';
 
 @Injectable()
 export class TriggerService {
@@ -20,7 +15,7 @@ export class TriggerService {
     @InjectModel(Trigger.name) private triggerModel: Model<Trigger>,
     private readonly githubService: GithubService,
     private readonly areaService: AreaService,
-    private readonly reactionService: ResponseService,
+    private readonly responseService: ResponseService,
     private readonly intervalTrigger: IntervalTriggerService,
   ) {}
 
@@ -108,50 +103,50 @@ export class TriggerService {
   //   return this.getByUUID(createdAction.uuid);
   // }
 
-//   async fire(uuid: string, token: string, payload: any) {
-//     const action = await this.triggerModel
-//       .findOne({ uuid })
-//       .select('+token')
-//       .lean()
-//       .exec();
-//
-//     if (!action) throw new NotFoundException('Action not found');
-//     if (!token || token !== action.token) {
-//       throw new UnauthorizedException('Invalid action token');
-//     }
-//
-//     const areas = await this.areaService.findEnabledByActionUUID(uuid);
-//     if (!areas.length) return { fired: true, areas: 0, results: [] };
-//
-//     const action_payload = JSON.stringify(payload ?? {});
-//     const results: Array<
-//       | { area_uuid: string; ok: true; result: any }
-//       | { area_uuid: string; ok: false; error: string }
-//     > = [];
-//
-//     for (const area of areas) {
-//       try {
-//         const reaction = await this.reactionService.getByUUID(
-//           area.reaction_uuid,
-//         );
-//         if (!reaction) {
-//           throw new NotFoundException('Reaction not found');
-//         }
-//         const res = this.reactionService.dispatch(reaction, action_payload);
-//         results.push({ area_uuid: area.uuid, ok: true, result: res });
-//         await this.areaService.appendHistory(area.uuid, 'OK');
-//       } catch (e: any) {
-//         results.push({
-//           area_uuid: area.uuid,
-//           ok: false,
-//           error: e?.message ?? 'error',
-//         });
-//         await this.areaService.appendHistory(
-//           area.uuid,
-//           `ERROR: ${e?.message ?? 'unknown'}`,
-//         );
-//       }
-//     }
-//     return { fired: true, areas: areas.length, results };
-//   }
+  async fire(uuid: string, token: string, payload: any) {
+  //   const action = await this.triggerModel
+  //     .findOne({ uuid })
+  //     .select('+token')
+  //     .lean()
+  //     .exec();
+  //
+  //   if (!action) throw new NotFoundException('Action not found');
+  //   if (!token || token !== action.token) {
+  //     throw new UnauthorizedException('Invalid action token');
+  //   }
+  //
+  //   const areas = await this.areaService.findEnabledByActionUUID(uuid);
+  //   if (!areas.length) return { fired: true, areas: 0, results: [] };
+  //
+  //   const action_payload = JSON.stringify(payload ?? {});
+  //   const results: Array<
+  //     | { area_uuid: string; ok: true; result: any }
+  //     | { area_uuid: string; ok: false; error: string }
+  //   > = [];
+  //
+  //   for (const area of areas) {
+  //     try {
+  //       const reaction = await this.responseService.getByUUID(
+  //         area.reaction_uuid,
+  //       );
+  //       if (!reaction) {
+  //         throw new NotFoundException('Reaction not found');
+  //       }
+  //       const res = this.responseService.dispatch(reaction, action_payload);
+  //       results.push({ area_uuid: area.uuid, ok: true, result: res });
+  //       await this.areaService.appendHistory(area.uuid, 'OK');
+  //     } catch (e: any) {
+  //       results.push({
+  //         area_uuid: area.uuid,
+  //         ok: false,
+  //         error: e?.message ?? 'error',
+  //       });
+  //       await this.areaService.appendHistory(
+  //         area.uuid,
+  //         `ERROR: ${e?.message ?? 'unknown'}`,
+  //       );
+  //     }
+  //   }
+  //   return { fired: true, areas: areas.length, results };
+  }
 }
