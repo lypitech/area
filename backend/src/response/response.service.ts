@@ -12,32 +12,20 @@ import { DiscordReactionService } from './services/discord.service';
 @Injectable()
 export class ResponseService {
   constructor(
-    @InjectModel(ReactionInstance.name) private reactionModel: Model<ReactionInstance>,
+    @InjectModel(ReactionInstance.name)
+    private responseModel: Model<ReactionInstance>,
     @Inject(DiscordReactionService) private discord: DiscordReactionService,
   ) {}
   private readonly logger = new ConsoleLogger(ResponseService.name);
 
-  async findAll(): Promise<ReactionInstance[]> {
-    return this.reactionModel.find().exec();
-  }
-
   async findByUUID(uuid: string): Promise<ReactionInstance | null> {
-    return this.reactionModel.findOne({ uuid }).lean().exec();
-  }
-
-  async create(data: Partial<ReactionInstance>): Promise<ReactionInstance> {
-    const doc = new this.reactionModel(data);
-    const saved = await doc.save();
-    return saved.toObject();
-  }
-
-  async remove(uuid: string): Promise<{ deleted: true; uuid: string }> {
-    const res = await this.reactionModel
-      .findOneAndDelete({ uuid })
-      .lean()
-      .exec();
-    if (!res) throw new NotFoundException('Reaction not found');
-    return { deleted: true, uuid };
+    const response: ReactionInstance | null = await this.responseModel.findOne({
+      uuid,
+    });
+    if (!response) {
+      throw new NotFoundException(`No Response with uuid ${uuid}`);
+    }
+    return response;
   }
 
   async dispatch(reaction: ReactionInstance, action_payload: string) {

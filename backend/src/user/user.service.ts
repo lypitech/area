@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
-import { Model } from 'mongoose';
+import { DeleteResult, Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -97,13 +97,11 @@ export class UserService {
     return updatedUser;
   }
 
-  async remove(uuid: string) {
-    const removed: User | null = await this.userModel.findOneAndDelete({
-      uuid,
-    });
-    if (!removed) {
-      throw new NotFoundException(`No user with uuid ${uuid}`);
+  async remove(uuid: string): Promise<boolean> {
+    const deleted: DeleteResult = await this.userModel.deleteOne({ uuid });
+    if (!deleted) {
+      throw new NotFoundException(`No oauth with uuid ${uuid}.`);
     }
-    return removed;
+    return deleted.deletedCount === 1;
   }
 }

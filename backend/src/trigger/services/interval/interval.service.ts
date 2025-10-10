@@ -42,66 +42,69 @@ export class IntervalTriggerService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async registerInterval(actionUuid: string, everyMinutes: number) {
-    const name = `action-interval:${actionUuid}`;
+  registerInterval(triggerUuid: string, everyMinutes: number) {
+    const name = `action-interval:${triggerUuid}`;
 
-    // try {
-    //   this.schedulerRegistry.deleteInterval(name);
-    // } catch {}
-    //
-    // const ms = Math.max(1, everyMinutes) * 60_000;
-    //
-    // const cb = async () => {
-    //   try {
-    //     const areas =
-    //       await this.areaService.findEnabledByActionUUID(actionUuid);
-    //     if (!areas?.length) return;
-    //
-    //     const action_payload = `Tick @ ${new Date().toISOString()} (ts=${Date.now()}) Pierre suce`;
-    //
-    //     for (const area of areas) {
-    //       try {
-    //         const reaction = await this.responseService.findByUUID(
-    //           area.response_uuid,
-    //         );
-    //         if (!reaction) throw new Error('Reaction not found');
-    //         const res = await this.responseService.dispatch(
-    //           reaction,
-    //           action_payload,
-    //         );
-    //         await this.areaService.appendHistory(area.uuid, 'OK (interval)');
-    //         this.logger.debug(`Interval fired area=${area.uuid} ok`);
-    //       } catch (e: any) {
-    //         await this.areaService.appendHistory(
-    //           area.uuid,
-    //           `ERROR (interval): ${e?.message ?? 'unknown'}`,
-    //         );
-    //         this.logger.warn(
-    //           `Interval error area=${area.uuid}: ${e?.message ?? e}`,
-    //         );
-    //       }
-    //     }
-    //   } catch (e) {
-    //     this.logger.error(
-    //       `Interval tick failed for action=${actionUuid}: ${e}`,
-    //     );
-    //   }
-    // };
-    //
-    // const interval = setInterval(cb, ms);
-    // this.schedulerRegistry.addInterval(name, interval);
-    //
-    // this.logger.log(
-    //   `Registered interval for action=${actionUuid} every ${everyMinutes} min`,
-    // );
+    try {
+      this.schedulerRegistry.deleteInterval(name);
+    } catch (e: any) {
+      this.logger.warn('Unknown error happened.');
+    }
+
+    const ms = Math.max(1, everyMinutes) * 60_000;
+
+    const cb = async () => {
+      try {
+        const areas =
+          await this.areaService.findEnabledByTriggerUUID(triggerUuid);
+        if (!areas) return;
+
+        const trigger_payload = `Tick @ ${new Date().toISOString()} (ts=${Date.now()})`;
+
+        for (const area of areas) {
+          try {
+            const response = await this.responseService.findByUUID(
+              area.response_uuid,
+            );
+            if (!response) throw new Error('Reaction not found');
+            await this.responseService.dispatch(response, trigger_payload);
+            await this.areaService.appendHistory(area.uuid, 'OK (interval)');
+            this.logger.debug(`Interval fired area=${area.uuid} ok`);
+          } catch (e: any) {
+            await this.areaService.appendHistory(
+              area.uuid,
+              `ERROR (interval): ${e?.message ?? 'unknown'}`,
+            );
+            this.logger.warn(
+              `Interval error area=${area.uuid}: ${e?.message ?? e}`,
+            );
+          }
+        }
+      } catch (e) {
+        this.logger.error(
+          `Interval tick failed for action=${triggerUuid}: ${e}`,
+        );
+      }
+    };
+
+    const interval = setInterval(cb, ms);
+    this.schedulerRegistry.addInterval(name, interval);
+
+    this.logger.log(
+      `Registered interval for action=${triggerUuid} every ${everyMinutes} min`,
+    );
   }
 
   unregisterInterval(actionUuid: string) {
     const name = `action-interval:${actionUuid}`;
     try {
       this.schedulerRegistry.deleteInterval(name);
-      this.logger.log(`Unregistered interval for action=${actionUuid}`);
-    } catch {}
+      this.logger.log(`Unregistered interval for action ${actionUuid}`);
+    } catch (error) {
+      this.logger.error(
+        `Could not unregister trigger ${actionUuid} because of ${error.message}`,
+      );
+    }
   }
 }
 export { IntervalTriggerService as IntervalService };

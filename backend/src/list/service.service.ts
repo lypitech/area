@@ -23,12 +23,10 @@ export class ServiceService {
     return service.save();
   }
 
-  async remove(uuid: string) {
+  async remove(uuid: string): Promise<boolean> {
     const res = await this.serviceListModel
-      .findOneAndDelete({ uuid })
-      .lean()
-      .exec();
+      .deleteOne({ uuid })
     if (!res) throw new NotFoundException('Service not found');
-    return { deleted: true, uuid };
+    return res.deletedCount === 1;
   }
 }

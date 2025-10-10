@@ -5,7 +5,7 @@ import { TriggerService } from '../trigger/trigger.service';
 export class HookService {
   private readonly logger = new Logger(HookService.name);
 
-  constructor(private readonly actionService: TriggerService) {}
+  constructor(private readonly triggerService: TriggerService) {}
 
   async handleGithubWebhook(
     payload: any,
@@ -13,6 +13,7 @@ export class HookService {
     token: string,
     event?: string,
   ) {
+    // TODO: Faire un dispatch un peu plus clair ou adapter le système de création
     try {
       this.logger.log(
         `Received GitHub webhook for action ${actionId} (event: ${
@@ -24,7 +25,7 @@ export class HookService {
       const owner =
         payload?.repository?.owner?.login || payload?.repository?.owner?.name;
 
-      const result = await this.actionService.fire(actionId, token, {
+      const result = await this.triggerService.fire(actionId, token, {
         repository,
         owner,
         event: event ?? 'push',

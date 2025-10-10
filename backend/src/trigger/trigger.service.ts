@@ -1,7 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Trigger } from './schemas/trigger.schema';
+import { Trigger, TriggerType } from './schemas/trigger.schema';
 import { GithubService } from './services/github/github.service';
 import { IntervalTriggerService } from './services/interval/interval.service';
 import { AreaService } from '../area/area.service';
@@ -24,84 +24,91 @@ export class TriggerService {
   }
 
   async getByUUID(uuid: string) {
-    return this.triggerModel.findOne({ uuid }).exec();
+    const trigger: Trigger | null = await this.triggerModel.findOne({ uuid });
+    if (!trigger) {
+      throw new NotFoundException(`No trigger with uuid ${uuid}`);
+    }
+    return trigger;
   }
 
-  async createAction(data: Partial<Trigger>): Promise<Trigger> {
-    const newAction = new this.triggerModel(data);
-    return newAction.save();
+  async create(data: TriggerType): Promise<Trigger> {
+    return new this.triggerModel(data).save();
   }
 
-  async remove(uuid: string): Promise<Trigger | null> {
-    const removed = await this.triggerModel.findOneAndDelete({ uuid }).exec();
-
-    if (removed?.trigger_type === 'interval') {
+  async remove(uuid: string): Promise<boolean> {
+    const removed: Trigger | null = await this.triggerModel.findOneAndDelete({
+      uuid,
+    });
+    if (!removed) {
+      throw new NotFoundException(`No trigger with uuid ${uuid}`);
+    }
+    if (removed.trigger_type === 'interval') {
       this.intervalTrigger.unregisterInterval(uuid);
     }
-
-    return removed;
+    return !!removed;
   }
 
-  // async createActionWithWebhook(action: Partial<Trigger>, parameters: any) {
-  //   const createdAction = await this.createAction(action);
-  //
-  //   if (
-  //     createdAction.service_name === 'github' &&
-  //     createdAction.trigger_type === 'webhook'
-  //   ) {
-  //     const owner = parameters?.owner;
-  //     const repo = parameters?.repo;
-  //     const userId = parameters?.userId;
-  //
-  //     if (!owner || !repo || !userId) {
-  //       this.logger.warn(
-  //         `[createActionWithWebhook] Missing GitHub parameters for action ${createdAction.uuid}: owner, repo, userId are required`,
-  //       );
-  //     } else {
-  //       const res = await this.githubService.configureWebhook({
-  //         owner,
-  //         repo,
-  //         userId,
-  //         actionId: createdAction.uuid,
-  //         actionToken: createdAction.token,
-  //       });
-  //
-  //       if (res?.id != null) {
-  //         await this.triggerModel
-  //           .updateOne(
-  //             { uuid: createdAction.uuid },
-  //             { $set: { service_resource_id: String(res.id) } },
-  //           )
-  //           .exec();
-  //       }
-  //     }
-  //   }
-  //
-  //   if (
-  //     createdAction.service_name === 'Area' &&
-  //     createdAction.trigger_type === 'interval'
-  //   ) {
-  //     const every =
-  //       createdAction.every_minutes ?? parameters?.every_minutes ?? 5;
-  //
-  //     await this.triggerModel
-  //       .updateOne(
-  //         { uuid: createdAction.uuid },
-  //         {
-  //           $set: {
-  //             every_minutes: every,
-  //           },
-  //         },
-  //       )
-  //       .exec();
-  //
-  //     // Enregistrer l’interval
-  //     const finalAction = await this.getByUUID(createdAction.uuid);
-  //     await this.intervalTrigger.registerInterval(createdAction.uuid, every);
-  //   }
-  //
-  //   return this.getByUUID(createdAction.uuid);
-  // }
+  async createTriggerWithWebhook(trigger: TriggerType, parameters: any) {
+    // TODO: Retaper entièrement la fonction, faire un `dispatch` etc
+    // const created: Trigger = await this.create(trigger);
+    //
+    // if (
+    //   created.service_name === 'github' &&
+    //   created.trigger_type === 'webhook'
+    // ) {
+    //   const owner = parameters?.owner;
+    //   const repo = parameters?.repo;
+    //   const userId = parameters?.userId;
+    //
+    //   if (!owner || !repo || !userId) {
+    //     this.logger.warn(
+    //       `[createActionWithWebhook] Missing GitHub parameters for action ${created.uuid}: owner, repo, userId are required`,
+    //     );
+    //   } else {
+    //     const res = await this.githubService.configureWebhook({
+    //       owner,
+    //       repo,
+    //       userId,
+    //       actionId: created.uuid,
+    //       actionToken: created.token,
+    //     });
+    //
+    //     if (res?.id != null) {
+    //       await this.triggerModel
+    //         .updateOne(
+    //           { uuid: created.uuid },
+    //           { $set: { service_resource_id: String(res.id) } },
+    //         )
+    //         .exec();
+    //     }
+    //   }
+    // }
+    //
+    // if (
+    //   created.service_name === 'Area' &&
+    //   created.trigger_type === 'interval'
+    // ) {
+    //   const every =
+    //     created.every_minutes ?? parameters?.every_minutes ?? 5;
+    //
+    //   await this.triggerModel
+    //     .updateOne(
+    //       { uuid: created.uuid },
+    //       {
+    //         $set: {
+    //           every_minutes: every,
+    //         },
+    //       },
+    //     )
+    //     .exec();
+    //
+    //   // Enregistrer l’interval
+    //   const finalAction = await this.getByUUID(created.uuid);
+    //   await this.intervalTrigger.registerInterval(created.uuid, every);
+    // }
+    //
+    // return this.getByUUID(created.uuid);
+  }
 
   async fire(uuid: string, token: string, payload: any) {
   //   const action = await this.triggerModel

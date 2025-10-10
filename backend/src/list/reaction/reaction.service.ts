@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Reaction, ReactionType } from '../schemas/reaction.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { DeleteResult, Model } from 'mongoose';
 
 @Injectable()
 export class ReactionService {
@@ -23,7 +23,11 @@ export class ReactionService {
     return reaction.save();
   }
 
-  async remove(uuid: string): Promise<Reaction | null> {
-    return this.reactionModel.findOneAndDelete({ uuid: uuid }).exec();
+  async remove(uuid: string): Promise<boolean> {
+    const deleted: DeleteResult = await this.reactionModel.deleteOne({ uuid });
+    if (!deleted) {
+      throw new NotFoundException(`No reaction with uuid ${uuid}`);
+    }
+    return deleted.deletedCount === 1;
   }
 }

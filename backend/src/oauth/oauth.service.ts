@@ -1,12 +1,7 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { Oauth, OauthType } from './schema/Oauth.schema';
-import { Model } from 'mongoose';
+import { DeleteResult, Model } from 'mongoose';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,25 +13,6 @@ export class OauthService {
     private readonly httpService: HttpService,
     @InjectModel(Oauth.name) private readonly oauthModel: Model<Oauth>,
   ) {}
-
-  async remove(uuid: string): Promise<Oauth | null> {
-    const removed: Oauth | null = await this.oauthModel
-      .findOneAndDelete({ uuid })
-      .exec();
-
-    if (!removed) {
-      throw new HttpException(
-        `No Oauth Token with uuid ${uuid}`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    await this.userService.removeOauthTokenByUUID(uuid);
-    return removed;
-  }
-
-  async findByService(service: string): Promise<Oauth[]> {
-    return this.oauthModel.find({ service_name: service });
-  }
 
   async findByUUID(uuid: string): Promise<Oauth> {
     const oauth: Oauth | null = await this.oauthModel.findOne({ uuid: uuid });
@@ -91,5 +67,13 @@ export class OauthService {
     };
 
     return this.addToken(user_uuid, token);
+  }
+
+  async remove(uuid: string): Promise<boolean> {
+    const deleted: DeleteResult = await this.oauthModel.deleteOne({ uuid });
+    if (!deleted) {
+      throw new NotFoundException(`No oauth with uuid ${uuid}.`);
+    }
+    return deleted.deletedCount === 1;
   }
 }

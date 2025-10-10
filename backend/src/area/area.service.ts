@@ -56,6 +56,18 @@ export class AreaService {
     return this.responseModel.find({ uuid: area.response_uuid });
   }
 
+  findEnabledByTriggerUUID(trigger_uuid: string) {
+    const now = new Date();
+    return this.areaModel
+      .find({
+        trigger_uuid: trigger_uuid,
+        enabled: true,
+        $or: [{ disabled_until: null }, { disabled_until: { $lte: now } }],
+      })
+      .lean()
+      .exec();
+  }
+
   async create(dto: AreaCreationDTO) {
     const user = await this.userService.findByUUID(dto.user_uuid);
     let triggerToken: string = '';
@@ -109,11 +121,6 @@ export class AreaService {
     });
   }
 
-  async remove(uuid: string): Promise<boolean> {
-    const result = await this.areaModel.deleteOne({ uuid });
-    return result.deletedCount === 1;
-  }
-
   async appendHistory(area_uuid: string, status: string) {
     const timestamp = new Date().toISOString();
     await this.areaModel.updateOne(
@@ -122,15 +129,11 @@ export class AreaService {
     );
   }
 
-  findEnabledByActionUUID(trigger_uuid: string) {
-    const now = new Date();
-    return this.areaModel
-      .find({
-        trigger_uuid: trigger_uuid,
-        enabled: true,
-        $or: [{ disabled_until: null }, { disabled_until: { $lte: now } }],
-      })
-      .lean()
-      .exec();
+  async remove(uuid: string): Promise<boolean> {
+    const result = await this.areaModel.deleteOne({ uuid });
+    if (!result) {
+      throw new NotFoundException(`No area with uuid ${uuid}.`);
+    }
+    return result.deletedCount === 1;
   }
 }
