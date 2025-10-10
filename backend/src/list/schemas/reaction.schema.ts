@@ -16,8 +16,8 @@ export class Reaction extends Document {
   @Prop({ required: true })
   description!: string;
 
-  @Prop({ required: true })
-  schema_input: string; // this field is required to be a json specifying expected infos for the service
+  @Prop({ type: Object, required: true })
+  schema_input: Record<string, any>; // this field is required to be a json with expected fields by the service
 }
 
 export interface ReactionType {
@@ -25,7 +25,7 @@ export interface ReactionType {
   service_name: string;
   name: string;
   description: string;
-  schema_input: string;
+  schema_input: Record<string, any>;
 }
 
 export const ReactionSchema = SchemaFactory.createForClass(Reaction);
