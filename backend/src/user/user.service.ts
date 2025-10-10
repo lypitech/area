@@ -13,8 +13,7 @@ export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async findAll(): Promise<User[]> {
-    const users: User[] = await this.userModel.find();
-    return users;
+    return this.userModel.find();
   }
 
   removeOauthTokenByUUID(
