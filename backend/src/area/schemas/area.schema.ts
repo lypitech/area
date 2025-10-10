@@ -21,9 +21,6 @@ export class Area {
   @Prop()
   description?: string;
 
-  @Prop({ required: true })
-  creation_date!: string;
-
   @Prop({ required: true, default: true })
   enabled!: boolean;
 

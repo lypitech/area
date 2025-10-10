@@ -10,7 +10,7 @@ import {
 import { AreaService } from './area.service';
 import type { AreaCreationDTO } from './schemas/area.schema';
 
-@Controller('area')
+@Controller('areas')
 export class AreaController {
   constructor(private readonly areaService: AreaService) {}
 
@@ -19,14 +19,14 @@ export class AreaController {
     return this.areaService.findAll();
   }
 
-  @Get('action/:action_uuid')
-  getByActionUuid(@Param('action_uuid') action_uuid: string) {
-    return this.areaService.findByActionUuid(action_uuid);
-  }
-
   @Get(':uuid')
   getByUUID(@Param('uuid') uuid: string) {
     return this.areaService.findByUUID(uuid);
+  }
+
+  @Get('areas')
+  getByActionUuid(@Param('action_uuid') action_uuid: string) {
+    return this.areaService.findByActionUuid(action_uuid);
   }
 
   @Patch(':uuid/history')
