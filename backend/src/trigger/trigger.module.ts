@@ -14,6 +14,10 @@ import {
 import { DiscordReactionService } from '../response/services/discord.service';
 import { HttpModule } from '@nestjs/axios';
 import { GithubModule } from './services/github/github.module';
+import { UserService } from '../user/user.service';
+import { OauthService } from '../oauth/oauth.service';
+import { User, UserSchema } from '../user/schemas/user.schema';
+import { Oauth, OauthSchema } from '../oauth/schema/Oauth.schema';
 
 @Module({
   imports: [
@@ -24,6 +28,8 @@ import { GithubModule } from './services/github/github.module';
       { name: Trigger.name, schema: TriggerSchema },
       { name: Area.name, schema: AreaSchema },
       { name: ReactionInstance.name, schema: ResponseSchema },
+      { name: User.name, schema: UserSchema },
+      { name: Oauth.name, schema: OauthSchema },
     ]),
   ],
   providers: [
@@ -32,6 +38,8 @@ import { GithubModule } from './services/github/github.module';
     AreaService,
     ResponseService,
     DiscordReactionService,
+    UserService,
+    OauthService,
   ],
   exports: [TriggerService],
 })

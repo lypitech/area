@@ -4,27 +4,19 @@ import { Model } from 'mongoose';
 import { Area } from './schemas/area.schema';
 import { Trigger } from 'src/trigger/schemas/trigger.schema';
 import { ReactionInstance } from 'src/response/schemas/response.schema';
-
-export type CreateAreaDto = {
-  action_uuid: string;
-  reaction_uuid: string;
-  user_uuid: string;
-  name: string;
-  description?: string;
-  enable?: boolean;
-  disabled_until?: Date | null;
-};
+import type { AreaCreationDTO } from './schemas/area.schema';
+import { OauthService } from '../oauth/oauth.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AreaService {
   constructor(
     @InjectModel(Area.name) private areaModel: Model<Area>,
-    @InjectModel(Trigger.name) private actionModel: Model<Trigger>,
     @InjectModel(Trigger.name) private readonly triggerModel: Model<Trigger>,
     @InjectModel(ReactionInstance.name)
-    private readonly reactionModel: Model<ReactionInstance>,
-    @InjectModel(ReactionInstance.name)
-    private readonly reactionInstance: Model<ReactionInstance>,
+    private readonly responseModel: Model<ReactionInstance>,
+    private readonly userService: UserService,
+    private readonly oauthService: OauthService,
   ) {}
 
   findByUUID(
@@ -61,40 +53,61 @@ export class AreaService {
     if (!area) {
       throw new NotFoundException(`No area with uuid ${uuid}.`);
     }
-    return this.reactionInstance.find({ uuid: area.response_uuid });
+    return this.responseModel.find({ uuid: area.response_uuid });
   }
 
-  async create(dto: CreateAreaDto): Promise<Area> {
-    const action = await this.actionModel
-      .findOne({ uuid: dto.action_uuid })
-      .lean()
-      .exec();
-    if (!action) {
-      throw new NotFoundException('Action not found');
-    }
+  async create(dto: AreaCreationDTO) {
+    const user = await this.userService.findByUUID(dto.user_uuid);
+    let triggerToken: string = '';
+    let responseToken: string = '';
 
-    const reaction = await this.reactionModel
-      .findOne({ uuid: dto.reaction_uuid })
-      .lean()
-      .exec();
-    if (!reaction) {
-      throw new NotFoundException('Reaction not found');
+    for (const oauth_uuid of user.oauth_uuids) {
+      const oauth = await this.oauthService.findByUUID(oauth_uuid);
+      if (!responseToken && oauth.service_name == dto.response.service_name) {
+        responseToken = oauth.token;
+      }
+      if (!triggerToken && oauth.service_name == dto.trigger.service_name) {
+        triggerToken = oauth.token;
+      }
     }
-
-    const areaData: Partial<Area> = {
-      trigger_uuid: dto.action_uuid,
-      response_uuid: dto.reaction_uuid,
+    if (!responseToken) {
+      throw new NotFoundException(
+        `No auth token for ${dto.response.service_name}`,
+      );
+    }
+    if (!triggerToken) {
+      throw new NotFoundException(
+        `No auth token for ${dto.trigger.service_name}`,
+      );
+    }
+    const response_uuid = await this.responseModel.create({
+      service_name: dto.response.service_name,
+      name: dto.response.name,
+      description: dto.response.description ?? '',
+      oauth_token: responseToken,
+      resource_id: dto.response.resource_id,
+      payload: dto.response.payload,
+    });
+    const trigger_uuid = await this.triggerModel.create({
+      service_name: dto.trigger.service_name,
+      name: dto.trigger.name,
+      description: dto.response.description ?? '',
+      resource_id: dto.response.resource_id,
+      oauth_token: triggerToken,
+      trigger_type: dto.trigger.trigger_type ?? 'webhook',
+      every_minutes: dto.trigger.every_minute ?? 5,
+    });
+    return this.areaModel.create({
+      trigger_uuid: trigger_uuid,
+      response_uuid: response_uuid,
       user_uuid: dto.user_uuid,
       name: dto.name,
-      description: dto.description,
-      creation_date: new Date().toISOString(),
-      enabled: dto.enable ?? true,
-      disabled_until: dto.disabled_until ?? null,
+      description: dto.description ?? '',
+      creation_date: Date.now(),
+      enabled: dto.enabled,
+      disabled_until: dto.disabled_until ?? '',
       history: [],
-    };
-
-    const newArea = new this.areaModel(areaData);
-    return newArea.save();
+    });
   }
 
   async remove(uuid: string): Promise<boolean> {

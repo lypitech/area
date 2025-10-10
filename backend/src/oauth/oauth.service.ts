@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { Oauth, OauthType } from './schema/Oauth.schema';
 import { Model } from 'mongoose';
@@ -27,6 +32,18 @@ export class OauthService {
     }
     this.userService.removeOauthTokenByUUID(uuid);
     return removed;
+  }
+
+  async findByService(service: string): Promise<Oauth[]> {
+    return this.oauthModel.find({ service_name: service });
+  }
+
+  async findByUUID(uuid: string): Promise<Oauth> {
+    const oauth: Oauth | null = await this.oauthModel.findOne({ uuid: uuid });
+    if (!oauth) {
+      throw new NotFoundException(`No user with uuid ${uuid} found.`);
+    }
+    return oauth;
   }
 
   private async addToken(user_uuid: string, token_data: OauthType) {

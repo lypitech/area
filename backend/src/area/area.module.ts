@@ -8,17 +8,25 @@ import {
   ReactionInstance,
   ResponseSchema,
 } from 'src/response/schemas/response.schema';
+import { UserService } from '../user/user.service';
+import { OauthService } from '../oauth/oauth.service';
+import { User, UserSchema } from '../user/schemas/user.schema';
+import { HttpModule } from '@nestjs/axios';
+import { Oauth, OauthSchema } from '../oauth/schema/Oauth.schema';
 
 @Module({
   imports: [
+    HttpModule,
     MongooseModule.forFeature([
       { name: Area.name, schema: AreaSchema },
       { name: Trigger.name, schema: TriggerSchema },
       { name: ReactionInstance.name, schema: ResponseSchema },
+      { name: User.name, schema: UserSchema },
+      { name: Oauth.name, schema: OauthSchema },
     ]),
   ],
   controllers: [AreaController],
-  providers: [AreaService],
+  providers: [AreaService, UserService, OauthService],
   exports: [AreaService],
 })
 export class AreaModule {}
