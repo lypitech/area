@@ -8,6 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { AreaService } from './area.service';
+import type { AreaCreationDTO } from './schemas/area.schema';
 
 @Controller('area')
 export class AreaController {
@@ -36,15 +37,7 @@ export class AreaController {
   @Post()
   create(
     @Body()
-    body: {
-      action_uuid: string;
-      reaction_uuid: string;
-      user_uuid: string;
-      name: string;
-      description?: string;
-      enable?: boolean;
-      disabled_until?: Date | null;
-    },
+    body: AreaCreationDTO,
   ) {
     return this.areaService.create(body);
   }
