@@ -6,10 +6,7 @@ export class OauthController {
   constructor(private readonly authService: OauthService) {}
 
   @Post('github')
-  async githubAuth(
-    @Body('code') code: string,
-    @Body('uuid') uuid: string
-  ) {
+  async githubAuth(@Body('code') code: string, @Body('uuid') uuid: string) {
     return this.authService.getGithubToken(code, uuid);
   }
 }
