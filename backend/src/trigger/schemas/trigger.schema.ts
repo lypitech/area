@@ -22,7 +22,7 @@ export class Trigger {
   description?: string;
 
   @Prop({ default: null, type: String })
-  service_resource_id?: string | null;
+  resource_id?: string | null;
 
   @Prop({ default: null, type: String })
   oauth_token?: string | null;

@@ -21,7 +21,7 @@ export class DiscordReactionService {
   }
 
   async sendMessage(reaction: ReactionInstance, action_payload: string) {
-    if (reaction.service_resource_id == null) {
+    if (reaction.resource_id == null) {
       throw new HttpException(
         'Service Resource not found.',
         HttpStatus.NOT_FOUND,
@@ -34,7 +34,7 @@ export class DiscordReactionService {
         ? { content: action_payload }
         : { content: String(action_payload) };
 
-    const url = reaction.service_resource_id;
+    const url = reaction.resource_id;
     console.log(`Sending ${JSON.stringify(message)} to ${url}`);
 
     try {

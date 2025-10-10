@@ -19,7 +19,7 @@ export class ReactionInstance {
   oauth_token?: string;
 
   @Prop({ default: null })
-  service_resource_id?: string;
+  resource_id?: string;
 
   @Prop({ required: true })
   payload!: string;
