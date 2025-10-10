@@ -70,12 +70,12 @@ export class AreaService {
         triggerToken = oauth.token;
       }
     }
-    if (!responseToken) {
+    if (!responseToken && !dto.response.oauth_token) {
       throw new NotFoundException(
         `No auth token for ${dto.response.service_name}`,
       );
     }
-    if (!triggerToken) {
+    if (!triggerToken && !dto.trigger.oauth_token) {
       throw new NotFoundException(
         `No auth token for ${dto.trigger.service_name}`,
       );
@@ -83,29 +83,28 @@ export class AreaService {
     const response_uuid = await this.responseModel.create({
       service_name: dto.response.service_name,
       name: dto.response.name,
-      description: dto.response.description ?? '',
-      oauth_token: responseToken,
+      description: dto.response.description ?? null,
+      oauth_token: responseToken ?? dto.response.oauth_token,
       resource_id: dto.response.resource_id,
       payload: dto.response.payload,
     });
     const trigger_uuid = await this.triggerModel.create({
       service_name: dto.trigger.service_name,
       name: dto.trigger.name,
-      description: dto.response.description ?? '',
+      description: dto.response.description ?? null,
       resource_id: dto.response.resource_id,
-      oauth_token: triggerToken,
+      oauth_token: triggerToken ?? dto.trigger.oauth_token,
       trigger_type: dto.trigger.trigger_type ?? 'webhook',
       every_minutes: dto.trigger.every_minute ?? 5,
     });
     return this.areaModel.create({
-      trigger_uuid: trigger_uuid,
-      response_uuid: response_uuid,
+      trigger_uuid: trigger_uuid.uuid,
+      response_uuid: response_uuid.uuid,
       user_uuid: dto.user_uuid,
       name: dto.name,
-      description: dto.description ?? '',
-      creation_date: Date.now(),
+      description: dto.description ?? null,
       enabled: dto.enabled,
-      disabled_until: dto.disabled_until ?? '',
+      disabled_until: dto.disabled_until ?? null,
       history: [],
     });
   }
