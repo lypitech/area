@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { v4 as uuid_v4 } from 'uuid';
-import { Oauth } from 'src/oauth/schema/Oauth.schema';
 
 @Schema()
 export class User extends Document {
@@ -26,8 +25,8 @@ export class User extends Document {
   @Prop({ required: false, default: null })
   refreshToken?: string;
 
-  @Prop({ type: [Oauth], default: [] })
-  oauth_uuids?: Oauth[];
+  @Prop({ required: true, default: [] })
+  oauth_uuids!: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
