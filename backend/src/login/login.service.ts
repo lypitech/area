@@ -19,13 +19,10 @@ export class LoginService {
     nickname: string,
     username: string,
   ) {
-    return this.userService.createNew(email, password, username, nickname);
+    return this.userService.create(email, password, username, nickname);
   }
 
-  async login(
-    email: string,
-    password: string
-  ) {
+  async login(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');

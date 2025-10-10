@@ -30,7 +30,7 @@ export class OauthService {
         HttpStatus.NOT_FOUND,
       );
     }
-    this.userService.removeOauthTokenByUUID(uuid);
+    await this.userService.removeOauthTokenByUUID(uuid);
     return removed;
   }
 
@@ -54,7 +54,7 @@ export class OauthService {
       token_type: token_data.token_type,
       expires_at: token_data.expires_at,
     });
-    this.userService.createOauthToken(user_uuid, token.uuid);
+    await this.userService.addOauthToken(user_uuid, token.uuid);
     return token;
   }
 
