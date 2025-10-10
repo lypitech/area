@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AreaService } from '../area/area.service';
 
@@ -41,8 +41,7 @@ export class UserController {
   }
 
   @Get(':uuid/areas/:area_uuid/response')
-  getResponseFromArea
-  (
+  getResponseFromArea(
     @Param('uuid') uuid: string,
     @Param('area_uuid') area_uuid: string,
   ) {
@@ -51,6 +50,11 @@ export class UserController {
 
   @Get('getuser/:refreshtoken')
   getUser(@Param('refreshtoken') refreshtoken: string) {
-    return this.userService.getUser(refreshtoken);
+    return this.userService.findUserByRefreshToken(refreshtoken);
+  }
+
+  @Delete(':uuid')
+  remove(@Param('uuid') uuid: string) {
+    return this.userService.remove(uuid);
   }
 }
