@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Action, ActionType } from '../schemas/action.schema';
+import { Injectable } from '@nestjs/common';
+import { Action } from '../schemas/action.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { DeleteResult, Model } from 'mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class ActionService {
@@ -16,13 +16,5 @@ export class ActionService {
 
   getByUUID(uuid: string): Promise<Action | null> {
     return this.actionModel.findOne({ uuid: uuid }).lean().exec();
-  }
-
-  async remove(uuid: string): Promise<boolean> {
-    const deleted: DeleteResult = await this.actionModel.deleteOne({ uuid });
-    if (!deleted) {
-      throw new NotFoundException(`No action with uuid ${uuid}.`);
-    }
-    return deleted.deletedCount === 1;
   }
 }
