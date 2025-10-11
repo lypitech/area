@@ -1,6 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ActionService } from './action.service';
-import type { ActionType } from '../schemas/action.schema';
 
 @Controller('actions')
 export class ActionController {
@@ -14,11 +13,6 @@ export class ActionController {
   @Get(':uuid')
   getByUUID(@Param('uuid') uuid: string) {
     return this.actionService.getByUUID(uuid);
-  }
-
-  @Post()
-  create(@Body() body: ActionType) {
-    return this.actionService.create(body);
   }
 
   @Delete(':uuid')

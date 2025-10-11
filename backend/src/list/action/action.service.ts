@@ -18,11 +18,6 @@ export class ActionService {
     return this.actionModel.findOne({ uuid: uuid }).lean().exec();
   }
 
-  create(data: ActionType): Promise<Action> {
-    const reaction = new this.actionModel(data);
-    return reaction.save();
-  }
-
   async remove(uuid: string): Promise<boolean> {
     const deleted: DeleteResult = await this.actionModel.deleteOne({ uuid });
     if (!deleted) {
