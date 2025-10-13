@@ -87,6 +87,36 @@ export default function Create() {
     });
   };
 
+  const handleSelectReaction = (tmpReaction: ReactionSelection) => {
+    setSelectedReaction({
+      uuid: tmpReaction.uuid,
+      service_name: tmpReaction.service_name.toLowerCase(),
+      name: tmpReaction.name.toLowerCase(),
+      description: tmpReaction.description,
+      service_resource_id: "",
+      payload: "",
+    });
+
+    if (!selectedReaction?.service_resource_id) {
+      setModalOpen(true);
+    }
+  };
+
+  const handleActionClick = (action: ActionSelection) => {
+    setSelectedAction({
+      uuid: action.uuid,
+      service_name: action.service_name,
+      name: action.name,
+      description: action.description,
+      area_uuid: "",
+      service_resource_id: "",
+      token: "",
+      oauth_token_id: "",
+      trigger_type: "interval",
+      every_minutes: 1,
+    });
+  };
+
   const saveReactionInput = () => {
     if (selectedReaction) {
       setSelectedReaction({
@@ -102,6 +132,7 @@ export default function Create() {
     if (!selectedAction || !selectedReaction || !user) return;
 
     try {
+      console.log("Creating area...");
       const actionPayload = {
         action: {
           service_name: selectedAction.service_name,

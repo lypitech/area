@@ -96,6 +96,7 @@ export async function logout(): Promise<void> {
   } catch (err) {
     console.error("Unexpected logout error:", err);
   } finally {
+    window.location.href = "/";
     clearLocalStorage();
   }
 }
