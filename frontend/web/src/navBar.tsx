@@ -40,7 +40,6 @@ export default function NavBar() {
 
   const handleLogout = () => {
     logout();
-    nav("/");
   };
 
   const isActive = (path: string) => {

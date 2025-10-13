@@ -51,11 +51,100 @@ export default function Create() {
     );
   };
 
-  const saveArea = () => {
-    if (!selectedAction || !selectedReaction) return;
-    console.log("Saving AREA:", { selectedAction, selectedReaction });
+  const handleSelectReaction = (tmpReaction: ReactionSelection) => {
+    setSelectedReaction({
+      uuid: tmpReaction.uuid,
+      service_name: tmpReaction.service_name.toLowerCase(),
+      name: tmpReaction.name.toLowerCase(),
+      description: tmpReaction.description,
+      service_resource_id: "",
+      payload: "",
+    });
 
-    // TODO: POST areas
+    if (!selectedReaction?.service_resource_id) {
+      setModalOpen(true);
+    }
+  };
+
+  const handleActionClick = (action: ActionSelection) => {
+    setSelectedAction({
+      uuid: action.uuid,
+      service_name: action.service_name,
+      name: action.name,
+      description: action.description,
+      area_uuid: "",
+      service_resource_id: "",
+      token: "",
+      oauth_token_id: "",
+      trigger_type: "interval",
+      every_minutes: 1,
+    });
+  };
+
+  const saveReactionInput = () => {
+    if (selectedReaction) {
+      setSelectedReaction({
+        ...selectedReaction,
+        service_resource_id: reactionInput,
+      });
+    }
+    setReactionInput("");
+    setModalOpen(false);
+  };
+
+  const saveArea = async () => {
+    if (!selectedAction || !selectedReaction || !user) return;
+
+    try {
+      console.log("Creating area...");
+      const actionPayload = {
+        action: {
+          service_name: selectedAction.service_name,
+          every_minutes: selectedAction.every_minutes,
+          name: selectedAction.name,
+          description: selectedAction.description,
+          oauth_token_id: selectedAction.oauth_token_id || null,
+          trigger_type: selectedAction.trigger_type,
+        },
+        parameters: {
+          owner: "my-org",
+          repo: "my-repo",
+          userId: user.uuid,
+        },
+      };
+
+      const createdAction = await createAction(actionPayload);
+      console.log("Action payload:", actionPayload);
+      console.log("Action créée :", createdAction);
+
+      const reactionPayload = {
+        service_name: selectedReaction.service_name,
+        name: selectedReaction.name,
+        service_resource_id: selectedReaction.service_resource_id || null,
+        description: selectedReaction.description,
+        payload: selectedReaction.payload || "{}",
+      };
+
+      const createdReaction = await createReaction(reactionPayload);
+      console.log("Reaction créée :", createdReaction);
+
+      const areaPayload = {
+        action_uuid: createdAction.uuid,
+        reaction_uuid: createdReaction.uuid,
+        user_uuid: user.uuid,
+        name: `${selectedAction.name} -> ${selectedReaction.name}`,
+        description: `Automation: ${selectedAction.name} triggers ${selectedReaction.name}`,
+        enable: true,
+        disabled_until: null,
+      };
+
+      const createdArea = await createArea(areaPayload);
+      console.log("Area créée :", createdArea);
+      alert("AREA créée avec succès !");
+    } catch (err: any) {
+      console.error("Erreur création Area :", err);
+      alert(`Échec de création : ${err.message}`);
+    }
   };
 
   const blocks = [
