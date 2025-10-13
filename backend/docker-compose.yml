@@ -1,0 +1,28 @@
+services:
+  nest-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/nestdb
+    command: npm run start:dev
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6
+    command: ["--quiet", "--logpath", "/data/db/mongo.log", "--logappend"]
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
