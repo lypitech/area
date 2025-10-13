@@ -15,5 +15,21 @@ export const API_ROUTES = {
 
   user: {
     getUser: `${API_BASE_URL}/users/getuser`,
-  }
+  },
+
+  area: {
+    create: `${API_BASE_URL}/area`,
+    get: `${API_BASE_URL}/area`,
+  },
+
+  actions: {
+    create: `${API_BASE_URL}/actions`,
+    get: `${API_BASE_URL}/actions`,
+  },
+
+  reactions: {
+    create: `${API_BASE_URL}/reactions`,
+    get: `${API_BASE_URL}/reactions`,
+    getByUuid: `${API_BASE_URL}/reactions/:uuid`,
+  },
 };
