@@ -1,10 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
-import { User } from 'src/user/schemas/user.schema';
 
 @Injectable()
 export class LoginService {
@@ -19,25 +16,19 @@ export class LoginService {
     nickname: string,
     username: string,
   ) {
-    return this.userService.createNew(email, password, username, nickname);
+    return this.userService.create(email, password, username, nickname);
   }
 
-  async login(
-    email: string,
-    password: string
-  ) {
+  async login(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    if (!(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
-
     const payload = { sub: user.uuid, email: user.email };
-
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
       expiresIn: process.env.JWT_ACCESS_EXPIRES || '15m',
@@ -50,30 +41,29 @@ export class LoginService {
 
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
     await this.userService.update(user.uuid, {
-      refreshToken: hashedRefreshToken
+      refreshToken: hashedRefreshToken,
     });
 
     return {
+      uuid: user.uuid,
       access_token: accessToken,
       refresh_token: refreshToken,
     };
   }
 
-  async refreshToken(
-    refreshToken: string
-  ) {
+  async refreshToken(refreshToken: string) {
     try {
-      const payload = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
-      });
+      const payload: Record<string, any> = await this.jwtService.verify(
+        refreshToken,
+        { secret: process.env.JWT_REFRESH_SECRET },
+      );
 
       const user = await this.userService.findByUUID(payload.sub);
       if (!user || !user.refreshToken) {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
-      const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
-      if (!isValid) {
+      if (!(await bcrypt.compare(refreshToken, user.refreshToken))) {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
@@ -90,10 +80,8 @@ export class LoginService {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
-  async logout(
-    userId: string
-  ) {
-  await this.userService.update(userId, { refreshToken: undefined });
-  return { message: 'Logged out successfully' };
-}
+  async logout(uuid: string) {
+    await this.userService.update(uuid, { refreshToken: undefined });
+    return { message: 'Logged out successfully' };
+  }
 }

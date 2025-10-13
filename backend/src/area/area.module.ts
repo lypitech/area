@@ -3,19 +3,30 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Area, AreaSchema } from './schemas/area.schema';
 import { AreaService } from './area.service';
 import { AreaController } from './area.controller';
-import { Action, ActionSchema } from 'src/action/schemas/action.schema';
-import { Reaction, ReactionSchema } from 'src/reaction/schemas/reaction.schema';
+import { Trigger, TriggerSchema } from 'src/trigger/schemas/trigger.schema';
+import {
+  ReactionInstance,
+  ResponseSchema,
+} from 'src/response/schemas/response.schema';
+import { UserService } from '../user/user.service';
+import { OauthService } from '../oauth/oauth.service';
+import { User, UserSchema } from '../user/schemas/user.schema';
+import { HttpModule } from '@nestjs/axios';
+import { Oauth, OauthSchema } from '../oauth/schema/Oauth.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Area.name, schema: AreaSchema }]),
-    MongooseModule.forFeature([{ name: Action.name, schema: ActionSchema }]),
+    HttpModule,
     MongooseModule.forFeature([
-      { name: Reaction.name, schema: ReactionSchema },
+      { name: Area.name, schema: AreaSchema },
+      { name: Trigger.name, schema: TriggerSchema },
+      { name: ReactionInstance.name, schema: ResponseSchema },
+      { name: User.name, schema: UserSchema },
+      { name: Oauth.name, schema: OauthSchema },
     ]),
   ],
   controllers: [AreaController],
-  providers: [AreaService],
+  providers: [AreaService, UserService, OauthService],
   exports: [AreaService],
 })
 export class AreaModule {}

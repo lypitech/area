@@ -7,10 +7,10 @@ export class Area {
   uuid!: string;
 
   @Prop({ required: true, index: true })
-  action_uuid!: string;
+  trigger_uuid!: string;
 
   @Prop({ required: true, index: true })
-  reaction_uuid!: string;
+  response_uuid!: string;
 
   @Prop({ required: true, index: true })
   user_uuid!: string;
@@ -21,11 +21,8 @@ export class Area {
   @Prop()
   description?: string;
 
-  @Prop({ required: true })
-  creation_date!: string;
-
   @Prop({ required: true, default: true })
-  enable!: boolean;
+  enabled!: boolean;
 
   @Prop({ type: Date, default: null })
   disabled_until?: Date | null;
@@ -33,5 +30,30 @@ export class Area {
   @Prop({ type: [{ timestamp: String, status: String }], default: [] })
   history!: { timestamp: string; status: string }[];
 }
+
+export type AreaCreationDTO = {
+  trigger: {
+    service_name: string;
+    name: string;
+    description: string | null;
+    resource_id: string;
+    oauth_token: string | null;
+    trigger_type: string | null;
+    every_minute: string | null;
+  };
+  response: {
+    service_name: string;
+    name: string;
+    description: string | null;
+    resource_id: string;
+    oauth_token: string | null;
+    payload: string;
+  };
+  user_uuid: string;
+  name: string;
+  description: string | null;
+  enabled: boolean;
+  disabled_until: Date | null;
+};
 
 export const AreaSchema = SchemaFactory.createForClass(Area);

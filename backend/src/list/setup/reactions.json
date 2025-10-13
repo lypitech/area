@@ -1,0 +1,10 @@
+[
+  {
+  "service_name": "Discord",
+  "name": "Send message",
+  "description": "Send a message to the specified webhook",
+  "schema_input": {
+    "message": "string"
+  }
+  }
+]

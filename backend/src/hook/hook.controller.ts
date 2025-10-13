@@ -9,11 +9,11 @@ import {
 } from '@nestjs/common';
 import { HookService } from './hook.service';
 
-@Controller('hooks/github')
+@Controller('hooks')
 export class HookController {
   constructor(private readonly hookService: HookService) {}
 
-  @Post(':actionId')
+  @Post('github/:actionId')
   async handleGithubWebhook(
     @Param('actionId') actionId: string,
     @Query('token') token: string | undefined,

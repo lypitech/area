@@ -1,10 +1,9 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { LoginService } from './login.service';
-import { ApiBody, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
-import { User } from '../user/schemas/user.schema';
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('login')
-@Controller('login')
+@Controller('user')
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
@@ -49,7 +48,7 @@ export class LoginController {
     return this.loginService.register(email, password, nickname, username);
   }
 
-  @Post()
+  @Post('login')
   @ApiBody({
     description: 'User registration payload',
     schema: {
@@ -80,16 +79,12 @@ export class LoginController {
   }
 
   @Post('refresh')
-  async refresh(
-    @Body('refresh_token') refreshToken: string
-  ) {
+  async refresh({ refreshToken }: { refreshToken: string }) {
     return this.loginService.refreshToken(refreshToken);
   }
 
   @Post('logout')
-  async logout(
-    @Body('userId') userId: string
-  ) {
-    return this.loginService.logout(userId);
+  async logout(@Body('uuid') uuid: string) {
+    return this.loginService.logout(uuid);
   }
 }
