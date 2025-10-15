@@ -14,6 +14,8 @@ import { TriggerModule } from './trigger/trigger.module';
 import { Reaction, ReactionSchema } from './list/schemas/reaction.schema';
 import { Action, ActionSchema } from './list/schemas/action.schema';
 import { HookModule } from './hook/hook.module';
+import { ActionModule } from './list/action/action.module';
+import { ReactionModule } from './list/reaction/reaction.module';
 import { ServiceModule } from './list/service.module';
 import { Service, ServiceSchema } from './list/schemas/service.schema';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -37,6 +39,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     TriggerModule,
     HookModule,
     ServiceModule,
+    ActionModule,
+    ReactionModule,
   ],
   controllers: [AppController],
   providers: [AppService, SeederService],
