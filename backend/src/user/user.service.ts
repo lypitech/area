@@ -7,10 +7,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import { DeleteResult, Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { Oauth } from 'src/oauth/schema/Oauth.schema';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Oauth.name) private OauthModel: Model<Oauth>,
+  ) {}
 
   async findAll(): Promise<User[]> {
     return this.userModel.find();
@@ -103,5 +107,24 @@ export class UserService {
       throw new NotFoundException(`No oauth with uuid ${uuid}.`);
     }
     return deleted.deletedCount === 1;
+  }
+
+  async getUserTokenByService(
+    user_uuid: string,
+    service: string,
+  ): Promise<Oauth> {
+    const user = await this.findByUUID(user_uuid);
+    if (!user) {
+      throw new NotFoundException(`No user with uuid ${user_uuid} found.`);
+    }
+
+    for (const oauth_uuid of user.oauth_uuids) {
+      const oauth = await this.OauthModel.findOne({ uuid: oauth_uuid });
+      if (oauth && oauth.service_name === service) {
+        return oauth;
+      }
+    }
+
+    throw new NotFoundException(`No OAuth token found for service ${service}.`);
   }
 }

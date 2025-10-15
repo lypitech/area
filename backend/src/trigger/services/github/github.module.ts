@@ -3,7 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { User, UserSchema } from '../../../user/schemas/user.schema';
 import { Trigger, TriggerSchema } from '../../schemas/trigger.schema';
-import { TRIGGER_DRIVERS } from '../../tokens';
 import { GithubWebhookTriggerDriver } from './github.driver';
 import { GithubService } from './github.service';
 
