@@ -6,6 +6,7 @@ import 'package:area/model/area_model.dart';
 import 'package:area/widget/a_text_field.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/areaction_card.dart';
+import 'package:area/widget/when_then_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -112,30 +113,7 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
             context.pushNamed('choose_platform', pathParameters: { 'mode': 'action' });
           }
         ),
-        Column(
-          spacing: 5,
-          children: [
-            Text(
-              l10n.new_area_when,
-              style: textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w500
-              ),
-            ),
-            RotatedBox(
-              quarterTurns: 1,
-              child: Icon(
-                Icons.link,
-                size: 32,
-              ),
-            ),
-            Text(
-              l10n.new_area_then,
-              style: textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w500
-              ),
-            )
-          ],
-        ),
+        WhenThenDo(),
         AreactionCard(
           title: areaModal.action != null
             ? areaModal.action!.name
