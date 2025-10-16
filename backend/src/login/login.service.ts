@@ -76,6 +76,7 @@ export class LoginService {
 
     return { access_token: newAccessToken };
   }
+
   async logout(uuid: string) {
     await this.userService.update(uuid, { refreshToken: undefined });
     return { message: 'Logged out successfully' };
