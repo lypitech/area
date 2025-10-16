@@ -9,6 +9,7 @@ import { LoginService } from './login.service';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './types/loginDto';
 import { CreateUserDto } from './types/createUserDto';
+import { RefreshTokenDto } from './types/tokenDto';
 
 @ApiTags('login')
 @Controller('user')
@@ -86,8 +87,9 @@ export class LoginController {
   }
 
   @Post('refresh')
-  async refresh({ refreshToken }: { refreshToken: string }) {
-    return this.loginService.refreshToken(refreshToken);
+  @UsePipes(new ValidationPipe())
+  async refresh(@Body() data: RefreshTokenDto) {
+    return this.loginService.refreshToken(data.refresh_token);
   }
 
   @Post('logout')
