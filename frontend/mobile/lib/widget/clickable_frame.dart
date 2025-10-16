@@ -28,6 +28,11 @@ class _ClickableFrameState extends State<ClickableFrame> {
 
   @override
   Widget build(BuildContext context) {
+    final body = Padding(
+      padding: widget.padding,
+      child: widget.child,
+    );
+
     return AnimatedScale(
       scale: _scale,
       duration: const Duration(milliseconds: 100),
@@ -37,23 +42,22 @@ class _ClickableFrameState extends State<ClickableFrame> {
         shadowColor: Colors.black,
         elevation: 8,
         borderRadius: BorderRadius.circular(widget.borderRadius),
-        child: InkWell(
-          onTapDown: (_) {
-            setState(() => _scale = 0.95);
-          },
-          onTapUp: (_) {
-            setState(() => _scale = 1);
-          },
-          onTapCancel: () {
-            setState(() => _scale = 1);
-          },
-          onTap: widget.onTap,
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          child: Padding(
-            padding: widget.padding,
-            child: widget.child,
-          ),
-        ),
+        child: widget.onTap != null
+          ? InkWell(
+            onTapDown: (_) {
+              setState(() => _scale = 0.95);
+            },
+            onTapUp: (_) {
+              setState(() => _scale = 1);
+            },
+            onTapCancel: () {
+              setState(() => _scale = 1);
+            },
+            onTap: widget.onTap,
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            child: body,
+          )
+          : body
       ),
     );
   }

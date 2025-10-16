@@ -33,21 +33,18 @@ class AreaDetailsPage extends StatelessWidget {
         AreactionCard(
           title: area.trigger.name,
           subtitle: area.actionPlatform.name,
-          onTap: () {
-
-          }
         ),
         WhenThenDo(),
         AreactionCard(
           title: area.action.name,
           subtitle: area.reactionPlatform.name,
-          onTap: () {
-
-          }
         ),
         ClickableFrame(
           padding: const EdgeInsets.symmetric(vertical: 10),
           color: Colors.red,
+          onTap: () {
+            // ...
+          },
           child: Center(
             child: Text(
               'Disable',
@@ -105,6 +102,9 @@ class AreaDetailsPage extends StatelessWidget {
             ClickableFrame(
               color: theme.colorScheme.primary,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              onTap: () {
+                // ...
+              },
               child: Text(
                 'Publish',
                 style: textTheme.bodyMedium?.copyWith(
@@ -115,6 +115,9 @@ class AreaDetailsPage extends StatelessWidget {
             ),
             ClickableFrame(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              onTap: () {
+                // ...
+              },
               child: Text(
                 'Archive',
                 style: textTheme.bodyMedium?.copyWith(
@@ -125,6 +128,9 @@ class AreaDetailsPage extends StatelessWidget {
             ClickableFrame(
               color: Colors.red,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              onTap: () {
+                // ...
+              },
               child: Text(
                 'Delete',
                 style: textTheme.bodyMedium?.copyWith(

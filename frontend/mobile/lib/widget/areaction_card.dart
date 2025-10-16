@@ -6,12 +6,12 @@ class AreactionCard extends StatelessWidget {
   final String title;
   final String subtitle;
   // todo: icon
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const AreactionCard({
     required this.title,
     required this.subtitle,
-    required this.onTap,
+    this.onTap,
     super.key
   });
 
