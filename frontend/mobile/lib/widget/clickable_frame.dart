@@ -5,12 +5,14 @@ class ClickableFrame extends StatefulWidget {
   final VoidCallback? onTap;
   final double borderRadius;
   final EdgeInsets padding;
+  final Color color;
   final Widget child;
 
   const ClickableFrame({
     this.onTap,
     this.borderRadius = 20,
     this.padding = EdgeInsets.zero,
+    this.color = Colors.white,
     required this.child,
     super.key
   });
@@ -31,7 +33,7 @@ class _ClickableFrameState extends State<ClickableFrame> {
       duration: const Duration(milliseconds: 100),
       curve: Curves.easeInOut,
       child: Material(
-        color: Colors.white,
+        color: widget.color,
         shadowColor: Colors.black,
         elevation: 8,
         borderRadius: BorderRadius.circular(widget.borderRadius),
