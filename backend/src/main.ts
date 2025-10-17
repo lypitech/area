@@ -21,7 +21,6 @@ async function bootstrap() {
     .setTitle('Area API')
     .setDescription('The Documentation for the Area API')
     .setVersion('1.0')
-    .addTag('area')
     .build();
   const documentFactory = () =>
     SwaggerModule.createDocument(app, config, { extraModels: [User] });

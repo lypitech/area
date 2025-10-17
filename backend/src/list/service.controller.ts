@@ -15,14 +15,4 @@ export class ServiceController {
   getByUUID(@Param('uuid') uuid: string) {
     return this.serviceService.getByUUID(uuid);
   }
-
-  @Post()
-  create(@Body() body: ServiceType) {
-    return this.serviceService.create(body);
-  }
-
-  @Delete(':uuid')
-  remove(@Param('uuid') uuid: string) {
-    return this.serviceService.remove(uuid);
-  }
 }
