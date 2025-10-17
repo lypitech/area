@@ -6,9 +6,11 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AreaService } from './area.service';
-import type { AreaCreationDTO } from './schemas/area.schema';
+import { AreaCreationDto } from './types/areaCreationDto';
 
 @Controller('areas')
 export class AreaController {
@@ -35,9 +37,10 @@ export class AreaController {
   }
 
   @Post()
+  @UsePipes(new ValidationPipe())
   create(
     @Body()
-    body: AreaCreationDTO,
+    body: AreaCreationDto,
   ) {
     return this.areaService.create(body);
   }

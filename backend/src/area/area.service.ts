@@ -4,9 +4,9 @@ import { Model } from 'mongoose';
 import { Area } from './schemas/area.schema';
 import { Trigger } from 'src/trigger/schemas/trigger.schema';
 import { ReactionInstance } from 'src/response/schemas/response.schema';
-import type { AreaCreationDTO } from './schemas/area.schema';
 import { OauthService } from '../oauth/oauth.service';
 import { UserService } from '../user/user.service';
+import { AreaCreationDto } from './types/areaCreationDto';
 
 @Injectable()
 export class AreaService {
@@ -68,7 +68,7 @@ export class AreaService {
       .exec();
   }
 
-  async create(dto: AreaCreationDTO) {
+  async create(dto: AreaCreationDto) {
     const user = await this.userService.findByUUID(dto.user_uuid);
     let triggerToken: string = '';
     let responseToken: string = '';

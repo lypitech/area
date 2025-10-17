@@ -31,29 +31,4 @@ export class Area {
   history!: { timestamp: string; status: string }[];
 }
 
-export type AreaCreationDTO = {
-  trigger: {
-    service_name: string;
-    name: string;
-    description: string | null;
-    resource_id: string;
-    oauth_token: string | null;
-    trigger_type: string | null;
-    every_minute: string | null;
-  };
-  response: {
-    service_name: string;
-    name: string;
-    description: string | null;
-    resource_id: string;
-    oauth_token: string | null;
-    payload: string;
-  };
-  user_uuid: string;
-  name: string;
-  description: string | null;
-  enabled: boolean;
-  disabled_until: Date | null;
-};
-
 export const AreaSchema = SchemaFactory.createForClass(Area);
