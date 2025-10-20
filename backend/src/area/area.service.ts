@@ -4,8 +4,8 @@ import { Model } from 'mongoose';
 import { Area } from './schemas/area.schema';
 import { Trigger } from 'src/trigger/schemas/trigger.schema';
 import { ReactionInstance } from 'src/response/schemas/response.schema';
-import { OauthService } from '../oauth/oauth.service';
-import { UserService } from '../user/user.service';
+import { OauthService } from 'src/oauth/oauth.service';
+import { UserService } from 'src/user/user.service';
 import { AreaCreationDto } from './types/areaCreationDto';
 
 @Injectable()

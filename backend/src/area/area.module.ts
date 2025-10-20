@@ -8,11 +8,11 @@ import {
   ReactionInstance,
   ResponseSchema,
 } from 'src/response/schemas/response.schema';
-import { UserService } from '../user/user.service';
-import { OauthService } from '../oauth/oauth.service';
-import { User, UserSchema } from '../user/schemas/user.schema';
+import { UserService } from 'src/user/user.service';
+import { OauthService } from 'src/oauth/oauth.service';
+import { User, UserSchema } from 'src/user/schemas/user.schema';
 import { HttpModule } from '@nestjs/axios';
-import { Oauth, OauthSchema } from '../oauth/schema/Oauth.schema';
+import { Oauth, OauthSchema } from 'src/oauth/schema/Oauth.schema';
 
 @Module({
   imports: [
