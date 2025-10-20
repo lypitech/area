@@ -25,10 +25,10 @@ export class HookService {
       const owner =
         payload?.repository?.owner?.login || payload?.repository?.owner?.name;
 
-      const result = await this.triggerService.fire(actionId, token, {
+      const result = await this.triggerService.fire(actionId, {
+        event,
         repository,
         owner,
-        event: event ?? 'push',
         payload,
       });
 

@@ -29,7 +29,7 @@ export class IntervalTriggerService implements OnModuleInit, OnModuleDestroy {
       .exec();
 
     for (const a of actions) {
-      const minutes = a.every_minutes ?? 5;
+      const minutes = (a as { input?: number }).input ?? 5;
       await this.registerInterval(a.uuid, minutes);
     }
 
