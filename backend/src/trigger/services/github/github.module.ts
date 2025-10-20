@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { User, UserSchema } from '../../../user/schemas/user.schema';
-import { Trigger, TriggerSchema } from '../../schemas/trigger.schema';
+import { User, UserSchema } from 'src/user/schemas/user.schema';
+import { Trigger, TriggerSchema } from 'src/trigger/schemas/trigger.schema';
 import { GithubWebhookTriggerDriver } from './github.driver';
 import { GithubService } from './github.service';
 
