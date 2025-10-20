@@ -4,15 +4,14 @@ import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 
 export default function Callback() {
-  const { data: githubToken, loading, error } = useGitHubToken();
+  const { githubToken, loading, error } = useGitHubToken();
   const nav = useNavigate();
   useEffect(() => {
     if (githubToken) {
       localStorage.setItem("github_access_token", githubToken);
-      console.log("GitHub token stored in localStorage:", githubToken);
+      nav("/create");
     }
-    nav("/create");
-  }, [githubToken]);
+  }, [githubToken, nav]);
 
   if (loading && !githubToken)
     return (
