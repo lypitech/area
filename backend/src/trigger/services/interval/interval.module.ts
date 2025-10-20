@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { IntervalService } from './interval.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Trigger, TriggerSchema } from 'src/trigger/schemas/trigger.schema';
-import { AreaModule } from 'src/area/area.module';
-import { ResponseModule } from 'src/response/response.module';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { Trigger, TriggerSchema } from '../../schemas/trigger.schema';
+import { AreaModule } from '../../../area/area.module';
+import { ResponseModule } from '../../../response/response.module';
+import { IntervalTriggerDriver } from './interval.driver';
+import { TRIGGER_DRIVERS } from '../../tokens';
 
 @Module({
   imports: [
@@ -11,6 +13,7 @@ import { ResponseModule } from 'src/response/response.module';
     ResponseModule,
     MongooseModule.forFeature([{ name: Trigger.name, schema: TriggerSchema }]),
   ],
-  providers: [IntervalService],
+  providers: [SchedulerRegistry, IntervalTriggerDriver],
+  exports: [IntervalTriggerDriver],
 })
 export class IntervalModule {}

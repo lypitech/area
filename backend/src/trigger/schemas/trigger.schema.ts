@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 
 export type TriggerDocument = HydratedDocument<Trigger>;
@@ -22,16 +22,16 @@ export class Trigger {
   description?: string;
 
   @Prop({ default: null, type: String })
-  resource_id?: string | null;
-
-  @Prop({ default: null, type: String })
   oauth_token?: string | null;
 
   @Prop({ required: true, enum: TriggerTypes, default: 'webhook' })
   trigger_type!: TriggerType;
 
-  @Prop({ default: 5 })
-  every_minutes?: number;
+  @Prop({ type: Object, default: {} })
+  meta?: Record<string, any>;
+
+  @Prop({ type: MongooseSchema.Types.Mixed, default: {} })
+  input?: Record<string, any> | null;
 }
 
 export const TriggerSchema = SchemaFactory.createForClass(Trigger);
