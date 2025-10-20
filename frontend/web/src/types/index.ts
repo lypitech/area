@@ -9,62 +9,71 @@ interface User {
   Area: string[];
 }
 
-// To show available actions
-interface ActionSelection {
-  uuid: string;
-  service_name: string;
-  name: string;
-  description: string;
-  trigger_types: string;
-}
+type TriggerType = 'webhook' | 'polling' | 'interval';
+// The names of the interfaces will be the name of the class
 
-// To show available reactions
-interface ReactionSelection {
+interface Service {
   uuid: string;
-  service_name: string;
   name: string;
-  description: string;
-  schema_input: string; // JSON string
+  triggers: Trigger[];
+  actions: Action[];
+  reactions: Reaction[];
 }
 
 interface Action {
+  uuid?: string;
+  service_name: string;
+  name: string;
+  description: string;
+  trigger_types: TriggerType[];
+  parameters: Array<{
+    name: string;
+    type: string;
+    description?: string;
+    required?: boolean;
+    [key: string]: any;
+  }>;
+}
+
+interface Trigger {
   uuid: string;
   service_name: string;
   name: string;
-  every_minutes: number;
   description: string;
-  area_uuid: string;
-  service_resource_id: string | null;
-  token: string;
-  oauth_token_id: string | null;
-  trigger_type: "webhook" | "polling" | "interval";
+  resource_id: string;
+  oauth_token: string; // Recovered automatically if not given
 }
 
 interface Reaction {
+	uuid: string;
+	service_name: string;
+	name: string;
+	description: string;
+	schema_input: Record<string, any>; // => json
+}
+
+interface Response { // The real name of the class is ReactionInstance to avoid http Response collision
   uuid: string;
   service_name: string;
   name: string;
-  service_resource_id: string | null;
   description: string;
+  oauth_token: string;
+  resource_id: string;
   payload: string;
-}
-
-interface AreaHistory {
-  timestamp: string;
-  status: string;
 }
 
 interface Area {
   uuid: string;
-  action_uuid: string;
-  reaction_uuid: string;
+  trigger_uuid: string;
+  response_uuid: string;
   user_uuid: string;
   name: string;
-  description: string;
-  creation_date: string;
-  enable: boolean;
-  disabled_until: string;
-  history: AreaHistory[];
+  description?: string;
+  enabled: boolean;                    // défaut: true
+  disabled_until?: string | null;     // ISO ou null
+  history: Array<{ timestamp: string; status: string }>;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface OAuth {
@@ -78,8 +87,8 @@ export type {
   Action,
   Reaction,
   Area,
-  AreaHistory,
-  ActionSelection,
-  ReactionSelection,
+  Trigger,
+  Response,
   OAuth,
+  Service
 };
