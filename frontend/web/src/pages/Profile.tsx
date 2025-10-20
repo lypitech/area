@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import type { User } from "../types";
-import { logout } from "../services/authServices";
+import { logout } from "../services/authService";
 import { useNavigate } from "react-router-dom";
-import { getUser } from "../services/userServices";
+import { getUser } from "../services/userService";
 
 export default function Profile() {
   const [user, setUser] = React.useState<User | null>(null);

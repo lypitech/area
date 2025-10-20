@@ -9,14 +9,14 @@ const features = [
     destination: "/create",
   },
   {
-    title: "Connect your apps",
-    desc: "Slack, Discord, Gmail and more.",
-    destination: "/apps",
-  },
-  {
     title: "View your Areas",
     desc: "See all the areas you have created.",
     destination: "/area",
+  },
+  {
+    title: "Connect your apps",
+    desc: "Slack, Discord, Gmail and more.",
+    destination: "/apps",
   },
 ];
 

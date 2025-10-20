@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
-import { login } from "../services/authServices";
+import { login } from "../services/authService";
 import { isLoggedIn } from "../utils/auth";
 import logo from "../assets/logo.png";
 
@@ -98,6 +98,7 @@ export default function Login() {
 
           {/* Submit button */}
           <Button
+            type="submit"
             className="w-full bg-black text-white font-semibold hover:opacity-90 transition"
             disabled={loading}
           >
