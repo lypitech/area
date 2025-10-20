@@ -3,14 +3,16 @@ import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import Icon from "./components/icons/icons";
 import { Button } from "./components/Button";
 import { isLoggedIn } from "./utils/auth";
-import { refreshToken } from "./services/authServices";
-import { logout } from "./services/authServices";
+import { refreshToken } from "./services/authService";
+import { logout } from "./services/authService";
+import { useArea } from "./context/AreaContext";
 
 export default function NavBar() {
   const nav = useNavigate();
   const position = useLocation();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const { userUuid, setUserUuid } = useArea();
 
   // Redirect to login if not logged in
   useEffect(() => {
@@ -21,9 +23,12 @@ export default function NavBar() {
 
   // Refresh token
   useEffect(() => {
-    console.log("Refreshing token");
     try {
       refreshToken();
+      const uuid = localStorage.getItem("uuid");
+      if (!userUuid) {
+        setUserUuid(uuid || "");
+      }
     } catch (err: any) {
       console.error("Error refreshing token:", err);
     }
