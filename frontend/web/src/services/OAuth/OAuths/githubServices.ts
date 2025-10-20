@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import type { User } from "../../../types";
-import { getUser } from "../../userServices";
+import { getUser } from "../../userService";
 
 export function githubLogin() {
   const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
@@ -13,46 +12,60 @@ export function githubLogin() {
 export function useGitHubToken() {
   const [params] = useSearchParams();
 
-  const [data, setData] = useState<string | null>(null);
+  const [githubToken, setGithubToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [uuid, setUuid] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
-      const userData = await getUser();
-      if (typeof userData === "string") {
-        setError(userData);
-        setUser(null);
-      } else {
-        setUser(userData);
+      try {
+        const localUuid = localStorage.getItem("uuid");
+        if (localUuid) {
+          setUuid(localUuid);
+          return;
+        }
+
+        const userData = await getUser();
+        if (typeof userData === "string") {
+          setError(userData);
+          setUuid(null);
+        } else {
+          setUuid(userData.uuid);
+          localStorage.setItem("uuid", userData.uuid);
+        }
+      } catch (err: any) {
+        setError(err.message || "Failed to get user UUID");
       }
     };
+
     fetchUser();
   }, []);
 
   useEffect(() => {
     const code = params.get("code");
-
-    if (!code || !user) return;
+    if (!code || !uuid) return;
 
     const fetchToken = async () => {
-      setLoading(true);
       try {
-        console.log("UUID:", user.uuid);
-        const res = await fetch("http://localhost:8080/auth/github", {
+        setLoading(true);
+
+        const res = await fetch("http://localhost:8080/oauth/github", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code, uuid: user.uuid }),
+          body: JSON.stringify({ code, uuid }),
         });
 
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
 
         const data = await res.json();
-        console.log("GitHub API response:", data);
 
-        if (data.accessToken) setData(data.accessToken);
-        else setError("No access token returned");
+        if (data.token) {
+          setGithubToken(data.token);
+          localStorage.setItem("github_access_token", data.token);
+        } else {
+          setError("No access token returned");
+        }
       } catch (err: any) {
         console.error("GitHub token error:", err);
         setError(err.message || "Unexpected error");
@@ -62,7 +75,8 @@ export function useGitHubToken() {
     };
 
     fetchToken();
-  }, [user]);
+  }, [uuid, params]);
 
-  return { data, loading, error };
+  return { githubToken, loading, error };
 }
+

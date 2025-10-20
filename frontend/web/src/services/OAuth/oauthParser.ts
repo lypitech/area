@@ -7,10 +7,8 @@ import { githubLogin } from "./OAuths/githubServices";
 
 function OAuthParser(serviceName: string) {
     switch (serviceName) {
-        case "Github":
+        case "github":
             return githubLogin();
-        case "Discord":
-            return "none";
         default:
             return "unknown";
     }
