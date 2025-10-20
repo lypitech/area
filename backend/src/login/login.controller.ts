@@ -17,7 +17,7 @@ export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
   @Post('register')
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new ValidationPipe({ whitelist: true }))
   @ApiBody({
     description: 'User registration payload',
     schema: {
