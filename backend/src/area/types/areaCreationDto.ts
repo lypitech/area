@@ -8,6 +8,7 @@ class TriggerCreationDto {
   name: string;
   description: string | null;
   resource_id: string;
+  input: any;
   oauth_token: string | null;
   trigger_type: string | null;
   every_minute: string | null;
