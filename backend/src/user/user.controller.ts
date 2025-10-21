@@ -1,4 +1,11 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { AreaService } from '../area/area.service';
 
@@ -10,11 +17,13 @@ export class UserController {
   ) {}
 
   @Get()
+  @UsePipes(new ValidationPipe({ whitelist: true }))
   getAll() {
     return this.userService.findAll();
   }
 
   @Get(':uuid')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
   getByUUID(@Param('uuid') uuid: string) {
     return this.userService.findByUUID(uuid);
   }
@@ -49,6 +58,7 @@ export class UserController {
   }
 
   @Get('getuser/:refreshtoken')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
   getUser(@Param('refreshtoken') refreshtoken: string) {
     return this.userService.findUserByRefreshToken(refreshtoken);
   }

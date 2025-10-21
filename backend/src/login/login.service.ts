@@ -2,6 +2,9 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
+import { UserDto } from 'src/user/types/userDto';
+import { User } from 'src/user/schemas/user.schema';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class LoginService {
@@ -15,8 +18,16 @@ export class LoginService {
     password: string,
     nickname: string,
     username: string,
-  ) {
-    return this.userService.create(email, password, username, nickname);
+  ): Promise<UserDto> {
+    const user: User = await this.userService.create(
+      email,
+      password,
+      username,
+      nickname,
+    );
+    return plainToInstance(UserDto, user.toObject(), {
+      excludeExtraneousValues: true,
+    });
   }
 
   async login(email: string, password: string) {
@@ -52,34 +63,31 @@ export class LoginService {
   }
 
   async refreshToken(refreshToken: string) {
-    try {
-      const payload: Record<string, any> = await this.jwtService.verify(
-        refreshToken,
-        { secret: process.env.JWT_REFRESH_SECRET },
-      );
+    const payload: Record<string, string> = await this.jwtService.verify(
+      refreshToken,
+      { secret: process.env.JWT_REFRESH_SECRET },
+    );
 
-      const user = await this.userService.findByUUID(payload.sub);
-      if (!user || !user.refreshToken) {
-        throw new UnauthorizedException('Invalid refresh token');
-      }
-
-      if (!(await bcrypt.compare(refreshToken, user.refreshToken))) {
-        throw new UnauthorizedException('Invalid refresh token');
-      }
-
-      const newAccessToken = this.jwtService.sign(
-        { sub: user.uuid, email: user.email },
-        {
-          secret: process.env.JWT_ACCESS_SECRET,
-          expiresIn: process.env.JWT_ACCESS_EXPIRES || '15m',
-        },
-      );
-
-      return { access_token: newAccessToken };
-    } catch (e) {
+    const user = await this.userService.findByUUID(payload.sub);
+    if (!user || !user.refreshToken) {
       throw new UnauthorizedException('Invalid refresh token');
     }
+
+    if (!(await bcrypt.compare(refreshToken, user.refreshToken))) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const newAccessToken = this.jwtService.sign(
+      { sub: user.uuid, email: user.email },
+      {
+        secret: process.env.JWT_ACCESS_SECRET,
+        expiresIn: process.env.JWT_ACCESS_EXPIRES || '15m',
+      },
+    );
+
+    return { access_token: newAccessToken };
   }
+
   async logout(uuid: string) {
     await this.userService.update(uuid, { refreshToken: undefined });
     return { message: 'Logged out successfully' };

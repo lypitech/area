@@ -4,6 +4,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as bodyParser from 'body-parser';
 import { User } from './user/schemas/user.schema';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,7 +21,6 @@ async function bootstrap() {
     .setTitle('Area API')
     .setDescription('The Documentation for the Area API')
     .setVersion('1.0')
-    .addTag('area')
     .build();
   const documentFactory = () =>
     SwaggerModule.createDocument(app, config, { extraModels: [User] });
@@ -31,6 +31,7 @@ async function bootstrap() {
   app.use('/hook/github', bodyParser.raw({ type: '*/*' }));
   app.use(bodyParser.json());
 
+  app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
   await app.listen(port);
 }

@@ -1,6 +1,15 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { LoginService } from './login.service';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { LoginDto } from './types/loginDto';
+import { CreateUserDto } from './types/createUserDto';
+import { RefreshTokenDto } from './types/tokenDto';
 
 @ApiTags('login')
 @Controller('user')
@@ -8,6 +17,7 @@ export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
   @Post('register')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
   @ApiBody({
     description: 'User registration payload',
     schema: {
@@ -39,16 +49,17 @@ export class LoginController {
       },
     },
   })
-  register(
-    @Body('email') email: string,
-    @Body('password') password: string,
-    @Body('nickname') nickname: string,
-    @Body('username') username: string,
-  ) {
-    return this.loginService.register(email, password, nickname, username);
+  register(@Body() userData: CreateUserDto) {
+    return this.loginService.register(
+      userData.email,
+      userData.password,
+      userData.nickname,
+      userData.username,
+    );
   }
 
   @Post('login')
+  @UsePipes(new ValidationPipe())
   @ApiBody({
     description: 'User registration payload',
     schema: {
@@ -71,16 +82,14 @@ export class LoginController {
       },
     },
   })
-  async login(
-    @Body('email') email: string,
-    @Body('password') password: string,
-  ) {
-    return this.loginService.login(email, password);
+  async login(@Body() userData: LoginDto) {
+    return this.loginService.login(userData.email, userData.password);
   }
 
   @Post('refresh')
-  async refresh({ refreshToken }: { refreshToken: string }) {
-    return this.loginService.refreshToken(refreshToken);
+  @UsePipes(new ValidationPipe())
+  async refresh(@Body() data: RefreshTokenDto) {
+    return this.loginService.refreshToken(data.refresh_token);
   }
 
   @Post('logout')

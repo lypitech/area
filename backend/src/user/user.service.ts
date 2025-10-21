@@ -7,6 +7,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import { DeleteResult, Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { plainToInstance } from 'class-transformer';
+import { UserDto } from './types/userDto';
 import { Oauth } from 'src/oauth/schema/Oauth.schema';
 
 @Injectable()
@@ -16,16 +18,25 @@ export class UserService {
     @InjectModel(Oauth.name) private OauthModel: Model<Oauth>,
   ) {}
 
-  async findAll(): Promise<User[]> {
-    return this.userModel.find();
+  async findAll(): Promise<UserDto[]> {
+    const users: User[] = await this.userModel.find();
+    return plainToInstance(
+      UserDto,
+      users.map((u) => {
+        return u.toObject();
+      }),
+      { excludeExtraneousValues: true },
+    );
   }
 
-  async findByUUID(uuid: string): Promise<User> {
+  async findByUUID(uuid: string): Promise<UserDto> {
     const user: User | null = await this.userModel.findOne({ uuid });
     if (!user) {
       throw new NotFoundException(`No user with uuid ${uuid} found.`);
     }
-    return user;
+    return plainToInstance(UserDto, user.toObject(), {
+      excludeExtraneousValues: true,
+    });
   }
 
   async findByEmail(email: string): Promise<User> {
@@ -46,7 +57,9 @@ export class UserService {
         user.refreshToken &&
         (await bcrypt.compare(refreshToken, user.refreshToken))
       ) {
-        return user;
+        return plainToInstance(UserDto, user.toObject(), {
+          excludeExtraneousValues: true,
+        });
       }
     }
     throw new NotFoundException('No user found with this refresh token');
