@@ -10,9 +10,11 @@ import { Oauth, OauthSchema } from 'src/oauth/schema/Oauth.schema';
 @Module({
   imports: [
     ConfigModule,
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    MongooseModule.forFeature([{ name: Trigger.name, schema: TriggerSchema }]),
-    MongooseModule.forFeature([{ name: Oauth.name, schema: OauthSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Trigger.name, schema: TriggerSchema },
+      { name: Oauth.name, schema: OauthSchema },
+    ]),
   ],
   providers: [GithubService, GithubWebhookTriggerDriver],
   exports: [GithubWebhookTriggerDriver, GithubService],
