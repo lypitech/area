@@ -29,6 +29,7 @@ async function bootstrap() {
 
   app.use('/action/github', bodyParser.raw({ type: '*/*' }));
   app.use('/hook/github', bodyParser.raw({ type: '*/*' }));
+  app.use('/discord', bodyParser.raw({ type: '*/*' }));
   app.use(bodyParser.json());
 
   app.useGlobalPipes(new ValidationPipe());
