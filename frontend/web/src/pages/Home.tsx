@@ -9,14 +9,14 @@ const features = [
     destination: "/create",
   },
   {
-    title: "Connect your apps",
-    desc: "Slack, Discord, Gmail and more.",
-    destination: "/apps",
-  },
-  {
     title: "View your Areas",
     desc: "See all the areas you have created.",
     destination: "/area",
+  },
+  {
+    title: "Connect your apps",
+    desc: "Slack, Discord, Gmail and more.",
+    destination: "/apps",
   },
 ];
 
@@ -36,14 +36,6 @@ export default function Home() {
             <p className="mt-4 text-lg md:text-xl opacity-90">
               Build and automate your own workflows.
             </p>
-            <Button
-              onClick={() => {
-                nav("/create");
-              }}
-              className="mt-8 inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-semibold rounded-lg shadow hover:scale-105 transition"
-            >
-              Start
-            </Button>
           </div>
         </div>
       </section>

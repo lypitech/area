@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAreas } from "../services/areaServices";
+import { getAreas } from "../services/areaService";
 import type { Area } from "../types";
 
 export default function Apps() {
@@ -45,7 +45,7 @@ export default function Apps() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
         {areas.map((area) => {
           const isDisabled =
-            !area.enable ||
+            !area.enabled ||
             (area.disabled_until && new Date(area.disabled_until) > new Date());
 
           return (
@@ -86,7 +86,7 @@ export default function Apps() {
                     <span className="font-medium text-gray-700">
                       Created on:
                     </span>{" "}
-                    {new Date(area.creation_date).toLocaleDateString("en-US")}
+                    {new Date(area.createdAt).toLocaleDateString("en-US")}
                   </p>
                 </div>
               </div>

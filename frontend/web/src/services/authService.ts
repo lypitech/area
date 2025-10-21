@@ -1,6 +1,6 @@
 import { API_ROUTES } from "../config/api";
 import { clearLocalStorage } from "../utils/auth";
-import { getUser } from "./userServices";
+import { getUser } from "./userService";
 
 export async function register(
   email: string,
@@ -9,7 +9,7 @@ export async function register(
   username: string,
   profile_picture: string | null = null
 ) {
-  const response = await fetch(API_ROUTES.auth.register, {
+  const response = await fetch(API_ROUTES.auth.register(), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -30,7 +30,7 @@ export async function register(
 }
 
 export async function login(email: string, password: string) {
-  const response = await fetch(API_ROUTES.auth.login, {
+  const response = await fetch(API_ROUTES.auth.login(), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -48,7 +48,7 @@ export async function refreshToken() {
   const refresh_token = localStorage.getItem("refresh_token");
   if (!refresh_token) throw new Error("No refresh token");
 
-  const res = await fetch(API_ROUTES.auth.refresh, {
+  const res = await fetch(API_ROUTES.auth.refresh(), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refresh_token }),
@@ -80,7 +80,7 @@ export async function logout(): Promise<void> {
     }
 
     if (uuid) {
-      const res = await fetch(API_ROUTES.auth.logout, {
+      const res = await fetch(API_ROUTES.auth.logout(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uuid }),

@@ -2,34 +2,43 @@ export const API_BASE_URL = "http://localhost:8080";
 
 export const API_ROUTES = {
   auth: {
-    register: `${API_BASE_URL}/login/register`,
-    login: `${API_BASE_URL}/login`,
-    refresh: `${API_BASE_URL}/login/refresh`,
-    logout: `${API_BASE_URL}/login/logout`,
+    register: () => `${API_BASE_URL}/user/register`,
+    login: () => `${API_BASE_URL}/user/login`,
+    refresh: () => `${API_BASE_URL}/user/refresh`,
+    logout: () => `${API_BASE_URL}/user/logout`,
   },
 
-  list: {
-    actions: `${API_BASE_URL}/list/actions`,
-    reactions: `${API_BASE_URL}/list/reactions`,
-  },
-
-  user: {
-    getUser: `${API_BASE_URL}/users/getuser`,
-  },
-
-  area: {
-    create: `${API_BASE_URL}/area`,
-    get: `${API_BASE_URL}/area`,
+  service: {
+    get: () => `${API_BASE_URL}/services`,
   },
 
   actions: {
-    create: `${API_BASE_URL}/actions`,
-    get: `${API_BASE_URL}/actions`,
+    getAll: () => `${API_BASE_URL}/actions`,
+    getByUUID: (uuid: string) => `${API_BASE_URL}/actions/${uuid}`,
   },
 
   reactions: {
-    create: `${API_BASE_URL}/reactions`,
-    get: `${API_BASE_URL}/reactions`,
-    getByUuid: `${API_BASE_URL}/reactions/:uuid`,
+    getAll: () => `${API_BASE_URL}/reactions`,
+    getByUUID: (uuid: string) => `${API_BASE_URL}/reactions/${uuid}`,
+  },
+
+  user: {
+    getUser: (refreshToken: string) => `${API_BASE_URL}/users/getuser/${refreshToken}`,
+  },
+
+  area: {
+    getAll: () => `${API_BASE_URL}/areas`,
+    getAreaByUUID: (area_uuid: string) => `${API_BASE_URL}/areas/${area_uuid}`,
+    getUserAreas: (uuid: string) => `${API_BASE_URL}/users/${uuid}/areas`,
+    create: () => `${API_BASE_URL}/areas`,
+    deleteAreaByUUID: (area_uuid: string) => `${API_BASE_URL}/areas/${area_uuid}`,
+  },
+
+  triggers: {
+    get: (uuid: string, area_uuid: string) => `${API_BASE_URL}/users/${uuid}/areas/${area_uuid}/trigger`,
+  },
+
+  responses: {
+    get: (uuid: string, area_uuid: string) => `${API_BASE_URL}/users/${uuid}/areas/${area_uuid}/response`,
   },
 };

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
-import { register } from "../services/authServices";
+import { register } from "../services/authService";
 import { isLoggedIn } from "../utils/auth";
 import logo from "../assets/logo.png";
 
@@ -30,6 +30,7 @@ export default function Register() {
   };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log("Registering...");
     setLoading(true);
     setError(null);
     e.preventDefault();
@@ -186,6 +187,7 @@ export default function Register() {
           </div>
 
           <Button
+            type="submit"
             className="w-full bg-black text-white font-semibold hover:opacity-90 transition"
             disabled={loading}
           >
