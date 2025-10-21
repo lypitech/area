@@ -36,10 +36,9 @@ export type AreaCreationDTO = {
     service_name: string;
     name: string;
     description: string | null;
-    resource_id: string;
+    input: string;
     oauth_token: string | null;
     trigger_type: string | null;
-    every_minute: string | null;
   };
   response: {
     service_name: string;
