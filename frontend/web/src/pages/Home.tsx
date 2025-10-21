@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "../components/Button";
 import logo from "../assets/logo.png";
 
 const features = [
