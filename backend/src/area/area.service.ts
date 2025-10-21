@@ -104,10 +104,9 @@ export class AreaService {
       service_name: dto.trigger.service_name,
       name: dto.trigger.name,
       description: dto.response.description ?? null,
-      resource_id: dto.response.resource_id,
       oauth_token: triggerToken ?? dto.trigger.oauth_token,
       trigger_type: dto.trigger.trigger_type ?? 'webhook',
-      every_minutes: dto.trigger.every_minute ?? 5,
+      input: dto.trigger.input,
     });
     return this.areaModel.create({
       trigger_uuid: trigger_uuid.uuid,
