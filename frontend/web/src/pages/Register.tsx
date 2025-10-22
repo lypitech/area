@@ -168,6 +168,7 @@ export default function Register() {
               placeholder="you@example.com"
               iconName="mail"
               required
+              type="email"
             />
           </div>
 
