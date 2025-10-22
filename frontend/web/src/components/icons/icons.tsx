@@ -19,6 +19,8 @@ import YourSpace from "./yourSpace";
 import Settings from "./settings";
 import Plus from "./plus";
 import App from "./app";
+import Eye from "./eye";
+import EyeOff from "./eyeOff";
 
 type IconName = string;
 
@@ -50,6 +52,8 @@ const iconComponents: { [name in IconName]: React.FC<{ className: string }> } =
     settings: Settings,
     plus: Plus,
     app: App,
+    eye: Eye,
+    eyeOff: EyeOff,
     default: Home,
   };
 
