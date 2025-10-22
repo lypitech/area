@@ -5,55 +5,76 @@ import { useNavigate } from "react-router-dom";
 import { register } from "../services/authService";
 import { isLoggedIn } from "../utils/auth";
 import logo from "../assets/logo.png";
+import Icon from "../components/icons/icons";
 
 export default function Register() {
   const navigate = useNavigate();
   const [profile_picture, setProfile_picture] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
-    if (isLoggedIn()) {
-      navigate("/home");
-    }
+    if (isLoggedIn()) navigate("/home");
   }, [navigate]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfile_picture(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => setProfile_picture(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  // Updated: special char = any char that is NOT a letter or digit
+  const validatePassword = (pwd: string) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+    return regex.test(pwd);
+  };
+
+  const getPasswordErrors = (pwd: string) => {
+    const errors: string[] = [];
+    if (pwd.length < 8) errors.push("at least 8 characters");
+    if (!/[A-Z]/.test(pwd)) errors.push("one uppercase letter");
+    if (!/[a-z]/.test(pwd)) errors.push("one lowercase letter");
+    if (!/\d/.test(pwd)) errors.push("one number");
+    if (!/[^A-Za-z0-9]/.test(pwd))
+      errors.push("one special character (non alphanumeric, e.g. _ or !)");
+    return errors;
   };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("Registering...");
+    e.preventDefault();
     setLoading(true);
     setError(null);
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
 
+    const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    const pwd = formData.get("password") as string;
     const confirmPassword = formData.get("confirm-password") as string;
     const nickname = formData.get("nickname") as string;
     const username = formData.get("username") as string;
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
+    if (pwd !== confirmPassword) {
+      setError("Passwords do not match.");
+      setLoading(false);
+      return;
+    }
+
+    const passwordErrors = getPasswordErrors(pwd);
+    if (passwordErrors.length > 0) {
+      setError(`Password must include: ${passwordErrors.join(", ")}.`);
       setLoading(false);
       return;
     }
 
     try {
-      await register(email, password, nickname, username, profile_picture);
+      await register(email, pwd, nickname, username, profile_picture);
       navigate("/login");
     } catch {
-      setError("Registration failed");
-      alert("Registration failed");
+      setError("Registration failed.");
     } finally {
       setLoading(false);
     }
@@ -68,11 +89,10 @@ export default function Register() {
 
       <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8">
         <h1 className="flex flex-col justify-center items-center gap-4 text-3xl font-bold text-center text-black mb-6">
-          <p>Register your account</p>
+          Register your account
         </h1>
 
         <form className="space-y-4" onSubmit={onSubmit}>
-          {/* Profile picture */}
           <div className="flex flex-col items-center">
             <label
               htmlFor="profile-picture"
@@ -103,7 +123,6 @@ export default function Register() {
             </p>
           </div>
 
-          {/* Nickname */}
           <div>
             <label
               htmlFor="nickname"
@@ -119,7 +138,6 @@ export default function Register() {
             />
           </div>
 
-          {/* Username */}
           <div>
             <label
               htmlFor="username"
@@ -138,7 +156,6 @@ export default function Register() {
             </p>
           </div>
 
-          {/* Email */}
           <div>
             <label
               htmlFor="email"
@@ -151,10 +168,10 @@ export default function Register() {
               placeholder="you@example.com"
               iconName="mail"
               required
+              type="email"
             />
           </div>
 
-          {/* Password */}
           <div>
             <label
               htmlFor="password"
@@ -162,15 +179,39 @@ export default function Register() {
             >
               Password
             </label>
-            <Input
-              name="password"
-              placeholder="Your password"
-              iconName="lock"
-              required
-            />
+            <div className="relative">
+              <Input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Your password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                inputClass="w-full pr-12 rounded-lg border text-black focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-black"
+              />
+              <Button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <Icon iconName="eyeOff" iconClass="w-6 h-6" />
+                ) : (
+                  <Icon iconName="eye" iconClass="w-6 h-6" />
+                )}
+              </Button>
+            </div>
+
+            {!validatePassword(password) && password.length > 0 && (
+              <ul className="text-xs text-red-500 mt-2 list-disc list-inside">
+                {getPasswordErrors(password).map((err) => (
+                  <li key={err}>{err}</li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          {/* Confirm Password */}
           <div>
             <label
               htmlFor="confirm-password"
@@ -178,12 +219,29 @@ export default function Register() {
             >
               Confirm Password
             </label>
-            <Input
-              name="confirm-password"
-              placeholder="Confirm your password"
-              iconName="lock"
-              required
-            />
+            <div className="relative">
+              <Input
+                name="confirm-password"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm your password"
+                required
+                inputClass="w-full pr-12 rounded-lg border text-black focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-black"
+              />
+              <Button
+                type="button"
+                onClick={() => setShowConfirmPassword((s) => !s)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                aria-label={
+                  showConfirmPassword ? "Hide password" : "Show password"
+                }
+              >
+                {showConfirmPassword ? (
+                  <Icon iconName="eyeOff" iconClass="w-6 h-6" />
+                ) : (
+                  <Icon iconName="eye" iconClass="w-6 h-6" />
+                )}
+              </Button>
+            </div>
           </div>
 
           <Button
