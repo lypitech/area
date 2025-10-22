@@ -21,6 +21,8 @@ export default function CreateAction() {
     setSelectedActionService,
     selectedAction,
     setSelectedAction,
+    input,
+    setInput,
   } = useArea();
 
   // Filter services with actions only
@@ -69,11 +71,14 @@ export default function CreateAction() {
 
   // Handle hook selection (ex: Push on repository)
   const handleHookSelection = (hook: Action) => {
+    if (input) {
+      setIsOpen(true);
+    }
     setSelectedAction(hook);
   };
 
   useEffect(() => {
-    if (selectedAction) {
+    if (selectedAction && input === "") {
       setIsOpen(true);
     }
   }, [selectedAction]);
@@ -85,6 +90,7 @@ export default function CreateAction() {
     } else {
       setSelectedAction(null);
       setSelectedActionService(null);
+      setInput("");
     }
   };
 
@@ -92,6 +98,7 @@ export default function CreateAction() {
   const handleModalClose = () => {
     setIsOpen(false);
     setSelectedAction(null);
+    setInput("");
   };
 
   return (

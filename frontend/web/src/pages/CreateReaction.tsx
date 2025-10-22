@@ -19,6 +19,10 @@ export default function CreateReaction() {
     setSelectedReactionService,
     selectedReaction,
     setSelectedReaction,
+    ressourceId,
+    setRessourceId,
+    payload,
+    setPayload,
   } = useArea();
 
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
@@ -57,11 +61,14 @@ export default function CreateReaction() {
   };
 
   const handleHookSelection = (hook: Reaction) => {
+    if (ressourceId || payload) {
+      setIsOpen(true);
+    }
     setSelectedReaction(hook);
   };
 
   useEffect(() => {
-    if (selectedReaction) {
+    if (selectedReaction && !ressourceId && !payload) {
       setIsOpen(true);
     }
   }, [selectedReaction]);

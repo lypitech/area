@@ -25,68 +25,77 @@ export default function Create() {
         console.error("Error fetching services:", error);
       }
     };
-
     fetchServices();
   }, []);
 
-  const blocks = [
-    { id: "action", label: "Action", top: 40, left: 15 },
-    { id: "reaction", label: "Reaction", top: 40, left: 60 },
-  ];
-
   return (
-    <div className="relative flex flex-col w-full h-screen bg-accent">
-      {/* CANVAS */}
+    <div className="flex flex-col justify-center items-center w-full h-screen bg-accent">
+      {/* Header */}
       <div className="flex flex-col items-center justify-center p-8">
-        <h1 className="text-4xl font-bold mb-4">Create an area</h1>
+        <h1 className="text-4xl font-bold mb-8">Create an area</h1>
       </div>
-      <svg className="absolute inset-0 w-full h-full pointer-events-none">
-        <line
-          x1={`${blocks[0].left + 10}%`}
-          y1={`${blocks[0].top + 4}%`}
-          x2={`${blocks[1].left + 10}%`}
-          y2={`${blocks[1].top + 4}%`}
-          stroke="black"
-          strokeWidth={2}
-        />
-      </svg>
-      {blocks.map((block) => (
+
+      {/* Canvas zone */}
+      <div className="flex flex-1 flex-row justify-between items-center w-2/3 transform -translate-y-12">
+        {/* Action block */}
         <div
-          key={block.id}
-          className="flex flex-row h-20 items-center justify-between absolute bg-white border rounded p-4 py-6 cursor-pointer shadow-2xl hover:shadow-xl transition"
-          style={{
-            top: `${block.top}%`,
-            left: `${block.left}%`,
-            width: "20%",
-            minWidth: "150px",
-          }}
-          onClick={() => nav(`/create/${block.id}`)}
+          onClick={() => nav(`/create/action`)}
+          className="flex flex-col justify-center bg-white border rounded-xl cursor-pointer shadow-2xl hover:shadow-xl hover:scale-105 transition-all duration-300 w-80 h-24"
         >
-          {block.label}
-          {block.id === "action" && selectedAction && (
-            <img
-              src={getLogo(
-                selectedActionService?.name.toLocaleLowerCase() || ""
-              )}
-              alt={selectedActionService?.name}
-              className="w-10 h-10 object-contain rounded-full"
-            />
-          )}
-          {block.id === "reaction" && selectedReaction && (
-            <img
-              src={getLogo(
-                selectedReactionService?.name.toLocaleLowerCase() || ""
-              )}
-              alt={selectedReactionService?.name}
-              className="w-10 h-10 object-contain rounded-full"
-            />
+          {selectedAction ? (
+            <div className="flex flex-row items-center p-4 gap-4">
+              <img
+                src={getLogo(
+                  selectedActionService?.name.toLocaleLowerCase() || ""
+                )}
+                alt={selectedActionService?.name}
+                className="w-12 h-12 object-contain rounded-full"
+              />
+              <p className="text-center text-xl font-medium text-gray-700">
+                {selectedAction?.name}
+              </p>
+            </div>
+          ) : (
+            <p className="text-center text-2xl font-medium text-gray-700">
+              Choose your action
+            </p>
           )}
         </div>
-      ))}
+
+        {/* Connector line */}
+        <div className="flex-1 border-t-2 border-black" />
+
+        {/* Reaction block */}
+        <div
+          onClick={() => nav(`/create/reaction`)}
+          className="flex flex-col justify-center bg-white border rounded-xl cursor-pointer shadow-2xl hover:shadow-xl hover:scale-105 transition-all duration-300 w-80 h-24"
+        >
+          {selectedReaction ? (
+            <div className="flex flex-row items-center p-4 gap-4">
+              <img
+                src={getLogo(
+                  selectedReactionService?.name.toLocaleLowerCase() || ""
+                )}
+                alt={selectedReactionService?.name}
+                className="w-12 h-12 object-contain rounded-full"
+              />
+              <p className="text-center text-xl font-medium text-gray-700">
+                {selectedReaction?.name}
+              </p>
+            </div>
+          ) : (
+            <p className="text-center text-2xl font-medium text-gray-700">
+              Choose your reaction
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Save button */}
       {selectedAction && selectedReaction && (
-        <div className="w-full h-full flex justify-center items-baseline-last p-8">
+        <div className="flex justify-center mb-12">
           <Button
-            className="w-50 h-16 bg-black hover:scale-105 hover:bg-neutral-700 transition ease-in-out duration-300"
+            className="px-10 py-4 bg-black hover:scale-105 hover:bg-neutral-700 transition ease-in-out duration-300"
             onClick={() => nav("save")}
           >
             <p className="text-xl text-white">Save your Area</p>
