@@ -22,10 +22,7 @@ interface AreaContextType {
   selectedReaction: Reaction | null;
   setSelectedReaction: (r: Reaction | null) => void;
   // AreaSaving additional fields
-  input: {
-    repoName: string;
-    ownerName: string;
-  };
+  input: any;
   setInput: (i: any) => void;
   ressourceId: string;
   setRessourceId: (r: string) => void;
