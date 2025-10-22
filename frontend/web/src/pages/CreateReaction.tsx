@@ -9,6 +9,7 @@ import { Button } from "../components/Button";
 import Icon from "../components/icons/icons";
 import Modal from "../components/Modal";
 import { getForm } from "../utils/parser";
+import Footer from "../components/Footer";
 
 export default function CreateReaction() {
   const nav = useNavigate();
@@ -79,17 +80,21 @@ export default function CreateReaction() {
     } else {
       setSelectedReaction(null);
       setSelectedReactionService(null);
+      setRessourceId("");
+      setPayload("");
     }
   };
 
   const handleModalClose = () => {
     setIsOpen(false);
     setSelectedReaction(null);
+    setRessourceId("");
+    setPayload("");
   };
 
   return (
     <div
-      className={`relative w-full h-full flex flex-col p-8 bg-accent transition-all duration-500 ease-in-out`}
+      className={`relative w-full h-full flex flex-col p-8 pb-0 bg-accent transition-all duration-500 ease-in-out`}
     >
       <Button
         type="button"
@@ -161,6 +166,7 @@ export default function CreateReaction() {
           })}
         </Modal>
       </div>
+      <Footer />
     </div>
   );
 }

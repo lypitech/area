@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
+import Footer from "../components/Footer";
 
 const features = [
   {
@@ -23,9 +24,9 @@ export default function Home() {
   const nav = useNavigate();
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full flex flex-col justify-between">
       {/* Hero */}
-      <section className="text-white bg-black py-24">
+      <div className="text-white bg-black py-24">
         <div className="max-w-5xl mx-auto flex flex-col gap-6 px-4 text-center">
           <img src={logo} className="rounded-xl shadow w-24 h-24 mx-auto" />
           <div>
@@ -37,10 +38,10 @@ export default function Home() {
             </p>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Features */}
-      <section className="max-w-5xl mx-auto px-4 py-12">
+      <div className="max-w-5xl mx-auto px-4 py-12">
         <h2 className="text-2xl font-bold mb-6">Functionnalities</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((f) => (
@@ -59,7 +60,8 @@ export default function Home() {
             </article>
           ))}
         </div>
-      </section>
+      </div>
+      <Footer />
     </div>
   );
 }
