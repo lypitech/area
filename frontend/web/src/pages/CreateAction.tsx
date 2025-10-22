@@ -11,6 +11,7 @@ import Modal from "../components/Modal";
 import { getForm } from "../utils/parser";
 import { isOauthNeeded } from "../utils/isOauthNeeded";
 import OAuthParser from "../services/OAuth/oauthParser";
+import Footer from "../components/Footer";
 
 export default function CreateAction() {
   const nav = useNavigate();
@@ -103,7 +104,7 @@ export default function CreateAction() {
 
   return (
     <div
-      className={`relative w-full h-full flex flex-col p-8 bg-accent transition-all duration-500 ease-in-out `}
+      className={`relative w-full h-full flex flex-col p-8 pb-0 bg-accent transition-all duration-500 ease-in-out `}
     >
       <Button
         type="button"
@@ -176,6 +177,8 @@ export default function CreateAction() {
           })}
         </Modal>
       </div>
+
+      <Footer />
     </div>
   );
 }

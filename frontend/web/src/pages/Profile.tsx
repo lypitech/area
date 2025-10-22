@@ -3,6 +3,7 @@ import type { User } from "../types";
 import { logout } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import { getUser } from "../services/userService";
+import Footer from "../components/Footer";
 
 export default function Profile() {
   const [user, setUser] = React.useState<User | null>(null);
@@ -50,7 +51,7 @@ export default function Profile() {
     : username[0].toUpperCase();
 
   return (
-    <div className="flex flex-col items-center mt-10 p-4">
+    <div className="flex flex-col h-full items-center p-8 pb-0">
       {/* Profile Picture */}
       <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-300 shadow-md flex items-center justify-center bg-gray-300 text-4xl font-bold text-white">
         {profile_picture ? (
@@ -83,6 +84,7 @@ export default function Profile() {
           Logout
         </button>
       </div>
+      <Footer />
     </div>
   );
 }
