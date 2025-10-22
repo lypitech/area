@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAreas } from "../services/areaService";
 import type { Area } from "../types";
+import Footer from "../components/Footer";
 
 export default function Apps() {
   const [areas, setAreas] = useState<Area[]>([]);
@@ -31,15 +32,18 @@ export default function Apps() {
 
   if (areas.length === 0) {
     return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">My Areas</h1>
-        <p className="text-gray-500">No automations created yet.</p>
+      <div className="h-full flex flex-col justify-between p-8 pb-0">
+        <div className=" mb-6">
+          <h1 className="text-3xl font-bold mb-4">My Areas</h1>
+          <p className="text-gray-500">No automations created yet.</p>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="p-6 bg-accent min-h-screen">
+    <div className="flex flex-col justify-between p-8 pb-0 h-full bg-accent">
       <h1 className="text-3xl font-bold mb-8">My Automations</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -94,6 +98,7 @@ export default function Apps() {
           );
         })}
       </div>
+      <Footer />
     </div>
   );
 }

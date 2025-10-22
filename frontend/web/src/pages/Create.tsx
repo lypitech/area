@@ -4,6 +4,7 @@ import { getServices } from "../services/serviceService";
 import { useArea } from "../context/AreaContext";
 import { Button } from "../components/Button";
 import { getLogo } from "../utils/getLogo";
+import Footer from "../components/Footer";
 
 export default function Create() {
   const nav = useNavigate();
@@ -102,6 +103,7 @@ export default function Create() {
           </Button>
         </div>
       )}
+      <Footer />
     </div>
   );
 }
