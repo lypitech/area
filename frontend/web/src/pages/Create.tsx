@@ -31,7 +31,7 @@ export default function Create() {
   return (
     <div className="flex flex-col justify-center items-center w-full h-screen bg-accent">
       {/* Header */}
-      <div className="flex flex-col items-center justify-center p-8">
+      <div className="flex flex-col w-full justify-baseline p-8">
         <h1 className="text-4xl font-bold mb-8">Create an area</h1>
       </div>
 
