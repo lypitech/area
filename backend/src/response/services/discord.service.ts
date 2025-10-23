@@ -1,11 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ReactionInstance } from 'src/response/schemas/response.schema';
+import type { DispatchFunction } from 'src/response/response.service';
 
 @Injectable()
 export class DiscordReactionService {
-  constructor(private readonly httpService: HttpService) {}
-  private _base_url: string = 'https://discord.com/api/';
+  private _base_url: string = 'https://discord.com/api/v10';
+  private readonly dispatchers = new Map<string, DispatchFunction>();
+  constructor(private readonly httpService: HttpService) {
+    this.dispatchers.set('Send message', (reaction, str) => {
+      this.sendMessage(reaction, str);
+    });
+  }
+
+  dispatch(reaction: ReactionInstance, action_payload: string) {
+    const reaction_name: string = reaction.name;
+    const dispatcher = this.dispatchers.get(reaction_name); // Map method
+    if (!dispatcher) {
+      throw new NotFoundException(`No dispatcher for ${reaction_name}.`);
+    }
+    dispatcher(reaction, action_payload);
+  }
 
   private sendRequest(url: string, payload: object) {
     const headers = {
@@ -15,20 +30,9 @@ export class DiscordReactionService {
     return this.httpService.post(url, payload, { headers });
   }
 
-  dispatch(reaction: ReactionInstance, action_payload: string) {
-    const reaction_name: string = reaction.name;
-    switch (reaction_name) {
-      case 'send message':
-        console.log('send message function called');
-        return this.sendMessage(reaction, action_payload);
-      default:
-        return; // TODO: Throw custom exceptions
-    }
-  }
-
-  sendMessage(reaction: ReactionInstance, action_payload: string) {
+  private sendMessage(reaction: ReactionInstance, action_payload: string) {
     const channelId = reaction.resource_id;
-    const url = `https://discord.com/api/v10/channels/${channelId}/messages`;
+    const url = `${this._base_url}/channels/${channelId}/messages`;
     const message = action_payload; // create helper function to retrieve the infos
     const payload = {
       content: message,
