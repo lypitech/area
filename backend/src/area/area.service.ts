@@ -2,16 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Area } from './schemas/area.schema';
-import { Trigger } from 'src/trigger/schemas/trigger.schema';
+import { Trigger, TriggerType } from 'src/trigger/schemas/trigger.schema';
 import { OauthService } from 'src/oauth/oauth.service';
 import { ResponseService } from 'src/response/response.service';
 import { AreaCreationDto } from './types/areaCreationDto';
+import { TriggerService } from '../trigger/trigger.service';
 
 @Injectable()
 export class AreaService {
   constructor(
     @InjectModel(Area.name) private areaModel: Model<Area>,
-    @InjectModel(Trigger.name) private readonly triggerModel: Model<Trigger>,
+    private readonly triggerService: TriggerService,
     private readonly responseService: ResponseService,
     private readonly oauthService: OauthService,
   ) {}
@@ -42,7 +43,7 @@ export class AreaService {
     if (!area) {
       throw new NotFoundException(`No area with uuid ${uuid}.`);
     }
-    return this.triggerModel.find({ uuid: area.trigger_uuid });
+    return this.triggerService.getByUUID(area.trigger_uuid);
   }
 
   async findResponse(uuid: string, user_uuid: string | null) {
@@ -51,18 +52,6 @@ export class AreaService {
       throw new NotFoundException(`No area with uuid ${uuid}.`);
     }
     return this.responseService.findByUUID(area.response_uuid);
-  }
-
-  findEnabledByTriggerUUID(trigger_uuid: string) {
-    const now = new Date();
-    return this.areaModel
-      .find({
-        trigger_uuid: trigger_uuid,
-        enabled: true,
-        $or: [{ disabled_until: null }, { disabled_until: { $lte: now } }],
-      })
-      .lean()
-      .exec();
   }
 
   async create(dto: AreaCreationDto) {
@@ -76,34 +65,37 @@ export class AreaService {
     );
 
     if (!responseOauth || !triggerOauth) {
-      let message: string = 'Missing oauth connection for ';
-      if (!responseOauth) {
-        message += triggerOauth
-          ? dto.response.service_name
-          : dto.response.service_name + ' and ' + dto.trigger.service_name;
-      } else {
-        message += dto.trigger.service_name;
-      }
-      throw new NotFoundException(message);
+      // let message: string = 'Missing oauth connection for ';
+      // if (!responseOauth) {
+      //   message += triggerOauth
+      //     ? dto.response.service_name
+      //     : dto.response.service_name + ' and ' + dto.trigger.service_name;
+      // } else {
+      //   message += dto.trigger.service_name;
+      // }
+      // throw new NotFoundException(message);
     }
     const response_uuid = await this.responseService.create({
       service_name: dto.response.service_name,
       name: dto.response.name,
       description: dto.response.description ?? '',
-      oauth_token: responseOauth.token,
+      oauth_token: responseOauth?.token ?? dto.response.oauth_token ?? 'tkt',
       resource_id: dto.response.resource_id,
       payload: dto.response.payload,
     });
-    const trigger_uuid = await this.triggerModel.create({
-      service_name: dto.trigger.service_name,
-      name: dto.trigger.name,
-      description: dto.response.description ?? null,
-      oauth_token: triggerOauth.token,
-      trigger_type: dto.trigger.trigger_type ?? 'webhook',
-      input: dto.trigger.input,
-    });
+    const trigger_uuid = await this.triggerService.create(
+      {
+        service_name: dto.trigger.service_name,
+        name: dto.trigger.name,
+        description: dto.response.description ?? undefined,
+        oauth_token: triggerOauth?.token ?? dto.trigger.oauth_token,
+        trigger_type: (dto.trigger.trigger_type as TriggerType) ?? 'webhook',
+        input: dto.trigger.input,
+      },
+      dto.trigger.input,
+    );
     return this.areaModel.create({
-      trigger_uuid: trigger_uuid.uuid,
+      trigger_uuid: trigger_uuid,
       response_uuid: response_uuid,
       user_uuid: dto.user_uuid,
       name: dto.name,

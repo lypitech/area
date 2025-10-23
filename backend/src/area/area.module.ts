@@ -15,10 +15,12 @@ import {
   ResponseSchema,
 } from 'src/response/schemas/response.schema';
 import { DiscordReactionService } from 'src/response/services/discord.service';
+import { TriggerModule } from '../trigger/trigger.module';
 
 @Module({
   imports: [
     HttpModule,
+    TriggerModule,
     MongooseModule.forFeature([
       { name: ReactionInstance.name, schema: ResponseSchema },
       { name: Area.name, schema: AreaSchema },
