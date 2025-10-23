@@ -1,5 +1,7 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { AppService } from './app.service';
+import type { Response, Request } from 'express';
+import { InteractionResponseType, InteractionType } from 'discord-interactions';
 
 @Controller()
 export class AppController {
@@ -8,6 +10,17 @@ export class AppController {
   @Get('ping')
   ping() {
     return 'pong';
+  }
+
+  // This is needed to set the `Interaction Endpoint URL`
+  @Post('discord')
+  discordEndpoint(@Req() req: Request, @Res() res: Response) {
+    const { type } = req.body;
+
+    if (type === InteractionType.PING) {
+      return res.send({ type: InteractionResponseType.PONG });
+    }
+    return res.status(400).json({ error: 'unknown interaction type' });
   }
 
   @Get()
