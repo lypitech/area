@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ReactionInstance } from './schemas/response.schema';
 import { DiscordReactionService } from './services/discord.service';
+import { ResponseCreationDto } from './types/responseCreationDto';
 
 export type DispatchFunction = (
   reaction: ReactionInstance,
@@ -26,6 +27,11 @@ export class ResponseService {
     this.dispatchers.set('Discord', (reaction, str) => {
       this.discord.dispatch(reaction, str);
     });
+  }
+
+  async create(data: ResponseCreationDto) {
+    const response: ReactionInstance = await this.responseModel.create(data);
+    return response.uuid;
   }
 
   async findByUUID(uuid: string): Promise<ReactionInstance | null> {
