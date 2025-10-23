@@ -28,7 +28,7 @@ export class GithubService {
   }): Promise<{ id?: number; raw?: any }> {
     const { repo, owner, userId, actionId, actionToken } = parameters;
 
-    const user = await this.userModel.findOne({ uuid: userId }).lean().exec();
+    const user = await this.userModel.findOne({ uuid: userId });
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
