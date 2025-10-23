@@ -1,18 +1,23 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Trigger } from './schemas/trigger.schema';
-import { TRIGGER_DRIVERS } from './tokens';
 import { TriggerDriver } from './contracts/trigger-driver';
+import { IntervalTriggerDriver } from './services/interval/interval.driver';
+import { GithubWebhookTriggerDriver } from './services/github/github.driver';
 
 @Injectable()
 export class TriggerService {
   private readonly logger = new Logger(TriggerService.name);
+  private readonly drivers: TriggerDriver[];
 
   constructor(
     @InjectModel(Trigger.name) private triggerModel: Model<Trigger>,
-    @Inject(TRIGGER_DRIVERS) private readonly drivers: TriggerDriver[],
-  ) {}
+    private readonly intervalDriver: IntervalTriggerDriver,
+    private readonly githubDriver: GithubWebhookTriggerDriver,
+  ) {
+    this.drivers = [this.intervalDriver, this.githubDriver];
+  }
 
   async getAll() {
     return this.triggerModel.find().exec();
@@ -28,7 +33,7 @@ export class TriggerService {
     const created = await new this.triggerModel(data).save();
     const driver = this.getDriverFor(created);
     if (driver?.onCreate) await driver.onCreate(created, params);
-    return created;
+    return created.uuid;
   }
 
   async remove(uuid: string) {
