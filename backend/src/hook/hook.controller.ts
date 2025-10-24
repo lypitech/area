@@ -17,7 +17,7 @@ export class HookController {
   async handleGithubWebhook(
     @Param('actionId') actionId: string,
     @Query('token') token: string | undefined,
-    @Body() payload: any,
+    @Body() payload: Record<string, any>,
     @Headers('x-github-event') event?: string,
   ) {
     if (!token) {
