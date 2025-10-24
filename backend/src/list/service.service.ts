@@ -10,11 +10,11 @@ export class ServiceService {
     private serviceListModel: Model<Service>,
   ) {}
 
-  getAll() {
-    return this.serviceListModel.find().exec();
+  getAll(): Promise<Service[]> {
+    return this.serviceListModel.find();
   }
 
-  getByUUID(uuid: string) {
-    return this.serviceListModel.findOne({ uuid: uuid }).exec();
+  async getByUUID(uuid: string): Promise<Service | null> {
+    return this.serviceListModel.findOne({ uuid: uuid });
   }
 }

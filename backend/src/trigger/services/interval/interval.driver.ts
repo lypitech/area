@@ -49,9 +49,9 @@ export class IntervalTriggerDriver
   }
 
   async onModuleInit() {
-    const triggers = await this.triggerModel
-      .find({ trigger_type: 'interval' })
-      .lean();
+    const triggers: Trigger[] = await this.triggerModel.find({
+      trigger_type: 'interval',
+    });
     triggers.forEach((t) => this.registerInterval(t));
     this.logger.log(`Loaded ${triggers.length} interval trigger(s).`);
   }

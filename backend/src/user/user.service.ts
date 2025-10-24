@@ -109,9 +109,11 @@ export class UserService {
   }
 
   async update(uuid: string, updateData: Partial<User>): Promise<User> {
-    const updatedUser: User | null = await this.userModel
-      .findOneAndUpdate({ uuid }, updateData, { new: true })
-      .exec();
+    const updatedUser: User | null = await this.userModel.findOneAndUpdate(
+      { uuid },
+      updateData,
+      { new: true },
+    );
     if (!updatedUser) {
       throw new NotFoundException(`no user with uuid ${uuid}`);
     }

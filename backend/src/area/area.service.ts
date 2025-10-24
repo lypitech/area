@@ -24,18 +24,18 @@ export class AreaService {
     if (user_uuid) {
       return this.areaModel.findOne({ uuid: uuid, user_uuid: user_uuid });
     }
-    return this.areaModel.findOne({ uuid }).exec();
+    return this.areaModel.findOne({ uuid });
   }
 
   findByActionUuid(action_uuid: string): Promise<Area[]> {
-    return this.areaModel.find({ action_uuid }).lean().exec();
+    return this.areaModel.find({ action_uuid });
   }
 
   findAll(user_uuid: string | null = null): Promise<Area[]> {
     if (user_uuid) {
-      return this.areaModel.find({ user_uuid: user_uuid }).lean().exec();
+      return this.areaModel.find({ user_uuid: user_uuid });
     }
-    return this.areaModel.find().exec();
+    return this.areaModel.find();
   }
 
   async findTrigger(uuid: string, user_uuid: string | null) {

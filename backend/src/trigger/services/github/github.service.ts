@@ -33,13 +33,10 @@ export class GithubService {
       throw new UnauthorizedException('User not found');
     }
 
-    const githubOauth = await this.oauthModel
-      .findOne({
-        uuid: { $in: user.oauth_uuids ?? [] },
-        service_name: 'github',
-      })
-      .lean()
-      .exec();
+    const githubOauth: Oauth | null = await this.oauthModel.findOne({
+      uuid: { $in: user.oauth_uuids ?? [] },
+      service_name: 'github',
+    });
 
     if (!githubOauth?.token) {
       throw new UnauthorizedException('GitHub authentication required');
@@ -98,7 +95,7 @@ export class GithubService {
   }): Promise<void> {
     const { owner, repo, userId, hookId } = parameters;
 
-    const user = await this.userModel.findOne({ uuid: userId }).lean().exec();
+    const user = await this.userModel.findOne({ uuid: userId });
     if (!user || !(user as any).githubToken) {
       throw new UnauthorizedException('GitHub authentication required');
     }

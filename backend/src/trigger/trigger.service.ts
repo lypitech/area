@@ -19,12 +19,12 @@ export class TriggerService {
     this.drivers = [this.intervalDriver, this.githubDriver];
   }
 
-  async getAll() {
-    return this.triggerModel.find().exec();
+  async getAll(): Promise<Trigger[]> {
+    return this.triggerModel.find();
   }
 
   async getByUUID(uuid: string) {
-    const trigger = await this.triggerModel.findOne({ uuid }).exec();
+    const trigger: Trigger | null = await this.triggerModel.findOne({ uuid });
     if (!trigger) throw new NotFoundException(`No trigger with uuid ${uuid}`);
     return trigger;
   }
@@ -37,11 +37,11 @@ export class TriggerService {
   }
 
   async remove(uuid: string) {
-    const trigger = await this.triggerModel.findOne({ uuid }).exec();
+    const trigger: Trigger | null = await this.triggerModel.findOne({ uuid });
     if (!trigger) throw new NotFoundException(`No trigger with uuid ${uuid}`);
     const driver = this.getDriverFor(trigger);
     if (driver?.onRemove) await driver.onRemove(trigger);
-    await this.triggerModel.deleteOne({ uuid }).exec();
+    await this.triggerModel.deleteOne({ uuid });
     return true;
   }
 
