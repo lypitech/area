@@ -6,7 +6,6 @@ import {
   DispatchReturn,
 } from 'src/response/types/dispatchFunction';
 import { catchError, firstValueFrom, map, Observable, of } from 'rxjs';
-import type { DispatchFunction } from 'src/response/response.service';
 
 @Injectable()
 export class DiscordReactionService {
