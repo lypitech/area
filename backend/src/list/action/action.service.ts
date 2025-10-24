@@ -11,10 +11,10 @@ export class ActionService {
   ) {}
 
   getAll(): Promise<Action[]> {
-    return this.actionModel.find().exec();
+    return this.actionModel.find();
   }
 
   getByUUID(uuid: string): Promise<Action | null> {
-    return this.actionModel.findOne({ uuid: uuid }).lean().exec();
+    return this.actionModel.findOne({ uuid: uuid });
   }
 }

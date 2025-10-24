@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
@@ -89,7 +94,12 @@ export class LoginService {
   }
 
   async logout(uuid: string) {
-    await this.userService.update(uuid, { refreshToken: undefined });
-    return { message: 'Logged out successfully' };
+    if (await this.userService.update(uuid, { refreshToken: undefined })) {
+      return { message: 'Logged out successfully' };
+    }
+    throw new HttpException(
+      { message: 'Could not log out' },
+      HttpStatus.BAD_REQUEST,
+    );
   }
 }

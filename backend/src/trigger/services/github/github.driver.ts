@@ -109,5 +109,5 @@ export class GithubWebhookTriggerDriver implements TriggerDriver {
     }
   }
 
-  async fire(trigger: Trigger, payload?: any): Promise<void> {}
+  async fire(trigger: Trigger, payload?: Record<string, any>): Promise<void> {}
 }

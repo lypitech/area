@@ -11,10 +11,10 @@ export class ReactionService {
   ) {}
 
   getAll(): Promise<Reaction[]> {
-    return this.reactionModel.find().exec();
+    return this.reactionModel.find();
   }
 
   getByUUID(uuid: string): Promise<Reaction | null> {
-    return this.reactionModel.findOne({ uuid: uuid }).lean().exec();
+    return this.reactionModel.findOne({ uuid: uuid });
   }
 }

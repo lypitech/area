@@ -25,13 +25,4 @@ export class Oauth {
   expires_at?: Date;
 }
 
-export interface OauthType {
-  uuid?: string;
-  service_name: string;
-  token: string;
-  refresh_token: string;
-  token_type: string;
-  expires_at?: Date;
-}
-
 export const OauthSchema = SchemaFactory.createForClass(Oauth);

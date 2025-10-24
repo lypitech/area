@@ -8,39 +8,30 @@ export class HookService {
   constructor(private readonly triggerService: TriggerService) {}
 
   async handleGithubWebhook(
-    payload: any,
+    payload: Record<string, any>,
     actionId: string,
     token: string,
     event?: string,
   ) {
     // TODO: Faire un dispatch un peu plus clair ou adapter le système de création
-    try {
-      this.logger.log(
-        `Received GitHub webhook for action ${actionId} (event: ${
-          event ?? 'unknown'
-        })`,
-      );
+    this.logger.log(
+      `Received GitHub webhook for action ${actionId} (event: ${
+        event ?? 'unknown'
+      })`,
+    );
 
-      const repository = payload?.repository?.name;
-      const owner =
-        payload?.repository?.owner?.login || payload?.repository?.owner?.name;
+    const repository_name: string | null = payload?.repository?.name;
+    const owner: string | null =
+      payload?.repository?.owner?.login || payload?.repository?.owner?.name;
 
-      const result = await this.triggerService.fire(actionId, {
-        event,
-        repository,
-        owner,
-        payload,
-      });
+    const result = await this.triggerService.fire(actionId, {
+      event,
+      repository: repository_name,
+      owner,
+      payload,
+    });
 
-      this.logger.log(`Successfully processed webhook for action ${actionId}`);
-      return result;
-    } catch (error: any) {
-      this.logger.error(
-        `Failed to process webhook for action ${actionId}: ${
-          error?.message ?? error
-        }`,
-      );
-      throw error;
-    }
+    this.logger.log(`Successfully processed webhook for action ${actionId}`);
+    return result;
   }
 }

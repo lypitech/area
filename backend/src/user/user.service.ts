@@ -65,10 +65,14 @@ export class UserService {
     throw new NotFoundException('No user found with this refresh token');
   }
 
-  async addOauthToken(user_uuid: string, token_uuid: string): Promise<User> {
+  async addOauthToken(
+    user_uuid: string,
+    token_uuid: string,
+    service_name: string,
+  ): Promise<User> {
     const updated: User | null = await this.userModel.findOneAndUpdate(
       { uuid: user_uuid },
-      { $push: { oauth_uuids: { token_uuid } } },
+      { $push: { oauth_uuids: { service_name, token_uuid } } },
       { new: true },
     );
     if (!updated) {
@@ -105,9 +109,11 @@ export class UserService {
   }
 
   async update(uuid: string, updateData: Partial<User>): Promise<User> {
-    const updatedUser: User | null = await this.userModel
-      .findOneAndUpdate({ uuid }, updateData, { new: true })
-      .exec();
+    const updatedUser: User | null = await this.userModel.findOneAndUpdate(
+      { uuid },
+      updateData,
+      { new: true },
+    );
     if (!updatedUser) {
       throw new NotFoundException(`no user with uuid ${uuid}`);
     }

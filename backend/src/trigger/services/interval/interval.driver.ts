@@ -3,15 +3,16 @@ import {
   Logger,
   OnModuleInit,
   OnModuleDestroy,
-  Inject,
+  NotFoundException,
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Trigger } from '../../schemas/trigger.schema';
-import { TriggerDriver } from '../../contracts/trigger-driver';
-import { AreaService } from '../../../area/area.service';
-import { ResponseService } from '../../../response/response.service';
+import { Trigger } from 'src/trigger/schemas/trigger.schema';
+import { TriggerDriver } from 'src/trigger/contracts/trigger-driver';
+import { ResponseService } from 'src/response/response.service';
+import { Area } from 'src/area/schemas/area.schema';
+import { HistoryDto } from 'src/area/types/historyDto';
 
 @Injectable()
 export class IntervalTriggerDriver
@@ -23,18 +24,34 @@ export class IntervalTriggerDriver
   constructor(
     private readonly scheduler: SchedulerRegistry,
     @InjectModel(Trigger.name) private triggerModel: Model<Trigger>,
-    private readonly areaService: AreaService,
+    @InjectModel(Area.name) private areaModel: Model<Area>,
     private readonly responseService: ResponseService,
   ) {}
+
+  private findEnabledAreaByTriggerUUID(trigger_uuid: string): Area[] {
+    const now = new Date();
+    return this.areaModel.find({
+      trigger_uuid: trigger_uuid,
+      enabled: true,
+      $or: [{ disabled_until: null }, { disabled_until: { $lte: now } }],
+    }) as unknown as Area[];
+  }
+
+  private async appendAreaHistory(area_uuid: string, status: HistoryDto) {
+    await this.areaModel.updateOne(
+      { uuid: area_uuid },
+      { $push: { history: { status } } },
+    );
+  }
 
   supports(trigger: Trigger) {
     return trigger.trigger_type.toLowerCase() === 'interval';
   }
 
   async onModuleInit() {
-    const triggers = await this.triggerModel
-      .find({ trigger_type: 'interval' })
-      .lean();
+    const triggers: Trigger[] = await this.triggerModel.find({
+      trigger_type: 'interval',
+    });
     triggers.forEach((t) => this.registerInterval(t));
     this.logger.log(`Loaded ${triggers.length} interval trigger(s).`);
   }
@@ -52,13 +69,13 @@ export class IntervalTriggerDriver
 
   onRemove(trigger: Trigger) {
     const name = this.nameOf(trigger);
-    try {
+    if (this.scheduler.doesExist('interval', name)) {
       this.scheduler.deleteInterval(name);
-    } catch {}
+    }
     return Promise.resolve();
   }
 
-  async fire(trigger: Trigger, payload?: any) {
+  async fire(trigger: Trigger, payload?: Record<string, any>) {
     await this.tick(trigger, payload);
   }
 
@@ -68,39 +85,36 @@ export class IntervalTriggerDriver
 
   private registerInterval(t: Trigger) {
     const name = this.nameOf(t);
-    try {
+    if (this.scheduler.doesExist('interval', name)) {
       this.scheduler.deleteInterval(name);
-    } catch {}
-    const ms = Math.max(1, t.input?.every ?? 5) * 60_000;
+    }
+    const ms = Math.max(1, (t.input?.every as number) ?? 5) * 60_000;
 
-    const cb = () =>
-      this.tick(t).catch((e) =>
-        this.logger.error(`Tick failed for ${t.uuid}: ${e}`),
-      );
-    const interval = setInterval(cb, ms);
+    const interval = setInterval(() => void this.tick(t), ms);
     this.scheduler.addInterval(name, interval);
     this.logger.log(`Registered interval ${name} every ${ms / 60000} min`);
   }
 
-  private async tick(t: Trigger, payload?: any) {
-    const areas = await this.areaService.findEnabledByTriggerUUID(t.uuid);
+  private async tick(t: Trigger, payload?: Record<string, any>) {
+    const areas = this.findEnabledAreaByTriggerUUID(t.uuid);
     if (!areas) return;
-    const trigger_payload =
-      payload ?? `Tick @ ${new Date().toISOString()} (ts=${Date.now()})`;
+    const trigger_payload = payload ?? {
+      message: `Tick @ ${new Date().toISOString()} (ts=${Date.now()})`,
+    };
     for (const area of areas) {
-      try {
-        const response = await this.responseService.findByUUID(
-          area.response_uuid,
-        );
-        if (!response) throw new Error('Reaction not found');
-        await this.responseService.dispatch(response, trigger_payload);
-        await this.areaService.appendHistory(area.uuid, 'OK (interval)');
-      } catch (e: any) {
-        await this.areaService.appendHistory(
-          area.uuid,
-          `ERROR (interval): ${e?.message ?? 'unknown'}`,
-        );
-      }
+      const response = await this.responseService.findByUUID(
+        area.response_uuid,
+      );
+      if (!response) throw new NotFoundException('Reaction not found');
+      const responseStatus = await this.responseService.dispatch(
+        response,
+        trigger_payload,
+      );
+      await this.appendAreaHistory(area.uuid, {
+        timestamp: new Date().toISOString(),
+        status: responseStatus.ok ? 'ok' : 'ko',
+        info: responseStatus.error,
+      });
     }
   }
 }
