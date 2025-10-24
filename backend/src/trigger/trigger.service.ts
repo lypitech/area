@@ -45,7 +45,7 @@ export class TriggerService {
     return true;
   }
 
-  async fire(uuid: string, payload?: any) {
+  async fire(uuid: string, payload?: Record<string, any>) {
     const trigger = await this.getByUUID(uuid);
     const driver = this.getDriverFor(trigger);
     if (!driver?.fire) return { fired: false, reason: 'No driver.fire' };
