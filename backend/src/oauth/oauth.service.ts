@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
-import { Oauth, OauthType } from './schema/Oauth.schema';
+import { Oauth } from './schema/Oauth.schema';
 import { DeleteResult, Model } from 'mongoose';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from 'src/user/schemas/user.schema';
+import { OauthDto } from './types/oauthDto';
 
 @Injectable()
 export class OauthService {
@@ -23,15 +23,19 @@ export class OauthService {
     return oauth;
   }
 
-  private async addToken(user_uuid: string, token_data: OauthType) {
+  private async addToken(user_uuid: string, data: OauthDto) {
     const token: Oauth = await this.oauthModel.create({
-      service_name: token_data.service_name,
-      token: token_data.token,
-      refresh_token: token_data.refresh_token,
-      token_type: token_data.token_type,
-      expires_at: token_data.expires_at,
+      service_name: data.service_name,
+      token: data.token,
+      refresh_token: data.refresh_token,
+      token_type: data.token_type,
+      expires_at: data.expires_at,
     });
-    await this.userService.addOauthToken(user_uuid, token.uuid, token_data.service_name);
+    await this.userService.addOauthToken(
+      user_uuid,
+      token.uuid,
+      data.service_name,
+    );
     return token;
   }
 
