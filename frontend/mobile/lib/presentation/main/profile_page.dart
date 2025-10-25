@@ -36,7 +36,12 @@ class ProfilePage extends ConsumerWidget {
 
     return authNotifierAsync.when(
       data: (authNotifier) {
-        final user = authNotifier.getUser()!;
+        final user = authNotifier.getUser();
+
+        if (user == null) {
+          _logout(context, ref);
+          return Container();
+        }
 
         return MainPageLayout(
           leading: AppbarButton(
