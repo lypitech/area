@@ -10,5 +10,6 @@ class Regexes {
   static final RegExp oneCapitalizedLetter = RegExp(r'^(?=.*[A-Z]).+$');
   static final RegExp oneNonCapitalizedLetter = RegExp(r'^(?=.*[a-z]).+$');
   static final RegExp oneSpecialCharacter = RegExp(r'^(?=.*[\W_]).+$');
+  static final RegExp port = RegExp(r'^(?:0|[1-9]\d{0,3}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$');
 
 }
