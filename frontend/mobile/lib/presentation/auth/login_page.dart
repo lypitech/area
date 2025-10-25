@@ -30,7 +30,7 @@ class LoginPage extends ConsumerWidget {
     }
 
     try {
-      final authNotifier = ref.read(authNotifierProvider.notifier);
+      final authNotifier = await ref.watch(authNotifierProvider.future);
 
       await authNotifier.login(
         email: _emailFieldController.text,

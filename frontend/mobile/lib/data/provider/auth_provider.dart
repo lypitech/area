@@ -2,21 +2,28 @@ import 'dart:async';
 
 import 'package:area/api/auth_api.dart';
 import 'package:area/core/constant/constants.dart';
+import 'package:area/data/provider/app_settings_provider.dart';
 import 'package:area/model/user_model.dart';
 import 'package:area/service/auth_service.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-final authDioProvider = Provider<Dio>((ref) {
-  final apiUrl = '${dotenv.env['API_URL']!}:${dotenv.env['API_PORT']!}';
+final authDioProvider = FutureProvider<Dio>((ref) async {
+  final appSettings = await ref.watch(appSettingsProvider.future);
+
   final dio = Dio(
     BaseOptions(
-      baseUrl: apiUrl
+      baseUrl: appSettings.fullUrl
     ),
   );
+
+  ref.onDispose(() {
+    try {
+      dio.close(force: true);
+    } catch (_) {}
+  });
 
   return dio;
 });
@@ -32,7 +39,7 @@ class AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     try {
-      final authService = ref.read(authServiceProvider);
+      final authService = await ref.watch(authServiceProvider.future);
       final access = await authService.getAccessToken();
 
       if (access != null) {
@@ -50,7 +57,7 @@ class AuthInterceptor extends Interceptor {
     // If 401, try to refresh
     if (err.response?.statusCode == 401 && requestOptions.extra['retried'] != true) {
       try {
-        final authService = ref.read(authServiceProvider);
+        final authService = await ref.watch(authServiceProvider.future);
         final refreshed = await authService.refreshIfNeeded();
 
         if (refreshed) {
@@ -70,7 +77,7 @@ class AuthInterceptor extends Interceptor {
             },
           );
 
-          final dio = ref.read(authDioProvider);
+          final dio = await ref.watch(authDioProvider.future);
           final response = await dio.request(
             requestOptions.path,
             data: requestOptions.data,
@@ -88,8 +95,8 @@ class AuthInterceptor extends Interceptor {
 
 }
 
-final authApiProvider = Provider<AuthApi>((ref) {
-  final dio = ref.read(authDioProvider);
+final authApiProvider = FutureProvider<AuthApi>((ref) async {
+  final dio = await ref.watch(authDioProvider.future);
   return AuthApi(dio: dio);
 });
 
@@ -97,14 +104,16 @@ final tokenStorageProvider = Provider<FlutterSecureStorage>((ref) {
   return FlutterSecureStorage();
 });
 
-final authServiceProvider = Provider<AuthService>((ref) {
-  final authService = AuthService(
-    api: ref.read(authApiProvider),
-    tokenStorage: ref.read(tokenStorageProvider)
+final authServiceProvider = FutureProvider<AuthService>((ref) async {
+  final api = await ref.watch(authApiProvider.future);
+  final storage = ref.watch(tokenStorageProvider);
+  final service = AuthService(
+    api: api,
+    tokenStorage: storage
   );
 
-  authService.init();
-  return authService;
+  await service.init();
+  return service;
 });
 
 enum AuthStatus {
@@ -279,9 +288,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
 }
 
-final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(
-    api: ref.read(authApiProvider),
-    service: ref.read(authServiceProvider)
-  );
+
+final authNotifierProvider = FutureProvider<AuthNotifier>((ref) async {
+  final api = await ref.watch(authApiProvider.future);
+  final service = await ref.watch(authServiceProvider.future);
+  final notifier = AuthNotifier(api: api, service: service);
+
+  return notifier;
 });

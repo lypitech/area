@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final registrationProvider = FutureProvider<void>((ref) async {
   final registerModal = ref.read(registerModalProvider);
-  final authNotifier = ref.read(authNotifierProvider.notifier);
+  final authNotifier = await ref.watch(authNotifierProvider.future);
 
   await authNotifier.register(
     email: registerModal.emailAddress,
