@@ -13,5 +13,11 @@ final dioProvider = FutureProvider<Dio>((ref) async {
   );
 
   dio.interceptors.add(AuthInterceptor(ref: ref));
+
+  ref.onDispose(() {
+    try {
+      dio.close(force: true);
+    } catch (_) {}
+  });
   return dio;
 });

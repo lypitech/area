@@ -39,15 +39,20 @@ class AppSettingsDialog {
                 child: ModalBottomSheetLayout(
                   icon: Icons.settings,
                   title: 'App settings',
-                  onConfirm: () {
+                  onConfirm: () async {
                     if (!formKey.currentState!.validate()) {
                       return false;
                     }
 
-                    appSettings.saveSettings(
-                      apiUrl: apiUrlController.text,
-                      apiPort: apiPortController.text
-                    );
+                    try {
+                      await ref.read(appSettingsProvider.notifier).saveSettings(
+                        apiUrl: apiUrlController.text.trim(),
+                        apiPort: apiPortController.text.trim(),
+                      );
+                    } catch (error) {
+                      /// TODO: Show toast?
+                      return false;
+                    }
 
                     return true;
                   },

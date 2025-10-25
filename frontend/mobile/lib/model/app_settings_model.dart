@@ -1,6 +1,3 @@
-import 'package:area/core/constant/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 class AppSettingsModel {
 
   String apiUrl;
@@ -11,20 +8,18 @@ class AppSettingsModel {
     required this.apiPort
   });
 
-  String get fullUrl => "$apiUrl:$apiPort";
+  String get fullUrl {
+    final url = apiUrl.trim();
+    final port = apiPort.trim();
 
-  Future<void> saveSettings({
-    required String apiUrl,
-    required String apiPort
-  }) async {
-    final sharedPreferences = await SharedPreferences.getInstance();
+    if (port.isEmpty) {
+      return url;
+    }
 
-    print("Saving settings : $apiUrl, $apiPort");
-
-    this.apiUrl = apiUrl;
-    this.apiPort = apiPort;
-    sharedPreferences.setString(Constants.apiUrlKey, apiUrl);
-    sharedPreferences.setString(Constants.apiPortKey, apiPort);
+    if (url.endsWith(':$port')) {
+      return url;
+    }
+    return '$url:$port';
   }
 
 }

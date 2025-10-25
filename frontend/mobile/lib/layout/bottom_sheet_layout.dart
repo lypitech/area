@@ -10,7 +10,7 @@ class ModalBottomSheetLayout extends StatelessWidget {
   final String title;
   final String? description;
   final bool showActions;
-  final bool Function()? onConfirm;
+  final Future<bool> Function()? onConfirm;
   final List<Widget> children;
 
   const ModalBottomSheetLayout({
