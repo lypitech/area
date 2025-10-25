@@ -1,6 +1,5 @@
 import 'package:area/core/constant/regexes.dart';
 import 'package:area/data/provider/app_settings_provider.dart';
-import 'package:area/data/provider/dio_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/bottom_sheet_layout.dart';
 import 'package:area/widget/a_text_field.dart';

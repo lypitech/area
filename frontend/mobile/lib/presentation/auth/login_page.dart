@@ -210,7 +210,7 @@ class LoginPage extends ConsumerWidget {
                 padding: const EdgeInsets.all(10),
                 onTap: () => AppSettingsDialog.show(context, ref),
                 child: Icon(Icons.settings)
-              )
+              ),
             ),
           ],
         ),

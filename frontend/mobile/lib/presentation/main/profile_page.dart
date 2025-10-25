@@ -90,7 +90,7 @@ class ProfilePage extends ConsumerWidget {
           ),
         ),
         Text(
-          'Account UUID\n${user.uuid}',
+          'Account UUID:\n${user.uuid}',
           style: textTheme.bodyMedium?.copyWith(
             color: Colors.grey.shade400
           ),

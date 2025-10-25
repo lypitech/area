@@ -40,7 +40,7 @@ class _ClickableFrameState extends State<ClickableFrame> {
       child: Material(
         color: widget.color,
         shadowColor: Colors.black,
-        elevation: 8,
+        elevation: 4,
         borderRadius: BorderRadius.circular(widget.borderRadius),
         child: widget.onTap != null
           ? InkWell(

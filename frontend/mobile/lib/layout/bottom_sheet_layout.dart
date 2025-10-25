@@ -97,14 +97,16 @@ class ModalBottomSheetLayout extends StatelessWidget {
                       text: 'Confirm',
                       onTap: () async {
                         if (onConfirm != null) {
-                          final dynamic result = await onConfirm!();
+                          final dynamic result = onConfirm!();
 
                           if (result is bool && result == false) {
                             return;
                           }
                         }
 
-                        context.pop();
+                        if (context.mounted) {
+                          context.pop();
+                        }
                       }
                     ),
                   ],
