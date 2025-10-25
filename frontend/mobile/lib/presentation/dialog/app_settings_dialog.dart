@@ -11,6 +11,7 @@ class AppSettingsDialog {
 
   static void show(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
 
     final appSettings = await ref.watch(appSettingsProvider.future);
 
@@ -61,6 +62,9 @@ class AppSettingsDialog {
                       title: 'API URL',
                       leadingIcon: Icons.web,
                       controller: apiUrlController,
+                      onChange: (_) {
+                        setModalState(() {});
+                      },
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return l10n.validator_empty_password;
@@ -73,6 +77,9 @@ class AppSettingsDialog {
                       title: 'API Port',
                       leadingIcon: Icons.web,
                       controller: apiPortController,
+                      onChange: (_) {
+                        setModalState(() {});
+                      },
                       keyboardType: TextInputType.number,
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
@@ -83,6 +90,20 @@ class AppSettingsDialog {
                         }
                         return null;
                       },
+                    ),
+                    Gap(10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Full API URL will look like this:\n'
+                          '${apiUrlController.text}:${apiPortController.text}',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey.shade400
+                          ),
+                          textAlign: TextAlign.left,
+                        )
+                      ],
                     )
                   ]
                 ),
