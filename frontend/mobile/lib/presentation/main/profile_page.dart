@@ -1,5 +1,6 @@
 import 'package:area/data/provider/areas_provider.dart';
 import 'package:area/data/provider/auth_provider.dart';
+import 'package:area/data/provider/oauth/oauth_github_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/presentation/dialog/app_settings_dialog.dart';
@@ -8,6 +9,8 @@ import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/clickable_frame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:github_oauth/github_oauth.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
