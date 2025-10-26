@@ -15,36 +15,36 @@ import 'package:go_router/go_router.dart';
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/init',
-    errorBuilder: (_, _) => ErrorPage(),
+    errorBuilder: (_,__) => ErrorPage(),
     routes: [
       // ---------- INIT ----------
       GoRoute(
         name: 'init',
         path: '/init',
-        builder: (_, _) => InitPage(),
+        builder: (_, __) => InitPage(),
       ),
 
       // ---------- AUTH ----------
       GoRoute(
         name: 'login',
         path: '/login',
-        builder: (_, _) => LoginPage(),
+        builder: (_, __) => LoginPage(),
       ),
       GoRoute(
         name: 'register',
         path: '/register',
-        builder: (_, _) => RegisterPage(),
+        builder: (_, __) => RegisterPage(),
       ),
 
       // ---------- MAIN ----------
       GoRoute(
         path: '/',
-        builder: (_, _) => MainPage(),
+        builder: (_, __) => MainPage(),
         routes: [
           GoRoute(
             name: 'new_area',
             path: 'new_area',
-            builder: (_, _) => NewAreaPage(),
+            builder: (_, __) => NewAreaPage(),
             routes: [
               GoRoute(
                 name: 'choose_platform',
