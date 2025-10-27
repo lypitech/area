@@ -1,6 +1,10 @@
 [
   {
     "name": "Discord",
+    "endpoints": {
+      "app": "https://discord.com/oauth2/authorize?client_id=1424797683578834994",
+      "bot": "https://discord.com/oauth2/authorize?client_id=1424797683578834994&scope=bot&permissions=85056"
+    },
     "actions": [],
     "reaction": []
   },

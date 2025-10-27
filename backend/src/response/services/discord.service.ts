@@ -51,7 +51,7 @@ export class DiscordReactionService {
     reaction: ReactionInstance,
     action_payload: Record<string, any>,
   ) {
-    const channelId = reaction.resource_id;
+    const channelId = reaction.resource_ids[0];
     const url = `${this._base_url}/channels/${channelId}/messages`;
     const message = JSON.stringify(action_payload); // create helper function to retrieve the infos
     const payload = {

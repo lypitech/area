@@ -3,6 +3,6 @@ export class ResponseCreationDto {
   name: string;
   description: string;
   oauth_token: string;
-  resource_id: string;
+  resource_ids: string[];
   payload: string;
 }
