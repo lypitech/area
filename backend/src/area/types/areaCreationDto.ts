@@ -1,4 +1,4 @@
-import { IsNotEmpty, ValidateNested } from 'class-validator';
+import { IsArray, IsNotEmpty, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class TriggerCreationDto {
@@ -22,6 +22,7 @@ class ResponseCreationDto {
   name: string;
 
   description: string | null;
+  @IsArray()
   resource_ids: string[];
   oauth_token: string | null;
   @IsNotEmpty()
