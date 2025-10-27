@@ -23,12 +23,14 @@ export class LoginService {
     password: string,
     nickname: string,
     username: string,
+    profilePicture
   ): Promise<UserDto> {
     const user: User = await this.userService.create(
       email,
       password,
       username,
       nickname,
+      profilePicture
     );
     return plainToInstance(UserDto, user.toObject(), {
       excludeExtraneousValues: true,
