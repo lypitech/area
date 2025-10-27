@@ -92,7 +92,7 @@ export class SeederService implements OnApplicationBootstrap {
         { upsert: true },
       );
       this.logger.log(
-        `Added service ${service.name} with actions: ${JSON.stringify(service.actions)} and reactions: ${JSON.stringify(service.reactions)}.`,
+        `Added service ${service.name} with actions: [${service.actions.map((a) => a.name).join(', ')}] and reactions: [${service.reactions.map((a) => a.name).join(', ')}].`,
       );
     }
   }
