@@ -13,5 +13,10 @@
     "name": "Area",
     "actions": [],
     "reaction": []
+  },
+  {
+    "name": "Twitch",
+    "actions": [],
+    "reaction": []
   }
 ]
