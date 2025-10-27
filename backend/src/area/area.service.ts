@@ -80,7 +80,7 @@ export class AreaService {
       name: dto.response.name,
       description: dto.response.description ?? '',
       oauth_token: responseOauth?.token ?? dto.response.oauth_token ?? 'tkt',
-      resource_id: dto.response.resource_id,
+      resource_ids: dto.response.resource_ids,
       payload: dto.response.payload,
     });
     const trigger_uuid = await this.triggerService.create(
