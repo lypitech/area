@@ -97,6 +97,8 @@ export class OauthService {
           client_id: process.env.TWITCH_CLIENT_ID ?? '',
           client_secret: process.env.TWITCH_CLIENT_SECRET ?? '',
           code,
+          grant_type: 'authorization_code',
+          redirect_uri: 'http://localhost:8081/callback'
         }).toString(),
 
         {
