@@ -2,6 +2,18 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { v4 as uuid_v4 } from 'uuid';
 
+export type ActionServiceType = {
+  uuid: string;
+  name: string;
+  description: string;
+};
+
+export type ReactionServiceType = {
+  uuid: string;
+  name: string;
+  description: string;
+};
+
 @Schema()
 export class Service extends Document {
   @Prop({ required: true, unique: true, default: uuid_v4 })
@@ -11,17 +23,21 @@ export class Service extends Document {
   name!: string;
 
   @Prop({ type: Object })
-  actions!: Record<string, any>;
+  endpoints?: Record<string, string>;
 
   @Prop({ type: Object })
-  reactions!: Record<string, any>;
+  actions!: ActionServiceType[];
+
+  @Prop({ type: Object })
+  reactions!: ReactionServiceType[];
 }
 
 export interface ServiceType {
   uuid?: string;
   name: string;
-  actions: Record<string, any>[];
-  reactions: Record<string, any>[];
+  endpoints: string[];
+  actions: ActionServiceType[];
+  reactions: ReactionServiceType[];
 }
 
 export const ServiceSchema = SchemaFactory.createForClass(Service);

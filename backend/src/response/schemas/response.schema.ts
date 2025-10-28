@@ -18,11 +18,11 @@ export class ReactionInstance {
   @Prop()
   oauth_token?: string;
 
-  @Prop({ default: null })
-  resource_id?: string;
+  @Prop({ required: true, default: [] })
+  resource_ids!: string[];
 
-  @Prop({ required: true })
-  payload!: string;
+  @Prop()
+  payload?: string;
 }
 
 export const ResponseSchema = SchemaFactory.createForClass(ReactionInstance);
