@@ -5,9 +5,37 @@
     "description": "trigger when a push is made on the given repository",
     "parameters": [
       {
-        "name": "repository",
-        "type": "string",
-        "description": "the full name of the repository (e.g., user/repo)"
+        "owner": "owner name",
+        "repo": "repo name",
+        "event": "push"
+      }
+    ],
+    "trigger_types": ["webhook"]
+  },
+
+  {
+    "service_name": "Github",
+    "name": "Pull request opened",
+    "description": "trigger when a pull request is opened",
+    "parameters": [
+      {
+        "owner": "owner name",
+        "repo": "repo name",
+        "event": "pull_request"
+      }
+    ],
+    "trigger_types": ["webhook"]
+  },
+
+  {
+    "service_name": "Github",
+    "name": "New issue opened",
+    "description": "trigger when a new issue is opened",
+    "parameters": [
+      {
+        "owner": "owner name",
+        "repo": "repo name",
+        "event": "issues"
       }
     ],
     "trigger_types": ["webhook"]

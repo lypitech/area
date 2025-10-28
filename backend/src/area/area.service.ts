@@ -64,17 +64,19 @@ export class AreaService {
       dto.response.service_name,
     );
 
-    if (!responseOauth || !triggerOauth) {
-      // let message: string = 'Missing oauth connection for ';
-      // if (!responseOauth) {
-      //   message += triggerOauth
-      //     ? dto.response.service_name
-      //     : dto.response.service_name + ' and ' + dto.trigger.service_name;
-      // } else {
-      //   message += dto.trigger.service_name;
-      // }
-      // throw new NotFoundException(message);
-    }
+    // Si besoin, réactive ces vérifs d'OAuth
+    // if (!responseOauth || !triggerOauth) {
+    //   let message: string = 'Missing oauth connection for ';
+    //   if (!responseOauth) {
+    //     message += triggerOauth
+    //       ? dto.response.service_name
+    //       : dto.response.service_name + ' and ' + dto.trigger.service_name;
+    //   } else {
+    //     message += dto.trigger.service_name;
+    //   }
+    //   throw new NotFoundException(message);
+    // }
+
     const response_uuid = await this.responseService.create({
       service_name: dto.response.service_name,
       name: dto.response.name,
@@ -83,6 +85,7 @@ export class AreaService {
       resource_id: dto.response.resource_id,
       payload: dto.response.payload,
     });
+
     const trigger_uuid = await this.triggerService.create(
       {
         service_name: dto.trigger.service_name,
@@ -91,9 +94,11 @@ export class AreaService {
         oauth_token: triggerOauth?.token ?? dto.trigger.oauth_token,
         trigger_type: (dto.trigger.trigger_type as TriggerType) ?? 'webhook',
         input: dto.trigger.input,
+        user_uuid: dto.user_uuid,
       },
       dto.trigger.input,
     );
+
     return this.areaModel.create({
       trigger_uuid: trigger_uuid,
       response_uuid: response_uuid,
