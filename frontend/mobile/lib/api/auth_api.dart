@@ -14,7 +14,7 @@ class AuthApi {
     required String password,
   }) async {
     final response = await dio.post(
-      '/login',
+      '/user/login',
       data: {
         'email': email,
         'password': password,
@@ -30,7 +30,7 @@ class AuthApi {
     required String username,
   }) async {
     final response = await dio.post(
-      '/login/register',
+      '/user/register',
       data: {
         'email': email,
         'password': password,
@@ -45,7 +45,7 @@ class AuthApi {
     required String refreshToken
   }) async {
     final response = await dio.post(
-      '/login/refresh',
+      '/user/refresh',
       data: {
         'refresh_token': refreshToken
       }
@@ -57,7 +57,7 @@ class AuthApi {
     required String refreshToken
   }) async {
     await dio.post(
-      '/login/logout',
+      '/user/logout',
       data: {
         'refresh_token': refreshToken
       }
