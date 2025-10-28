@@ -134,20 +134,6 @@ export default function NavBar() {
             <div className="w-full h-px bg-gray-200 my-2" />
 
             <Button
-              onClick={() => nav("/settings")}
-              className={`flex items-center ${
-                open ? "justify-start gap-3 w-full" : "justify-center w-10 h-10"
-              } rounded-lg  hover:bg-gray-100 hover:scale-[101%] transition ${
-                isActive("/settings")
-                  ? "outline-black outline-2"
-                  : "outline outline-gray-200"
-              }`}
-            >
-              <Icon iconName="settings" iconClass="w-5 h-5" />
-              {open && <span>Settings</span>}
-            </Button>
-
-            <Button
               onClick={() => nav("/profile")}
               className={`flex items-center ${
                 open ? "justify-start gap-3 w-full" : "justify-center w-10 h-10"
