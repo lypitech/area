@@ -25,14 +25,6 @@ export default function Apps() {
     fetchServices();
   }, []);
 
-  useEffect(() => {
-    console.log("Services:", services);
-    console.log(
-      "github_access_token:",
-      localStorage.getItem("github_access_token")
-    );
-  }, []);
-
   return (
     <div className="flex flex-col justify-between p-8 pb-0 h-full bg-accent">
       <h1 className="text-3xl font-bold mb-6">Available Apps</h1>
@@ -51,11 +43,11 @@ export default function Apps() {
               />
               <h3 className="text-lg font-semibold">{app.name}</h3>
 
-              {isOauthNeeded(app.name) ? (
+              {isOauthNeeded(app.name.toLowerCase()) ? (
                 <Button
                   className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-semibold"
                   onClick={() => {
-                    OAuthParser(app.name);
+                    OAuthParser(app.name.toLowerCase());
                   }}
                 >
                   Connect
@@ -63,7 +55,7 @@ export default function Apps() {
               ) : (
                 <Button
                   className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold"
-                  onClick={() => navigate(`/apps/${app.name}`)}
+                  onClick={() => navigate(`/apps/${app.name}`, { state: app })}
                 >
                   View Details
                 </Button>
