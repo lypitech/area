@@ -1,10 +1,16 @@
 [
   {
-  "service_name": "Discord",
-  "name": "Send message",
-  "description": "Send a message to the specified webhook",
-  "schema_input": {
-    "message": "string"
-  }
+    "service_name": "Discord",
+    "name": "Send message",
+    "description": "Send a message to the specified webhook",
+    "schema_input": {
+      "message": "string"
+    }
+  },
+  {
+    "service_name": "Discord",
+    "name": "Add role",
+    "description": "Adds the specified role to the specified user",
+    "schema_input": {}
   }
 ]
