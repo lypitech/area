@@ -70,26 +70,6 @@ class _InitPageState extends ConsumerState<InitPage> {
         }
       },
     );
-
-    // final authState = await ref.read(authNotifierProvider.future);
-    //
-    // if (!mounted) {
-    //   return;
-    // }
-    //
-    //
-    //
-    // switch (authState.status) {
-    //   case AuthStatus.authenticated:
-    //     context.go('/');
-    //     break;
-    //   case AuthStatus.unauthenticated:
-    //     // context.go('/login');
-    //     // break;
-    //   case AuthStatus.unknown:
-    //     context.go('/login');
-    //     break;
-    // }
   }
 
   @override
