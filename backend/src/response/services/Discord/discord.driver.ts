@@ -23,7 +23,7 @@ export class DiscordResponseDriver
   private readonly logger = new Logger('DiscordDriver');
   readonly responseValidator = new Map<
     string,
-    (response: ResponseCreationDto) => void
+    (response: ResponseCreationDto) => Promise<boolean>
   >();
   private readonly dispatchers = new Map<string, DispatchFunction>();
   constructor(
@@ -33,9 +33,15 @@ export class DiscordResponseDriver
     this.dispatchers.set('Send message', (reaction, payload) => {
       return this.discordService.sendMessage(reaction, payload);
     });
-    this.responseValidator.set('Send message', (response) =>
-      this.sendMessageValidator(response),
-    );
+    this.dispatchers.set('Send message', (reaction, payload) => {
+      return this.discordService.addRole(reaction, payload);
+    });
+    this.responseValidator.set('Send message', (response) => {
+      return this.sendMessageValidator(response);
+    });
+    this.responseValidator.set('Send message', (response) => {
+      return this.addRoleValidator(response);
+    });
   }
 
   dispatch(reaction: ReactionInstance, action_payload: Record<string, any>) {
@@ -57,7 +63,10 @@ export class DiscordResponseDriver
     return map[name] ?? 0n;
   }
 
-  private async assertPermissions(channelId: string, required: string[]) {
+  private async assertChannelPermissions(
+    channelId: string,
+    required: string[],
+  ) {
     const guildId = await this.discordService.getGuildId(channelId);
 
     if (!guildId) {
@@ -65,7 +74,7 @@ export class DiscordResponseDriver
     }
 
     const me = await this.discordService.getMe(guildId);
-    const botRoleIds: string[] = me.roles;
+    const botRoleIds: string[] = me.roles as string[];
 
     const roles = await this.discordService.getRoles(guildId);
     const channel = await this.discordService.getGuildChannel(channelId);
@@ -102,6 +111,21 @@ export class DiscordResponseDriver
     return true;
   }
 
+  private async assertRolePermissions(guild_id: string) {
+    const me = await this.discordService.getMe(guild_id);
+    const roles = await this.discordService.getRoles(guild_id);
+
+    let my_permissions = BigInt(0);
+    for (const roleId of me.roles) {
+      const role = roles.find((r) => r.id === roleId);
+      if (role) {
+        my_permissions |= BigInt(role.permissions);
+      }
+    }
+    const MANAGE_ROLES = 0x10000000n;
+    return (my_permissions & MANAGE_ROLES) === MANAGE_ROLES;
+  }
+
   onModuleDestroy(): any {}
 
   async onModuleInit(): Promise<any> {
@@ -119,7 +143,11 @@ export class DiscordResponseDriver
         `No Discord response ${response.service_name}.`,
       );
     }
-    await validator(response);
+    if (!(await validator(response))) {
+      throw new BadRequestException(
+        'The bot is missing the manage roles right in the server.',
+      );
+    }
   }
 
   supports(response: ResponseCreationDto): boolean {
@@ -138,9 +166,20 @@ export class DiscordResponseDriver
           ? 'There must be a single element in resource_ids.'
           : 'Missing field resource_ids.',
       );
-    return await this.assertPermissions(resource_ids[0], [
+    return await this.assertChannelPermissions(resource_ids[0], [
       'ViewChannel',
       'SendMessages',
     ]);
+  }
+
+  private async addRoleValidator(response: ResponseCreationDto) {
+    const resource_ids: string[] = response.resource_ids ?? [];
+    if (resource_ids.length !== 3)
+      throw new BadRequestException(
+        resource_ids.length > 3
+          ? 'There must be a single element in resource_ids.'
+          : 'Missing field resource_ids.',
+      );
+    return await this.assertRolePermissions(resource_ids[0]);
   }
 }

@@ -1,14 +1,7 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ReactionInstance } from 'src/response/schemas/response.schema';
-import {
-  DispatchFunction,
-  DispatchReturn,
-} from 'src/response/types/dispatchFunction';
+import { DispatchReturn } from 'src/response/types/dispatchFunction';
 import { catchError, firstValueFrom, map, Observable, of } from 'rxjs';
 
 @Injectable()
@@ -90,7 +83,7 @@ export class DiscordReactionService {
     return data.data as Record<string, any>[];
   }
 
-  private async sendRequest(
+  private async sendPostRequest(
     url: string,
     payload: object,
   ): Promise<DispatchReturn> {
@@ -98,6 +91,22 @@ export class DiscordReactionService {
       .post(url, payload, { headers: this.headers })
       .pipe(
         map(() => ({ ok: true })), // success
+        catchError((err): Observable<DispatchReturn> => {
+          const ret: DispatchReturn = {
+            ok: false,
+            error: (err?.response?.data as string) ?? (err as Error),
+          };
+          return of(ret);
+        }),
+      );
+    return firstValueFrom(result);
+  }
+
+  private async sendPutRequest(url: string): Promise<DispatchReturn> {
+    const result = this.httpService
+      .put(url, {}, { headers: this.headers })
+      .pipe(
+        map(() => ({ ok: true })),
         catchError((err): Observable<DispatchReturn> => {
           const ret: DispatchReturn = {
             ok: false,
@@ -120,7 +129,17 @@ export class DiscordReactionService {
       content: message,
       tts: false,
     };
+    return await this.sendPostRequest(url, payload);
+  }
 
-    return await this.sendRequest(url, payload);
+  async addRole(
+    reaction: ReactionInstance,
+    action_payload: Record<string, any>,
+  ) {
+    const guildId = reaction.resource_ids[0];
+    const userId = reaction.resource_ids[1];
+    const roleId = reaction.resource_ids[2];
+    const url = `${this._base_url}/guilds/${guildId}/members/${userId}/roles/${roleId}`;
+    return this.sendPutRequest(url);
   }
 }
