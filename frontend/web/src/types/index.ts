@@ -15,7 +15,6 @@ type TriggerType = 'webhook' | 'polling' | 'interval';
 interface Service {
   uuid: string;
   name: string;
-  triggers: Trigger[];
   actions: Action[];
   reactions: Reaction[];
 }
