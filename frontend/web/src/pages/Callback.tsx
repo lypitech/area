@@ -1,35 +1,55 @@
 import { useEffect } from "react";
-import { useGitHubToken } from "../services/OAuth/OAuths/githubServices";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
-import { useNavigate } from "react-router-dom";
+
+import { useGitHubToken } from "../services/OAuth/OAuths/githubServices";
+import { useTwitchToken } from "../services/OAuth/OAuths/twitchServices";
 
 export default function Callback() {
-  const { githubToken, loading, error } = useGitHubToken();
+  const [params] = useSearchParams();
+  const provider = params.get("state");
   const nav = useNavigate();
+
+  const hooks = {
+    github: useGitHubToken,
+    twitch: useTwitchToken,
+  };
+
+  const useProviderHook = hooks[provider as keyof typeof hooks];
+  if (!useProviderHook)
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <p className="text-2xl font-bold">Invalid OAuth provider</p>
+      </div>
+    );
+
+  const { token, loading, error } = useProviderHook();
+
   useEffect(() => {
-    if (githubToken) {
-      localStorage.setItem("github_access_token", githubToken);
+    if (token) {
+      localStorage.setItem(`${provider}_access_token`, token);
       nav("/create");
     }
-  }, [githubToken, nav]);
+  }, [token, provider, nav]);
 
-  if (loading && !githubToken)
+  if (loading && !token)
     return (
       <div className="flex items-center justify-center w-full h-full">
         <Loader />
       </div>
     );
-  if (error && !githubToken)
+
+  if (error && !token)
     return (
       <div className="w-full h-full flex flex-col items-center justify-center">
-        <p className="text-4xl font-bold">Failed to connect to Github</p>
+        <p className="text-4xl font-bold">Failed to connect to {provider}</p>
         <p className="text-2xl font-bold">Error: {error}</p>
       </div>
     );
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
-      <p className="text-4xl font-bold">Connected to Github</p>
+      <p className="text-4xl font-bold">Connected to {provider}</p>
     </div>
   );
 }
