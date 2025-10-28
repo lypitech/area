@@ -1,4 +1,5 @@
 import { githubLogin } from "./OAuths/githubServices";
+import { twitchLogin } from "./OAuths/twitchServices";
 
 // Service name => string in LOWERCASE
 // examples :
@@ -9,6 +10,8 @@ function OAuthParser(serviceName: string) {
     switch (serviceName) {
         case "github":
             return githubLogin();
+        case "twitch":
+            return twitchLogin();
         default:
             return "unknown";
     }
