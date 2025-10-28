@@ -4,5 +4,5 @@ export class ResponseCreationDto {
   description: string;
   oauth_token: string;
   resource_ids: string[];
-  payload: string;
+  payload: string | null;
 }

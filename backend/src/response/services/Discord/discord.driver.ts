@@ -33,13 +33,13 @@ export class DiscordResponseDriver
     this.dispatchers.set('Send message', (reaction, payload) => {
       return this.discordService.sendMessage(reaction, payload);
     });
-    this.dispatchers.set('Send message', (reaction, payload) => {
+    this.dispatchers.set('Add role', (reaction, payload) => {
       return this.discordService.addRole(reaction, payload);
     });
     this.responseValidator.set('Send message', (response) => {
       return this.sendMessageValidator(response);
     });
-    this.responseValidator.set('Send message', (response) => {
+    this.responseValidator.set('Add role', (response) => {
       return this.addRoleValidator(response);
     });
   }

@@ -21,8 +21,8 @@ export class ReactionInstance {
   @Prop({ required: true, default: [] })
   resource_ids!: string[];
 
-  @Prop({ required: true })
-  payload!: string;
+  @Prop()
+  payload?: string;
 }
 
 export const ResponseSchema = SchemaFactory.createForClass(ReactionInstance);
