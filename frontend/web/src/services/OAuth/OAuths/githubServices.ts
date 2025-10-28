@@ -22,6 +22,7 @@ export function githubLogin() {
     redirectUri
   )}&scope=${encodeURIComponent(scope)}&state=github`;
 
+  localStorage.setItem("oauth_redirect_after", window.location.pathname);
   window.location.href = githubAuthUrl;
 }
 
