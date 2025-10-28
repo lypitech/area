@@ -6,6 +6,7 @@ import { register } from "../services/authService";
 import { isLoggedIn } from "../utils/auth";
 import logo from "../assets/logo.png";
 import Icon from "../components/icons/icons";
+import { fileToBase64 } from "../utils/fileToBase64";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -20,12 +21,11 @@ export default function Register() {
     if (isLoggedIn()) navigate("/home");
   }, [navigate]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => setProfile_picture(reader.result as string);
-    reader.readAsDataURL(file);
+    const base64 = await fileToBase64(file);
+    setProfile_picture(base64);
   };
 
   // Updated: special char = any char that is NOT a letter or digit

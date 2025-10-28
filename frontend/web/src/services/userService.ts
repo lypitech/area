@@ -38,3 +38,12 @@ export async function getUser(): Promise<User | string> {
     return err.message || "Unexpected error";
   }
 }
+
+// export async function updateUser(user: User) {
+//   const res = await fetch(API_ROUTES.user.updateUser(user), {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify(user),
+//   });

@@ -4,6 +4,9 @@ import { logout } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import { getUser } from "../services/userService";
 import Footer from "../components/Footer";
+// import { useState } from "react";
+// import EditProfileModal from "../components/EditProfile";
+// import { u } from "framer-motion/client";
 
 export default function Profile() {
   const [user, setUser] = React.useState<User | null>(null);
@@ -49,6 +52,22 @@ export default function Profile() {
   const initial = nickname
     ? nickname[0].toUpperCase()
     : username[0].toUpperCase();
+
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // <EditProfileModal
+  //   isOpen={isModalOpen}
+  //   onClose={() => setIsModalOpen(false)}
+  //   initialData={{
+  //     nickname: user.nickname,
+  //     username: user.username,
+  //     email: user.email,
+  //     profile_picture: user.profile_picture,
+  //   }}
+  //   onSave={async (updated) => {
+  //     await updateUser(updated);
+  //   }}
+  // />;
 
   return (
     <div className="flex flex-col h-full items-center p-8 pb-0">
