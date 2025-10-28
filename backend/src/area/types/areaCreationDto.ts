@@ -10,7 +10,6 @@ class TriggerCreationDto {
 
   description: string | null;
 
-  @IsObject()
   input: Record<string, any>;
 
   oauth_token: string | null;
