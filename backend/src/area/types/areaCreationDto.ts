@@ -4,14 +4,18 @@ import { Type } from 'class-transformer';
 class TriggerCreationDto {
   @IsNotEmpty()
   service_name: string;
+
   @IsNotEmpty()
   name: string;
+
   description: string | null;
-  resource_ids: string[];
+
+  @IsObject()
   input: Record<string, any>;
+
   oauth_token: string | null;
+
   trigger_type: string | null;
-  every_minute: string | null;
 }
 
 class ResponseCreationDto {
@@ -25,6 +29,7 @@ class ResponseCreationDto {
   @IsArray()
   resource_ids: string[];
   oauth_token: string | null;
+
   @IsNotEmpty()
   payload: string;
 }
@@ -45,6 +50,7 @@ export class AreaCreationDto {
 
   @IsNotEmpty()
   name: string;
+
   description: string | null;
   enabled: boolean;
   disabled_until: Date | null;

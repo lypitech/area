@@ -13,7 +13,6 @@ export class HookService {
     token: string,
     event?: string,
   ) {
-    // TODO: Faire un dispatch un peu plus clair ou adapter le système de création
     this.logger.log(
       `Received GitHub webhook for action ${actionId} (event: ${
         event ?? 'unknown'

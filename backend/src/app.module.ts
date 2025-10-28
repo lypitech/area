@@ -29,7 +29,10 @@ import { ScheduleModule } from '@nestjs/schedule';
       { name: Action.name, schema: ActionSchema },
       { name: Service.name, schema: ServiceSchema },
     ]),
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env', '.env.local'],
+    }),
     UserModule,
     OauthModule,
     CommonModule,

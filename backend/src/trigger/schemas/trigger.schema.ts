@@ -32,6 +32,9 @@ export class Trigger {
 
   @Prop({ type: MongooseSchema.Types.Mixed, default: {} })
   input?: Record<string, any> | null;
+
+  @Prop({ type: String, default: null, index: true })
+  user_uuid?: string | null;
 }
 
 export const TriggerSchema = SchemaFactory.createForClass(Trigger);

@@ -83,6 +83,7 @@ export class AreaService {
       resource_ids: dto.response.resource_ids,
       payload: dto.response.payload,
     });
+
     const trigger_uuid = await this.triggerService.create(
       {
         service_name: dto.trigger.service_name,
@@ -91,9 +92,11 @@ export class AreaService {
         oauth_token: triggerOauth?.token ?? dto.trigger.oauth_token,
         trigger_type: (dto.trigger.trigger_type as TriggerType) ?? 'webhook',
         input: dto.trigger.input,
+        user_uuid: dto.user_uuid,
       },
       dto.trigger.input,
     );
+
     return this.areaModel.create({
       trigger_uuid: trigger_uuid,
       response_uuid: response_uuid,
