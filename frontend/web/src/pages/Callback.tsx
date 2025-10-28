@@ -28,7 +28,16 @@ export default function Callback() {
   useEffect(() => {
     if (token) {
       localStorage.setItem(`${provider}_access_token`, token);
-      nav("/create");
+
+      const redirectPath =
+        localStorage.getItem("oauth_redirect_after") || "/create";
+      localStorage.removeItem("oauth_redirect_after");
+
+      if (redirectPath.includes("/create")) {
+        nav("/create");
+      } else {
+        nav(redirectPath);
+      }
     }
   }, [token, provider, nav]);
 

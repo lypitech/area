@@ -8,6 +8,8 @@ export function twitchLogin() {
   const twitchAuthUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
     redirectUri
   )}&response_type=code&scope=user:read:email&state=twitch`;
+
+  localStorage.setItem("oauth_redirect_after", window.location.pathname);
   window.location.href = twitchAuthUrl;
 }
 
