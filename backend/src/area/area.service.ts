@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Area } from './schemas/area.schema';
@@ -64,23 +64,23 @@ export class AreaService {
       dto.response.service_name,
     );
 
-    if (!responseOauth || !triggerOauth) {
-      // let message: string = 'Missing oauth connection for ';
-      // if (!responseOauth) {
-      //   message += triggerOauth
-      //     ? dto.response.service_name
-      //     : dto.response.service_name + ' and ' + dto.trigger.service_name;
-      // } else {
-      //   message += dto.trigger.service_name;
-      // }
-      // throw new NotFoundException(message);
+    let message = 'missing oauth connection for ';
+    if (dto.response.service_name != 'Discord' && !responseOauth) {
+      message += dto.response.service_name;
     }
+    if (dto.trigger.service_name != 'Discord' && !triggerOauth) {
+      message +=
+        message.length < 30
+          ? dto.response.service_name
+          : ' and ' + dto.trigger.service_name;
+    }
+    if (message.length > 30) throw new NotFoundException(message);
     const response_uuid = await this.responseService.create({
       service_name: dto.response.service_name,
       name: dto.response.name,
       description: dto.response.description ?? '',
-      oauth_token: responseOauth?.token ?? dto.response.oauth_token ?? 'tkt',
-      resource_id: dto.response.resource_id,
+      oauth_token: responseOauth?.token ?? dto.response.oauth_token ?? '',
+      resource_ids: dto.response.resource_ids,
       payload: dto.response.payload,
     });
     const trigger_uuid = await this.triggerService.create(

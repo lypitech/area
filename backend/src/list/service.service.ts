@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Service } from './schemas/service.schema';
@@ -16,5 +16,17 @@ export class ServiceService {
 
   async getByUUID(uuid: string): Promise<Service | null> {
     return this.serviceListModel.findOne({ uuid: uuid });
+  }
+
+  async getReactionsByServiceName(name: string) {
+    const service = await this.serviceListModel.findOne({ name });
+    if (!service) {
+      throw new NotFoundException(`Service ${name} not found`);
+    }
+    const reactions: string[] = [];
+    for (const reaction of service.reactions) {
+      reactions.push(reaction.name);
+    }
+    return reactions;
   }
 }
