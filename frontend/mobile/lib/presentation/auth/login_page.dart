@@ -42,7 +42,11 @@ class LoginPage extends ConsumerWidget {
       }
     } catch (e) {
       // Login failed for some reasons.
-      Fluttertoast.showToast(msg: 'login failed lol\n$e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: $e')),
+        );
+      }
     }
   }
 
