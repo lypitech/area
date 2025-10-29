@@ -4,6 +4,7 @@ import { Trigger, TriggerSchema } from './schemas/trigger.schema';
 import { TriggerService } from './trigger.service';
 import { IntervalModule } from './services/interval/interval.module';
 import { GithubModule } from './services/github/github.module';
+import { DiscordModule } from './services/discord/discord.module';
 import { TwitchModule } from './services/twitch/twitch.module';
 
 
@@ -12,6 +13,7 @@ import { TwitchModule } from './services/twitch/twitch.module';
     MongooseModule.forFeature([{ name: Trigger.name, schema: TriggerSchema }]),
     IntervalModule,
     GithubModule,
+    DiscordModule,
     TwitchModule,
   ],
   providers: [TriggerService],

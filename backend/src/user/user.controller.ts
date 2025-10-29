@@ -54,7 +54,7 @@ export class UserController {
     @Param('uuid') uuid: string,
     @Param('area_uuid') area_uuid: string,
   ) {
-    return this.areaService.findResponse(uuid, area_uuid);
+    return this.areaService.findResponse(area_uuid, uuid);
   }
 
   @Get('getuser/:refreshtoken')

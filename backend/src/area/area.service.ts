@@ -1,8 +1,8 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Area } from './schemas/area.schema';
-import { Trigger, TriggerType } from 'src/trigger/schemas/trigger.schema';
+import { TriggerType } from 'src/trigger/schemas/trigger.schema';
 import { OauthService } from 'src/oauth/oauth.service';
 import { ResponseService } from 'src/response/response.service';
 import { AreaCreationDto } from './types/areaCreationDto';
@@ -10,12 +10,15 @@ import { TriggerService } from '../trigger/trigger.service';
 
 @Injectable()
 export class AreaService {
+  private readonly noOauthRequired: string[];
   constructor(
     @InjectModel(Area.name) private areaModel: Model<Area>,
     private readonly triggerService: TriggerService,
     private readonly responseService: ResponseService,
     private readonly oauthService: OauthService,
-  ) {}
+  ) {
+    this.noOauthRequired = ['Discord', 'Area'];
+  }
 
   findByUUID(
     uuid: string,
