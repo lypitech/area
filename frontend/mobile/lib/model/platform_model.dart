@@ -6,14 +6,14 @@ class PlatformModel {
 
   final String uuid;
   final String name;
-  final String iconBase64;
+  final String? iconBase64;
   final List<TriggerModel> triggers;
   final List<ActionModel> actions;
 
   PlatformModel({
     required this.uuid,
     required this.name,
-    this.iconBase64 = '',
+    this.iconBase64,
     this.triggers = const [],
     this.actions = const [],
   });
@@ -22,7 +22,7 @@ class PlatformModel {
     return PlatformModel(
       uuid: json['uuid'] as String,
       name: json['name'] as String,
-      iconBase64: json['iconBase64'] as String? ?? '',
+      iconBase64: json['iconBase64'] as String?,
       triggers: (json['actions'] as List<dynamic>?)
           ?.map((e) => TriggerModel.fromJson(JsonData.from(e)))
           .toList()
