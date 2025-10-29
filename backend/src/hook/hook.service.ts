@@ -34,4 +34,31 @@ export class HookService {
     this.logger.log(`Successfully processed webhook for action ${actionId}`);
     return result;
   }
+
+  async handleTwitchWebhook(
+    payload: Record<string, any>,
+    actionId: string,
+    token: string,
+    event?: string,
+  ) {
+    this.logger.log(
+      `Received GitHub webhook for action ${actionId} (event: ${
+        event ?? 'unknown'
+      })`,
+    );
+
+    const repository_name: string | null = payload?.repository?.name;
+    const owner: string | null =
+      payload?.repository?.owner?.login || payload?.repository?.owner?.name;
+
+    const result = await this.triggerService.fire(actionId, {
+      event,
+      repository: repository_name,
+      owner,
+      payload,
+    });
+
+    this.logger.log(`Successfully processed webhook for action ${actionId}`);
+    return result;
+  }
 }
