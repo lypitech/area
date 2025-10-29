@@ -1,6 +1,5 @@
-import 'package:area/model/action_model.dart';
+import 'package:area/core/constant/constants.dart';
 import 'package:area/model/platform_model.dart';
-import 'package:area/model/trigger_model.dart';
 import 'package:dio/dio.dart';
 
 class PlatformApi {
@@ -16,7 +15,7 @@ class PlatformApi {
     final list = response.data as List<dynamic>;
 
     return list
-      .map((e) => PlatformModel.fromJson(Map<String, dynamic>.from(e)))
+      .map((e) => PlatformModel.fromJson(JsonData.from(e)))
       .toList();
   }
 
