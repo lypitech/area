@@ -1,6 +1,7 @@
 import 'package:area/data/provider/areas_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
+import 'package:area/model/user_model.dart';
 import 'package:area/widget/area_card.dart';
 import 'package:area/widget/clickable_frame.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +10,11 @@ import 'package:go_router/go_router.dart';
 
 class MyAreasPage extends ConsumerWidget {
 
+  final UserModel user;
+
   const MyAreasPage({
-    super.key
+    super.key,
+    required this.user,
   });
 
   @override

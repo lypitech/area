@@ -1,3 +1,4 @@
+import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/data/provider/main_page_route_provider.dart';
 import 'package:area/presentation/main/discover_page.dart';
 import 'package:area/presentation/main/home_page.dart';
@@ -6,28 +7,50 @@ import 'package:area/presentation/main/profile_page.dart';
 import 'package:area/widget/a_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class MainPage extends ConsumerWidget {
 
-  MainPage({
+  const MainPage({
     super.key
   });
-
-  final Map<String, Widget> _router = {
-    'home': HomePage(),
-    'discover': DiscoverPage(),
-    'myareas': MyAreasPage(),
-    'profile': ProfilePage(),
-  };
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentRoute = ref.watch(mainPageRouteProvider);
+    final authNotifierAsync = ref.watch(authNotifierProvider);
 
-    return Scaffold(
-      extendBody: true,
-      bottomNavigationBar: ANavbar(),
-      body: _router[currentRoute],
+    return authNotifierAsync.when(
+      data: (authNotifier) {
+        final user = authNotifier.getUser();
+
+        if (user == null) {
+          context.go('/login');
+          return Container();
+        }
+
+        final Widget body = switch (currentRoute) {
+          'home' => HomePage(),
+          'discover' => DiscoverPage(),
+          'myareas' => MyAreasPage(user: user),
+          'profile' => ProfilePage(user: user),
+          String() => throw UnimplementedError(),
+        };
+
+        return Scaffold(
+          extendBody: true,
+          bottomNavigationBar: ANavbar(),
+          body: body,
+        );
+      },
+      error: (err, _) {
+        return Center(
+          child: Text('Error: $err')
+        );
+      },
+      loading: () {
+        return CircularProgressIndicator();
+      }
     );
   }
 
