@@ -6,18 +6,24 @@ import 'package:area/model/trigger_model.dart';
 
 class AreaModel {
 
-  final String title;
+  final String? uuid;
+  final String name;
   final PlatformModel actionPlatform;
   final TriggerModel trigger;
   final PlatformModel reactionPlatform;
   final ActionModel action;
+  final DateTime? updatedAt;
+  final bool isSyncing;
 
   AreaModel({
-    required this.title,
+    this.uuid,
+    required this.name,
     required this.actionPlatform,
     required this.trigger,
     required this.reactionPlatform,
-    required this.action
+    required this.action,
+    this.updatedAt,
+    this.isSyncing = false
   });
 
   factory AreaModel.fromModal(AreaModal modal) {
@@ -26,7 +32,7 @@ class AreaModel {
     }
 
     return AreaModel(
-      title: modal.title!,
+      name: modal.title!,
       actionPlatform: modal.actionPlatform!,
       trigger: modal.trigger!,
       reactionPlatform: modal.reactionPlatform!,
@@ -36,22 +42,50 @@ class AreaModel {
 
   factory AreaModel.fromJson(JsonData data) {
     return AreaModel(
-      title: data['title'],
+      uuid: data['area_uuid'],
+      name: data['name'],
       actionPlatform: PlatformModel.fromJson(data['action_platform']),
       trigger: TriggerModel.fromJson(data['trigger']),
       reactionPlatform: PlatformModel.fromJson(data['reaction_platform']),
-      action: ActionModel.fromJson(data['action'])
+      action: ActionModel.fromJson(data['action']),
+      updatedAt: data['updated_at'] != null
+        ? DateTime.parse(data['updated_at'])
+        : null,
     );
   }
 
   JsonData toJson() {
     return {
-      'title': title,
+      'area_uuid': uuid,
+      'name': name,
       'action_platform': actionPlatform.toJson(),
       'trigger': trigger.toJson(),
       'reaction_platform': reactionPlatform.toJson(),
-      'action': action.toJson()
+      'action': action.toJson(),
+      'updated_at': updatedAt?.toIso8601String(),
     };
+  }
+
+  AreaModel copyWith({
+    String? uuid,
+    String? name,
+    PlatformModel? actionPlatform,
+    TriggerModel? trigger,
+    PlatformModel? reactionPlatform,
+    ActionModel? action,
+    DateTime? updatedAt,
+    bool? isSyncing,
+  }) {
+    return AreaModel(
+      uuid: uuid ?? this.uuid,
+      name: name ?? this.name,
+      actionPlatform: actionPlatform ?? this.actionPlatform,
+      trigger: trigger ?? this.trigger,
+      reactionPlatform: reactionPlatform ?? this.reactionPlatform,
+      action: action ?? this.action,
+      updatedAt: updatedAt ?? this.updatedAt,
+      isSyncing: isSyncing ?? this.isSyncing,
+    );
   }
 
 }

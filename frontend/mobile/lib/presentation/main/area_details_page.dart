@@ -22,7 +22,7 @@ class AreaDetailsPage extends StatelessWidget {
     final textTheme = theme.textTheme;
 
     return MainPageLayout(
-      title: area.title,
+      title: area.name,
       leading: AppbarButton(
         icon: Icons.arrow_back_ios_rounded,
         onTap: () {

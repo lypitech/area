@@ -45,7 +45,7 @@ class AreaCard extends StatelessWidget {
             ],
           ),
           Text(
-            area.title,
+            area.name,
             style: textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w500
             ),
