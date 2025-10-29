@@ -2,24 +2,45 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ReactionInstance } from './schemas/response.schema';
-import { DiscordReactionService } from './services/discord.service';
+import { DiscordReactionService } from './services/Discord/discord.service';
 import { ResponseCreationDto } from './types/responseCreationDto';
 import { DispatchFunction } from './types/dispatchFunction';
+import { ResponseDriver } from './services/contracts/response-driver';
+import { DiscordResponseDriver } from './services/Discord/discord.driver';
 
 @Injectable()
 export class ResponseService {
   private readonly dispatchers = new Map<string, DispatchFunction>();
+  private readonly drivers: ResponseDriver[] = [];
   constructor(
     @InjectModel(ReactionInstance.name)
+    @Inject(DiscordReactionService)
     private responseModel: Model<ReactionInstance>,
-    @Inject(DiscordReactionService) private discord: DiscordReactionService,
+    private readonly discordDriver: DiscordResponseDriver,
   ) {
+    this.drivers = [this.discordDriver];
     this.dispatchers.set('Discord', (reaction, payload) => {
-      return this.discord.dispatch(reaction, payload);
+      return this.discordDriver.dispatch(reaction, payload);
     });
   }
 
+  private getDriverFor(
+    response: ResponseCreationDto,
+  ): ResponseDriver | undefined {
+    return this.drivers.find((d) => d.supports(response));
+  }
+
+  remove(uuid: string) {
+    return this.responseModel.deleteOne({ uuid });
+  }
+
+  findAll() {
+    return this.responseModel.find();
+  }
+
   async create(data: ResponseCreationDto) {
+    const driver = this.getDriverFor(data);
+    await driver?.onCreate?.(data);
     const response: ReactionInstance = await this.responseModel.create(data);
     return response.uuid;
   }
@@ -35,10 +56,11 @@ export class ResponseService {
   }
 
   dispatch(reaction: ReactionInstance, action_payload: Record<string, any>) {
-    const service_name = reaction.service_name.toLowerCase();
-    const dispatcher = this.dispatchers.get(service_name);
+    const dispatcher = this.dispatchers.get(reaction.service_name);
     if (!dispatcher) {
-      throw new NotFoundException(`No dispatcher for ${service_name}.`);
+      throw new NotFoundException(
+        `No dispatcher for ${reaction.service_name}.`,
+      );
     }
     return dispatcher(reaction, action_payload);
   }

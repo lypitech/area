@@ -28,19 +28,24 @@ export class IntervalTriggerDriver
     private readonly responseService: ResponseService,
   ) {}
 
-  private findEnabledAreaByTriggerUUID(trigger_uuid: string): Area[] {
+  private async findEnabledAreaByTriggerUUID(
+    trigger_uuid: string,
+  ): Promise<Area[]> {
     const now = new Date();
-    return this.areaModel.find({
-      trigger_uuid: trigger_uuid,
-      enabled: true,
-      $or: [{ disabled_until: null }, { disabled_until: { $lte: now } }],
-    }) as unknown as Area[];
+    return this.areaModel
+      .find({
+        trigger_uuid,
+        enabled: true,
+        $or: [{ disabled_until: null }, { disabled_until: { $lte: now } }],
+      })
+      .lean()
+      .exec();
   }
 
-  private async appendAreaHistory(area_uuid: string, status: HistoryDto) {
+  private async appendAreaHistory(area_uuid: string, entry: HistoryDto) {
     await this.areaModel.updateOne(
       { uuid: area_uuid },
-      { $push: { history: { status } } },
+      { $push: { history: entry } },
     );
   }
 
@@ -49,9 +54,9 @@ export class IntervalTriggerDriver
   }
 
   async onModuleInit() {
-    const triggers: Trigger[] = await this.triggerModel.find({
-      trigger_type: 'interval',
-    });
+    const triggers: Trigger[] = await this.triggerModel
+      .find({ trigger_type: 'interval' })
+      .exec();
     triggers.forEach((t) => this.registerInterval(t));
     this.logger.log(`Loaded ${triggers.length} interval trigger(s).`);
   }
@@ -90,31 +95,34 @@ export class IntervalTriggerDriver
     }
     const ms = Math.max(1, (t.input?.every as number) ?? 5) * 60_000;
 
-    const interval = setInterval(() => void this.tick(t), ms);
+    const interval = setInterval(() => {
+      this.tick(t).catch((err) => {
+        this.logger.error(`Tick failed for ${name}: ${err?.stack ?? err}`);
+      });
+    }, ms);
+
     this.scheduler.addInterval(name, interval);
     this.logger.log(`Registered interval ${name} every ${ms / 60000} min`);
   }
 
   private async tick(t: Trigger, payload?: Record<string, any>) {
-    const areas = this.findEnabledAreaByTriggerUUID(t.uuid);
-    if (!areas) return;
+    const areas = await this.findEnabledAreaByTriggerUUID(t.uuid);
+    if (!areas?.length) return;
+
     const trigger_payload = payload ?? {
       message: `Tick @ ${new Date().toISOString()} (ts=${Date.now()})`,
     };
+
     for (const area of areas) {
       const response = await this.responseService.findByUUID(
         area.response_uuid,
       );
-      if (!response) throw new NotFoundException('Reaction not found');
+      if (!response) throw new NotFoundException('Response not found');
+
       const responseStatus = await this.responseService.dispatch(
         response,
         trigger_payload,
       );
-      await this.appendAreaHistory(area.uuid, {
-        timestamp: new Date().toISOString(),
-        status: responseStatus.ok ? 'ok' : 'ko',
-        info: responseStatus.error,
-      });
     }
   }
 }
