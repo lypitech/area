@@ -38,7 +38,9 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
     @InjectModel(Trigger.name) private readonly triggerModel: Model<Trigger>,
     @InjectModel(Area.name) private readonly areaModel: Model<Area>,
     private readonly responseService: ResponseService,
-  ) {}
+  ) {
+    this.logger.verbose(`[DiscordTriggerDriver] New instance created`);
+  }
 
   async onModuleInit(): Promise<any> {
     const tmp = await this.serviceService.getActionsByServiceName('Discord');
@@ -51,22 +53,24 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
   }
 
   private connectGateway() {
+    if (this.ws) this.ws.removeAllListeners();
     this.ws = new WebSocket('wss://gateway.discord.gg/?v=10&encoding=json');
     this.ws.on('open', () => {
       this.logger.log('Websocket Connected.');
     });
     this.ws.on('message', (message) => {
       this.discordService.handleGatewayMessage(this.ws, message);
+    });
 
-      this.ws.on('close', (code, reason) => {
-        this.logger.warn(`WebSocket closed (${code}): ${reason}`);
-        this.discordService.stopHeartbeat();
-        setTimeout(() => this.connectGateway(), 5000);
-      });
+    this.ws.once('close', (code, reason) => {
+      this.logger.warn(`WebSocket closed (${code}): ${reason}`);
+      this.discordService.stopHeartbeat();
+      this.ws.removeAllListeners();
+      setTimeout(() => this.connectGateway(), 5000);
+    });
 
-      this.ws.on('error', (err) => {
-        this.logger.error(`WebSocket error: ${err.message}`);
-      });
+    this.ws.on('error', (err) => {
+      this.logger.error(`WebSocket error: ${err.message}`);
     });
   }
 
