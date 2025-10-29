@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { getAreas } from "../services/areaService";
 import type { Area } from "../types";
 import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
 
 export default function Apps() {
   const [areas, setAreas] = useState<Area[]>([]);
   const [loading, setLoading] = useState(true);
+  const nav = useNavigate();
 
   useEffect(() => {
     const fetchAreas = async () => {
@@ -20,7 +22,7 @@ export default function Apps() {
     };
 
     fetchAreas();
-  }, []);
+  }, [nav]);
 
   if (loading) {
     return (
@@ -60,6 +62,11 @@ export default function Apps() {
                   ? "bg-gray-100 border-gray-300"
                   : "bg-white hover:shadow-xl border-gray-200"
               }`}
+              onClick={() => {
+                nav(`/area/${area.uuid}`, {
+                  state: area,
+                });
+              }}
             >
               <div>
                 {/* Header */}

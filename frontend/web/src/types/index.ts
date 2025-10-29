@@ -9,7 +9,7 @@ interface User {
   Area: string[];
 }
 
-type TriggerType = 'webhook' | 'polling' | 'interval';
+export type TriggerType = 'webhook' | 'polling' | 'interval';
 // The names of the interfaces will be the name of the class
 
 interface Service {

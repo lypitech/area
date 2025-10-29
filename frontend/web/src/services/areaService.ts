@@ -37,12 +37,21 @@ export async function createArea(
   selectedReactionService: any,
   userUuid: string,
   input: any,
-  ressourceId: string,
+  ressourceId: string[],
   reactionPayload: string
 ): Promise<Area> {
 
   if (!selectedAction || !selectedReaction) {
     throw new Error("Both action and reaction must be selected before creating an Area");
+  }
+
+  let triggerType: string | null = null;
+  if (selectedActionService.name === "Area") {
+    triggerType = "interval";
+  } else if (selectedActionService.name === "Discord" || selectedActionService.name === "Github") {
+    triggerType = "webhook";
+  } else {
+    triggerType = "polling";
   }
 
   const payload = {
@@ -51,13 +60,13 @@ export async function createArea(
       name: selectedAction.name,
       description: selectedAction.description,
       input: input,
-      trigger_type: "event",
+      trigger_type: triggerType,
     },
     response: {
       service_name: selectedReactionService.name,
       name: selectedReaction.name,
       description: selectedReaction.description,
-      resource_id: ressourceId,
+      resource_ids: ressourceId,
       payload: reactionPayload,
     },
     user_uuid: userUuid,

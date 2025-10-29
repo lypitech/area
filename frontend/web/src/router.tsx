@@ -13,6 +13,7 @@ import CreateAction from "./pages/CreateAction";
 import CreateReaction from "./pages/CreateReaction";
 import NotFound from "./pages/NotFound";
 import SaveArea from "./pages/SaveArea";
+import AreaDetails from "./pages/AreaDetails";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
       { path: "apps", element: <Apps /> },
       { path: "apps/:appName", element: <AppDetails /> },
       { path: "area", element: <Area /> },
+      { path: "area/:areaId", element: <AreaDetails /> },
       { path: "create", element: <Create /> },
       { path: "callback", element: <Callback /> },
       { path: "create/action", element: <CreateAction /> },
