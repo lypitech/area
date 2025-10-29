@@ -5,6 +5,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as bodyParser from 'body-parser';
 import { User } from './user/schemas/user.schema';
 import { ValidationPipe } from '@nestjs/common';
+import { SeederService } from './list/setup/seeder.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,6 +23,9 @@ async function bootstrap() {
     .setDescription('The Documentation for the Area API')
     .setVersion('1.0')
     .build();
+  const seeder = app.get(SeederService);
+  await seeder.populate();
+
   const documentFactory = () =>
     SwaggerModule.createDocument(app, config, { extraModels: [User] });
 

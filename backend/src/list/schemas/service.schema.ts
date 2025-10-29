@@ -22,6 +22,9 @@ export class Service extends Document {
   @Prop({ required: true })
   name!: string;
 
+  @Prop({ required: true })
+  icon!: string;
+
   @Prop({ type: Object })
   endpoints?: Record<string, string>;
 
@@ -35,6 +38,7 @@ export class Service extends Document {
 export interface ServiceType {
   uuid?: string;
   name: string;
+  icon: string;
   endpoints: string[];
   actions: ActionServiceType[];
   reactions: ReactionServiceType[];

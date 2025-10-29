@@ -1,4 +1,4 @@
-import { OnApplicationBootstrap, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Reaction, ReactionType } from 'src/list/schemas/reaction.schema';
 import { Model } from 'mongoose';
@@ -13,7 +13,7 @@ import {
 } from '../schemas/service.schema';
 
 @Injectable()
-export class SeederService implements OnApplicationBootstrap {
+export class SeederService {
   private readonly logger = new Logger('SeederService');
   constructor(
     @InjectModel(Reaction.name)
@@ -24,7 +24,7 @@ export class SeederService implements OnApplicationBootstrap {
     private readonly serviceModel: Model<Service>,
   ) {}
 
-  async onApplicationBootstrap(): Promise<void> {
+  async populate() {
     await this.populate_reactions();
     await this.populate_actions();
     await this.populate_services();
