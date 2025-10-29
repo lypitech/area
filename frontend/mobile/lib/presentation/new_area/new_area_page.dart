@@ -96,7 +96,14 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
               }
 
               final area = AreaModel.fromModal(areaModal);
-              (await ref.read(areaNotifierProvider(user).future)).createArea(area: area);
+              final res = await (await ref.read(areaNotifierProvider(user).future))
+                .createArea(area: area);
+
+              if (res != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('AREA creation failed: $res')),
+                );
+              }
 
               setState(() => _isCreating = false);
 

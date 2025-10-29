@@ -76,7 +76,7 @@ class AreaNotifier extends StateNotifier<AreaState> {
     }
   }
 
-  Future<void> createArea({
+  Future<String?> createArea({
     required AreaModel area
   }) async {
     try {
@@ -88,10 +88,13 @@ class AreaNotifier extends StateNotifier<AreaState> {
           createdArea
         ]
       );
+
+      return null;
     } catch (e) {
       state = state.copyWith(
         error: e.toString()
       );
+      return e.toString();
     }
   }
 
