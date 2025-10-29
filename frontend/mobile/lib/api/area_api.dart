@@ -24,16 +24,31 @@ class AreaApi {
     required String userUuid,
     required AreaModel area
   }) async {
+    print('AREA_CREATE: Creating...');
+
     final response = await dio.post(
-      '/users/$userUuid/areas',
+      '/areas',
       data: {
         'name': area.name,
-        'trigger_uuid': area.trigger.uuid,
-        'action_uuid': area.action.uuid,
-        'trigger_platform_uuid': area.actionPlatform.uuid,
-        'reaction_platform_uuid': area.reactionPlatform.uuid,
+        'description': '',
+        'trigger': {
+          'service_name': area.actionPlatform.name,
+          'name': area.trigger.name,
+          'description': area.trigger.description,
+        },
+        'response': {
+          'service_name': area.reactionPlatform.name,
+          'name': area.action.name,
+          'description': area.action.description,
+        },
+        'user_uuid': userUuid,
+        'enabled': 'true',
       },
     );
+
+    print('AREA_CREATE: Created! Here is the response');
+    print(response.data);
+
     return response.data as JsonData;
   }
 
