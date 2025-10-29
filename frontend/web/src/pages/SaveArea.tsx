@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
 import Input from "../components/Input";
 import { createArea } from "../services/areaService";
 import { useArea } from "../context/AreaContext";
+import { useNavigate } from "react-router-dom";
 
 export default function SaveArea() {
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
@@ -49,6 +52,12 @@ export default function SaveArea() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (success) {
+      navigate("/area");
+    }
+  }, [success]);
 
   return (
     <div className="w-full min-h-screen flex justify-center items-center bg-accent">

@@ -13,7 +13,8 @@ export default function DiscordReaction({ onClose }: DiscordReactionProps) {
   const { setRessourceId, setPayload } = useArea();
 
   const handleSave = () => {
-    setRessourceId(channelId);
+    const data = [channelId];
+    setRessourceId(data);
     setPayload(message);
     console.log("Saved Discord reaction:", { channelId, message });
     onClose?.();
