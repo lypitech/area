@@ -67,25 +67,17 @@ export class AreaService {
       dto.response.service_name,
     );
 
-    const missing: string[] = [];
-    if (
-      !this.noOauthRequired.includes(dto.response.service_name) &&
-      !responseOauth
-    ) {
-      missing.push(dto.response.service_name);
-    }
-    if (
-      !this.noOauthRequired.includes(dto.trigger.service_name) &&
-      !triggerOauth
-    ) {
-      missing.push(dto.trigger.service_name);
-    }
-
-    if (missing.length > 0) {
-      throw new NotFoundException(
-        `missing oauth connection for ${missing.join(' and ')}`,
-      );
-    }
+    // let message = 'missing oauth connection for ';
+    // if (dto.response.service_name != 'Discord' && !responseOauth) {
+    //   message += dto.response.service_name;
+    // }
+    // if (dto.trigger.service_name != 'Discord' && !triggerOauth) {
+    //   message +=
+    //     message.length < 30
+    //       ? dto.response.service_name
+    //       : ' and ' + dto.trigger.service_name;
+    // }
+    // if (message.length > 30) throw new NotFoundException(message);
     const response_uuid = await this.responseService.create({
       service_name: dto.response.service_name,
       name: dto.response.name,

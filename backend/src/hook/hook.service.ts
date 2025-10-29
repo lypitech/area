@@ -33,4 +33,29 @@ export class HookService {
     this.logger.log(`Successfully processed webhook for action ${actionId}`);
     return result;
   }
+
+  async handleTwitchWebhook(
+    payload: Record<string, any>,
+    actionId: string,
+    token: string,
+    event?: string,
+  ) {
+    const eventType = payload?.subscription?.type ?? event ?? 'unknown';
+    const broadcaster = payload?.event?.broadcaster_user_name ?? 'unknown';
+    const user = payload?.event?.user_name ?? null;
+
+    this.logger.log(
+      `Received Twitch webhook for action ${actionId} (event: ${eventType}) from broadcaster: ${broadcaster}`,
+    );
+
+    const result = await this.triggerService.fire(actionId, {
+      event: eventType,
+      broadcaster,
+      user,
+      payload,
+    });
+
+    this.logger.log(`Successfully processed Twitch webhook for action ${actionId}`);
+    return result;
+  }
 }

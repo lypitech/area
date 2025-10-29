@@ -27,6 +27,7 @@ export class LoginController {
         password: { type: 'string', example: 'MyStrongPassword123!' },
         nickname: { type: 'string', example: 'Johnny' },
         username: { type: 'string', example: 'johnny_dev' },
+        profilePicture: { type: 'string', example: '', nullable: true },
       },
       required: ['email', 'password', 'nickname', 'username'],
     },
@@ -55,6 +56,7 @@ export class LoginController {
       userData.password,
       userData.nickname,
       userData.username,
+      userData.profilePicture,
     );
   }
 

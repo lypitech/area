@@ -88,6 +88,43 @@ export class OauthService {
     return this.addToken(user_uuid, token);
   }
 
+  async getTwitchToken(code: string, user_uuid: string) {
+    const tokenResponse = await firstValueFrom(
+      this.httpService.post(
+        'https://id.twitch.tv/oauth2/token',
+
+        new URLSearchParams({
+          client_id: process.env.TWITCH_CLIENT_ID ?? '',
+          client_secret: process.env.TWITCH_CLIENT_SECRET ?? '',
+          code,
+          grant_type: 'authorization_code',
+          redirect_uri: 'http://localhost:8081/callback'
+        }).toString(),
+
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
+      ),
+    );
+    const tokenData = tokenResponse.data;
+    const accessToken = tokenData.access_token;
+    if (!accessToken) {
+      throw new Error('Twitch OAuth failed: no access token returned');
+    }
+    const token = {
+      service_name: 'twitch',
+      token: accessToken,
+      refresh_token: tokenData.refreshToken,
+      token_type: tokenData.token_type,
+      expires_at: tokenData.expires_at,
+    };
+
+    return this.addToken(user_uuid, token);
+  }
+
   async remove(uuid: string): Promise<boolean> {
     const deleted: DeleteResult = await this.oauthModel.deleteOne({ uuid });
     if (!deleted) {

@@ -5,6 +5,7 @@ import { Trigger } from './schemas/trigger.schema';
 import { TriggerDriver } from './contracts/trigger-driver';
 import { IntervalTriggerDriver } from './services/interval/interval.driver';
 import { GithubWebhookTriggerDriver } from './services/github/github.driver';
+import { TwitchWebhookTriggerDriver } from './services/twitch/twitch.driver';
 
 @Injectable()
 export class TriggerService {
@@ -14,9 +15,10 @@ export class TriggerService {
   constructor(
     @InjectModel(Trigger.name) private triggerModel: Model<Trigger>,
     private readonly intervalDriver: IntervalTriggerDriver,
+    private readonly TwitchDriver: TwitchWebhookTriggerDriver,
     private readonly githubDriver: GithubWebhookTriggerDriver,
   ) {
-    this.drivers = [this.intervalDriver, this.githubDriver];
+    this.drivers = [this.intervalDriver, this.githubDriver, this.TwitchDriver];
   }
 
   async getAll(): Promise<Trigger[]> {
