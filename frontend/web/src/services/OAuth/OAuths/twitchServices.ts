@@ -5,13 +5,48 @@ import { getUser } from "../../userService";
 export function twitchLogin() {
   const clientId = import.meta.env.VITE_TWITCH_CLIENT_ID;
   const redirectUri = "http://localhost:8081/callback";
+
+  const scopes = [
+    "user:read:email",
+    "user:read:subscriptions",
+    "user:read:follows",
+    "user:edit",
+    "user:edit:follows",
+    "clips:edit",
+    "channel:manage:broadcast",
+    "channel:manage:moderators",
+    "channel:manage:polls",
+    "channel:manage:predictions",
+    "channel:manage:redemptions",
+    "channel:manage:schedule",
+    "channel:manage:videos",
+    "channel:read:editors",
+    "channel:read:hype_train",
+    "channel:read:polls",
+    "channel:read:predictions",
+    "channel:read:redemptions",
+    "channel:read:subscriptions",
+    "moderation:read",
+    "moderator:manage:banned_users",
+    "moderator:read:chat_settings",
+    "moderator:manage:chat_settings",
+    "moderator:read:followers",
+    "moderator:read:shoutouts",
+    "moderator:manage:shoutouts",
+    "chat:read",
+    "chat:edit",
+    "whispers:read",
+    "whispers:edit",
+  ];
+
   const twitchAuthUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
     redirectUri
-  )}&response_type=code&scope=user:read:email&state=twitch`;
+  )}&response_type=code&scope=${encodeURIComponent(scopes.join(" "))}&state=twitch`;
 
   localStorage.setItem("oauth_redirect_after", window.location.pathname);
   window.location.href = twitchAuthUrl;
 }
+
 
 export function useTwitchToken() {
   const [params] = useSearchParams();
