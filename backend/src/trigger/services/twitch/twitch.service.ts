@@ -1,62 +1,49 @@
 import { Injectable, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import axios from 'axios';
 import { User } from 'src/user/schemas/user.schema';
 import { Oauth } from 'src/oauth/schema/Oauth.schema';
 
 @Injectable()
 export class TwitchService {
     constructor(
-        private readonly config: ConfigService,
+        private readonly configService: ConfigService,
         @InjectModel(User.name) private readonly userModel: Model<User>,
         @InjectModel(Oauth.name) private readonly oauthModel: Model<Oauth>,
     ) {}
 
-    private async getAppAccessToken(): Promise<string> {
-        const clientId = this.config.get<string>('TWITCH_CLIENT_ID');
-        const clientSecret = this.config.get<string>('TWITCH_CLIENT_SECRET');
-
-        const res = await axios.post(
-        `https://id.twitch.tv/oauth2/token`,
-        null,
-        {
-            params: {
-            client_id: clientId,
-            client_secret: clientSecret,
-            grant_type: 'client_credentials',
-            },
-        },
-        );
-
-        return res.data.access_token;
-    }
-
-    async createEventSubSubscription(params: {
-        twitchUserId: string;
-        eventType: string;
+    async configureWebhook(parameters: {
+        userId: string;
         actionId: string;
         actionToken: string;
-    }): Promise<{ id: string }> {
-        const { twitchUserId, eventType, actionId, actionToken } = params;
+        twitchUserId: string;
+        eventType?: string;
+    }): Promise<{ id?: string; raw?: any }> {
+        const { userId, actionId, actionToken, twitchUserId } = parameters;
 
-        const baseUrl =
-        this.config.get<string>('BASE_URL') || 'http://localhost:8080';
-        const callbackUrl = `${baseUrl.replace(/\/$/, '')}/hooks/twitch/${encodeURIComponent(
-        actionId,
-        )}?token=${encodeURIComponent(actionToken)}`;
-        const clientId = this.config.get<string>('TWITCH_CLIENT_ID');
-        const user = await this.userModel.findOne({ uuid: twitchUserId });
-        if (!user) {
-            throw new UnauthorizedException('User not found');
-        }
-        const appToken: Oauth | null = await this.oauthModel.findOne({
-            uuid: { $in: user.oauth_uuids ?? [] },
-            service_name: 'github',
+        const user = await this.userModel.findOne({ uuid: userId });
+        if (!user) throw new UnauthorizedException('User not found');
+
+        const twitchOauth = await this.oauthModel.findOne({
+        uuid: { $in: user.oauth_uuids ?? [] },
+        service_name: 'twitch',
         });
-        const body = {
-        type: eventType, // ex: "stream.online", "stream.offline", etc.
+
+        const baseUrl = this.configService.get<string>('BASE_URL') || 'http://localhost:8080';
+        const callbackUrl = `${baseUrl.replace(/\/$/, '')}/hooks/twitch/${encodeURIComponent(
+            actionId,
+        )}?token=${encodeURIComponent(actionToken)}`;
+
+        const headers = {
+        Authorization: `Bearer ${"4qdij1q257shnsmkvriligt2l1lod8"}`,
+        'Client-Id': this.configService.get<string>('TWITCH_CLIENT_ID') ?? '',
+        'Content-Type': 'application/json',
+        };
+
+        const data = {
+        type: 'stream.online',
         version: '1',
         condition: {
             broadcaster_user_id: twitchUserId,
@@ -71,41 +58,39 @@ export class TwitchService {
         try {
         const response = await axios.post(
             'https://api.twitch.tv/helix/eventsub/subscriptions',
-            body,
-            {
-            headers: {
-                'Client-ID': clientId,
-                Authorization: `Bearer ${appToken}`,
-                'Content-Type': 'application/json',
-            },
-            },
+            data,
+            { headers },
         );
 
-        return { id: response.data.data[0].id };
+        return { id: response.data?.data?.[0]?.id, raw: response.data };
         } catch (error: any) {
-        const msg =
+        const message =
             error?.response?.data?.message ??
             error?.message ??
-            'Erreur Twitch EventSub';
+            'unknown Twitch error';
         throw new HttpException(
-            `Échec création EventSub: ${msg}`,
-            error?.response?.status ?? HttpStatus.BAD_REQUEST,
+            `Failed to configure Twitch webhook: ${message}`,
+            error?.response?.status ?? HttpStatus.UNAUTHORIZED,
         );
         }
     }
 
-    async deleteEventSubSubscription(subscriptionId: string): Promise<void> {
-        const clientId = this.config.get<string>('TWITCH_CLIENT_ID');
-        const appToken = await this.getAppAccessToken();
+    async deleteWebhook(subscriptionId: string): Promise<void> {
+        try {
+        const headers = {
+            Authorization: `Bearer ${process.env.TWITCH_APP_TOKEN}`,
+            'Client-Id': process.env.TWITCH_CLIENT_ID ?? '',
+        };
 
         await axios.delete(
-        `https://api.twitch.tv/helix/eventsub/subscriptions?id=${subscriptionId}`,
-        {
-            headers: {
-            'Client-ID': clientId,
-            Authorization: `Bearer ${appToken}`,
-            },
-        },
+            `https://api.twitch.tv/helix/eventsub/subscriptions?id=${subscriptionId}`,
+            { headers },
         );
+        } catch (error: any) {
+        throw new HttpException(
+            `Failed to delete Twitch webhook: ${error?.message}`,
+            error?.response?.status ?? HttpStatus.BAD_REQUEST,
+        );
+        }
     }
 }

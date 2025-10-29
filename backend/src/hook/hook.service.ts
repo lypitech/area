@@ -40,24 +40,22 @@ export class HookService {
     token: string,
     event?: string,
   ) {
+    const eventType = payload?.subscription?.type ?? event ?? 'unknown';
+    const broadcaster = payload?.event?.broadcaster_user_name ?? 'unknown';
+    const user = payload?.event?.user_name ?? null;
+
     this.logger.log(
-      `Received GitHub webhook for action ${actionId} (event: ${
-        event ?? 'unknown'
-      })`,
+      `Received Twitch webhook for action ${actionId} (event: ${eventType}) from broadcaster: ${broadcaster}`,
     );
 
-    const repository_name: string | null = payload?.repository?.name;
-    const owner: string | null =
-      payload?.repository?.owner?.login || payload?.repository?.owner?.name;
-
     const result = await this.triggerService.fire(actionId, {
-      event,
-      repository: repository_name,
-      owner,
+      event: eventType,
+      broadcaster,
+      user,
       payload,
     });
 
-    this.logger.log(`Successfully processed webhook for action ${actionId}`);
+    this.logger.log(`Successfully processed Twitch webhook for action ${actionId}`);
     return result;
   }
 }

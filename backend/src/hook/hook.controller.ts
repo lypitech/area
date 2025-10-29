@@ -31,21 +31,17 @@ export class HookController {
     );
   }
 
-  @Post('github/:actionId')
+  @Post('twitch/:actionId')
   async handleTwitchWebhook(
     @Param('actionId') actionId: string,
     @Query('token') token: string | undefined,
     @Body() payload: Record<string, any>,
-    @Headers('x-twitch-event') event?: string,
+    @Headers('twitch-eventsub-message-type') eventType?: string,
   ) {
     if (!token) {
       throw new UnauthorizedException('Missing action token');
     }
-    return this.hookService.handleGithubWebhook(
-      payload,
-      actionId,
-      token,
-      event,
-    );
+
+    return this.hookService.handleTwitchWebhook(payload, actionId, token, eventType);
   }
 }

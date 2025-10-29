@@ -64,17 +64,17 @@ export class AreaService {
       dto.response.service_name,
     );
 
-    let message = 'missing oauth connection for ';
-    if (dto.response.service_name != 'Discord' && !responseOauth) {
-      message += dto.response.service_name;
-    }
-    if (dto.trigger.service_name != 'Discord' && !triggerOauth) {
-      message +=
-        message.length < 30
-          ? dto.response.service_name
-          : ' and ' + dto.trigger.service_name;
-    }
-    if (message.length > 30) throw new NotFoundException(message);
+    // let message = 'missing oauth connection for ';
+    // if (dto.response.service_name != 'Discord' && !responseOauth) {
+    //   message += dto.response.service_name;
+    // }
+    // if (dto.trigger.service_name != 'Discord' && !triggerOauth) {
+    //   message +=
+    //     message.length < 30
+    //       ? dto.response.service_name
+    //       : ' and ' + dto.trigger.service_name;
+    // }
+    // if (message.length > 30) throw new NotFoundException(message);
     const response_uuid = await this.responseService.create({
       service_name: dto.response.service_name,
       name: dto.response.name,
