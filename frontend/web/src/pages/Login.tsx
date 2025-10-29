@@ -99,7 +99,7 @@ export default function Login() {
               <Button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 bg-transparent shadow-none"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
