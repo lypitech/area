@@ -4,12 +4,14 @@ import { Trigger, TriggerSchema } from './schemas/trigger.schema';
 import { TriggerService } from './trigger.service';
 import { IntervalModule } from './services/interval/interval.module';
 import { GithubModule } from './services/github/github.module';
+import { DiscordModule } from './services/discord/discord.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Trigger.name, schema: TriggerSchema }]),
     IntervalModule,
     GithubModule,
+    DiscordModule,
   ],
   providers: [TriggerService],
   exports: [TriggerService],
