@@ -11,11 +11,11 @@ services:
     environment:
       - NODE_ENV=development
       - MONGO_URI=mongodb://mongo:27017/nestdb
-    entrypoint: ['/bin/sh', '-lc'] # POSIX shell (Alpine)
-    command: '/app/entrypoint.sh' # récupère BASE_URL depuis ngrok puis lance Nest
+    entrypoint: ['/bin/sh', '-lc']
+    command: '/app/entrypoint.sh'
     depends_on:
       - mongo
-      - ngrok # Nest attend ngrok (pas l’inverse)
+      - ngrok
     env_file:
       - .env.local
 
@@ -24,11 +24,11 @@ services:
     command:
       - http
       - --region=eu
-      - nest-backend:8080 # pas de --bind-tls
+      - nest-backend:8080
     ports:
       - '4040:4040'
     env_file:
-      - .env.local # évite le WARNING d’authtoken
+      - .env.local
 
   mongo:
     image: mongo:6
