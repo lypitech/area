@@ -1,13 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { WebSocket } from 'ws';
-
-const discord_op = {
-  HELLO: 10,
-  HEARTBEAT: 11,
-  DISPATCH: 0,
-  RECONNECT: 7,
-  INVALID: 9,
-};
+import { discord_intents, discord_op } from './types';
 
 @Injectable()
 export class DiscordTriggerService {
@@ -106,9 +99,13 @@ export class DiscordTriggerService {
       this.logger.error('Missing DISCORD_BOT_TOKEN');
       return;
     }
-    const intents = 1 + 512;
+    const intents =
+      discord_intents.GUILDS +
+      discord_intents.GUILD_MESSAGE +
+      discord_intents.GUILD_MESSAGE_REACTION +
+      discord_intents.MESSAGE_CONTENT;
     const payload = {
-      op: 2,
+      op: discord_op.IDENTIFY,
       d: {
         token,
         intents,
