@@ -5,24 +5,37 @@ services:
       dockerfile: Dockerfile
     container_name: nestjs-backend
     ports:
-      - "8080:8080"
+      - '8080:8080'
     volumes:
       - .:/app
     environment:
       - NODE_ENV=development
       - MONGO_URI=mongodb://mongo:27017/nestdb
-    command: npm run start:dev
+    entrypoint: ['/bin/sh', '-lc'] # POSIX shell (Alpine)
+    command: '/app/entrypoint.sh' # récupère BASE_URL depuis ngrok puis lance Nest
     depends_on:
       - mongo
+      - ngrok # Nest attend ngrok (pas l’inverse)
     env_file:
       - .env.local
 
+  ngrok:
+    image: ngrok/ngrok:alpine
+    command:
+      - http
+      - --region=eu
+      - nest-backend:8080 # pas de --bind-tls
+    ports:
+      - '4040:4040'
+    env_file:
+      - .env.local # évite le WARNING d’authtoken
+
   mongo:
     image: mongo:6
-    command: ["--quiet", "--logpath", "/data/db/mongo.log", "--logappend"]
+    command: ['--quiet', '--logpath', '/data/db/mongo.log', '--logappend']
     container_name: mongodb
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - mongo_data:/data/db
 
