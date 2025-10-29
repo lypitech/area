@@ -1,8 +1,8 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Area } from './schemas/area.schema';
-import { Trigger, TriggerType } from 'src/trigger/schemas/trigger.schema';
+import { TriggerType } from 'src/trigger/schemas/trigger.schema';
 import { OauthService } from 'src/oauth/oauth.service';
 import { ResponseService } from 'src/response/response.service';
 import { AreaCreationDto } from './types/areaCreationDto';
@@ -10,12 +10,15 @@ import { TriggerService } from '../trigger/trigger.service';
 
 @Injectable()
 export class AreaService {
+  private readonly noOauthRequired: string[];
   constructor(
     @InjectModel(Area.name) private areaModel: Model<Area>,
     private readonly triggerService: TriggerService,
     private readonly responseService: ResponseService,
     private readonly oauthService: OauthService,
-  ) {}
+  ) {
+    this.noOauthRequired = ['Discord', 'Area'];
+  }
 
   findByUUID(
     uuid: string,
@@ -64,17 +67,25 @@ export class AreaService {
       dto.response.service_name,
     );
 
-    let message = 'missing oauth connection for ';
-    if (dto.response.service_name != 'Discord' && !responseOauth) {
-      message += dto.response.service_name;
+    const missing: string[] = [];
+    if (
+      !this.noOauthRequired.includes(dto.response.service_name) &&
+      !responseOauth
+    ) {
+      missing.push(dto.response.service_name);
     }
-    if (dto.trigger.service_name != 'Discord' && !triggerOauth) {
-      message +=
-        message.length < 30
-          ? dto.response.service_name
-          : ' and ' + dto.trigger.service_name;
+    if (
+      !this.noOauthRequired.includes(dto.trigger.service_name) &&
+      !triggerOauth
+    ) {
+      missing.push(dto.trigger.service_name);
     }
-    if (message.length > 30) throw new NotFoundException(message);
+
+    if (missing.length > 0) {
+      throw new NotFoundException(
+        `missing oauth connection for ${missing.join(' and ')}`,
+      );
+    }
     const response_uuid = await this.responseService.create({
       service_name: dto.response.service_name,
       name: dto.response.name,
