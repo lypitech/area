@@ -14,8 +14,10 @@ services:
     entrypoint: ['/bin/sh', '-lc']
     command: '/app/entrypoint.sh'
     depends_on:
-      - mongo
-      - ngrok
+      mongo:
+        condition: service_started
+      ngrok:
+        condition: service_healthy
     env_file:
       - .env.local
 
@@ -29,6 +31,12 @@ services:
       - '4040:4040'
     env_file:
       - .env.local
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4040/api/tunnels"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
 
   mongo:
     image: mongo:6

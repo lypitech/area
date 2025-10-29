@@ -8,6 +8,7 @@ import { Area, AreaSchema } from 'src/area/schemas/area.schema';
 import { TwitchService } from './twitch.service';
 import { TwitchWebhookTriggerDriver } from './twitch.driver';
 import { ResponseModule } from 'src/response/response.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { ResponseModule } from 'src/response/response.module';
         { name: Area.name, schema: AreaSchema },
         ]),
         ResponseModule,
+        HttpModule,
     ],
     providers: [TwitchService, TwitchWebhookTriggerDriver],
     exports: [TwitchService, TwitchWebhookTriggerDriver],
