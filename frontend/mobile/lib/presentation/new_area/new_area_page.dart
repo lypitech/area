@@ -1,5 +1,7 @@
 import 'package:area/data/provider/area_modal_provider.dart';
+import 'package:area/data/provider/area_provider.dart';
 import 'package:area/data/provider/areas_provider.dart';
+import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/area_model.dart';
@@ -10,6 +12,7 @@ import 'package:area/widget/when_then_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class NewAreaPage extends ConsumerStatefulWidget {
@@ -26,6 +29,7 @@ class NewAreaPage extends ConsumerStatefulWidget {
 class _NewAreaPageState extends ConsumerState<NewAreaPage> {
 
   final _titleController = TextEditingController();
+  bool _isCreating = false;
 
   @override
   void initState() {
@@ -48,8 +52,9 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
         }
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
+        onPressed: () async {
           ref.read(areaModalProvider.notifier).setTitle(_titleController.text);
+
           if (!areaModal.isComplete()) {
             // fixme: tmp
             showDialog(
@@ -78,12 +83,40 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
             return;
           }
 
-          final area = AreaModel.fromModal(areaModal);
+          setState(() => _isCreating = true);
 
-          ref.read(areasProvider).add(area);
+          final authNotifierAsync = ref.watch(authNotifierProvider);
 
-          Fluttertoast.showToast(msg: 'Successfully created AREA');
-          context.pop();
+          return authNotifierAsync.when(
+            data: (authNotifier) async {
+              final user = authNotifier.getUser();
+
+              if (user == null) {
+                return;
+              }
+
+              final area = AreaModel.fromModal(areaModal);
+              (await ref.read(areaNotifierProvider(user).future)).createArea(area: area);
+
+              setState(() => _isCreating = false);
+
+              Fluttertoast.showToast(
+                msg: 'Successfully created AREA'
+              );
+
+              if (context.mounted) {
+                context.pop();
+              }
+            },
+            loading: () => null,
+            error: (err, stack) {
+              setState(() => _isCreating = false);
+              Fluttertoast.showToast(
+                msg: 'Failed to create AREA. Error: $err'
+              );
+              return null;
+            }
+          );
         },
         label: Text(
           l10n.create_area,
@@ -125,6 +158,10 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
             context.pushNamed('choose_platform', pathParameters: { 'mode': 'reaction' });
           }
         ),
+        if (_isCreating) ... {
+          Gap(10),
+          CircularProgressIndicator()
+        }
       ]
     );
   }
