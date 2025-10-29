@@ -192,7 +192,7 @@ export default function Register() {
               <Button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 shadow-none"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
@@ -230,7 +230,7 @@ export default function Register() {
               <Button
                 type="button"
                 onClick={() => setShowConfirmPassword((s) => !s)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 shadow-none"
                 aria-label={
                   showConfirmPassword ? "Hide password" : "Show password"
                 }
