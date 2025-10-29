@@ -5,14 +5,35 @@ import { Model } from 'mongoose';
 import axios from 'axios';
 import { User } from 'src/user/schemas/user.schema';
 import { Oauth } from 'src/oauth/schema/Oauth.schema';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class TwitchService {
     constructor(
         private readonly configService: ConfigService,
+        private readonly httpService: HttpService,
         @InjectModel(User.name) private readonly userModel: Model<User>,
         @InjectModel(Oauth.name) private readonly oauthModel: Model<Oauth>,
     ) {}
+
+    async getTwitchAppToken(): Promise<string> {
+        const resp = await firstValueFrom(
+        this.httpService.post(
+            'https://id.twitch.tv/oauth2/token',
+            new URLSearchParams({
+            client_id: this.configService.get<string>('TWITCH_CLIENT_ID')!,
+            client_secret: this.configService.get<string>('TWITCH_CLIENT_SECRET')!,
+            grant_type: 'client_credentials'
+            }).toString(),
+            {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            },
+        ),
+        );
+
+        return resp.data.access_token;
+    }
 
     async configureWebhook(parameters: {
         userId: string;
@@ -26,20 +47,16 @@ export class TwitchService {
         const user = await this.userModel.findOne({ uuid: userId });
         if (!user) throw new UnauthorizedException('User not found');
 
-        const twitchOauth = await this.oauthModel.findOne({
-        uuid: { $in: user.oauth_uuids ?? [] },
-        service_name: 'twitch',
-        });
+        const appToken = await this.getTwitchAppToken();
 
-        const baseUrl = this.configService.get<string>('BASE_URL') || 'http://localhost:8080';
-        const callbackUrl = `${baseUrl.replace(/\/$/, '')}/hooks/twitch/${encodeURIComponent(
-            actionId,
-        )}?token=${encodeURIComponent(actionToken)}`;
+        const baseUrl = this.configService.get<string>('BASE_URL');
+        const callbackUrl = `${baseUrl}/hooks/twitch/${actionId}?token=${actionToken}`;
 
         const headers = {
-        Authorization: `Bearer ${"4qdij1q257shnsmkvriligt2l1lod8"}`,
-        'Client-Id': this.configService.get<string>('TWITCH_CLIENT_ID') ?? '',
+        Authorization: `Bearer ${appToken}`,
+        'Client-Id': this.configService.get<string>('TWITCH_CLIENT_ID')!,
         'Content-Type': 'application/json',
+        Accept: 'application/json',
         };
 
         const data = {
@@ -62,35 +79,26 @@ export class TwitchService {
             { headers },
         );
 
-        return { id: response.data?.data?.[0]?.id, raw: response.data };
+        return { id: response.data.data[0].id };
         } catch (error: any) {
-        const message =
-            error?.response?.data?.message ??
-            error?.message ??
-            'unknown Twitch error';
         throw new HttpException(
-            `Failed to configure Twitch webhook: ${message}`,
-            error?.response?.status ?? HttpStatus.UNAUTHORIZED,
+            `Failed to configure Twitch webhook: ${error?.response?.data?.message}`,
+            error?.response?.status ?? HttpStatus.BAD_REQUEST,
         );
         }
     }
 
-    async deleteWebhook(subscriptionId: string): Promise<void> {
-        try {
-        const headers = {
-            Authorization: `Bearer ${process.env.TWITCH_APP_TOKEN}`,
-            'Client-Id': process.env.TWITCH_CLIENT_ID ?? '',
-        };
+    async deleteWebhook(subscriptionId: string) {
+        const appToken = await this.getTwitchAppToken();
 
         await axios.delete(
-            `https://api.twitch.tv/helix/eventsub/subscriptions?id=${subscriptionId}`,
-            { headers },
+        `https://api.twitch.tv/helix/eventsub/subscriptions?id=${subscriptionId}`,
+        {
+            headers: {
+            Authorization: `Bearer ${appToken}`,
+            'Client-Id': this.configService.get<string>('TWITCH_CLIENT_ID')!,
+            },
+        },
         );
-        } catch (error: any) {
-        throw new HttpException(
-            `Failed to delete Twitch webhook: ${error?.message}`,
-            error?.response?.status ?? HttpStatus.BAD_REQUEST,
-        );
-        }
     }
 }

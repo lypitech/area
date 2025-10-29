@@ -38,24 +38,36 @@ export class HookService {
     payload: Record<string, any>,
     actionId: string,
     token: string,
-    event?: string,
+    messageType?: string,
   ) {
-    const eventType = payload?.subscription?.type ?? event ?? 'unknown';
-    const broadcaster = payload?.event?.broadcaster_user_name ?? 'unknown';
-    const user = payload?.event?.user_name ?? null;
+    const subscriptionType = payload?.subscription?.type;
+    const broadcaster = payload?.event?.broadcaster_user_name;
+    const isStreamOnlineEvent = subscriptionType === 'stream.online';
 
     this.logger.log(
-      `Received Twitch webhook for action ${actionId} (event: ${eventType}) from broadcaster: ${broadcaster}`,
+      `Twitch webhook received for action=${actionId} messageType=${messageType} subscription=${subscriptionType}`
     );
 
-    const result = await this.triggerService.fire(actionId, {
-      event: eventType,
-      broadcaster,
-      user,
+    if (messageType === 'webhook_callback_verification') {
+      const challenge = payload?.challenge;
+      this.logger.warn(`Responding challenge for Twitch EventSub validation ✅`);
+      return challenge;
+    }
+
+    if (!payload?.event) {
+      this.logger.warn(`Ignoring webhook without event payload ❌`);
+      return { fired: false, reason: 'No event payload' };
+    }
+
+    if (!isStreamOnlineEvent) {
+      this.logger.warn(`Ignoring event '${subscriptionType}' (we only react to stream.online) ⚠️`);
+      return { fired: false, reason: 'Not a stream.online event' };
+    }
+
+    return this.triggerService.fire(actionId, {
+      event: subscriptionType,
+      broadcaster: broadcaster ?? null,
       payload,
     });
-
-    this.logger.log(`Successfully processed Twitch webhook for action ${actionId}`);
-    return result;
   }
 }
