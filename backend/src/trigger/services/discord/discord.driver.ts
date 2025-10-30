@@ -1,29 +1,22 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { TriggerDriver } from 'src/trigger/contracts/trigger-driver';
 import { Trigger } from 'src/trigger/schemas/trigger.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from 'src/user/schemas/user.schema';
 import { Area } from 'src/area/schemas/area.schema';
 import { ResponseService } from 'src/response/response.service';
 import { ServiceService } from 'src/list/service.service';
 import { WebSocket } from 'ws';
 import { DiscordTriggerService } from './discord.service';
 import { discord_op } from './types';
+import { AreaService } from 'src/area/area.service';
 
-type CreateParams = {
-  owner: string;
-  repo: string;
-  event?: string;
-};
-
-const ALLOWED_EVENTS = new Set<string>(['push', 'pull_request', 'issues']);
-
-function normalizeEvent(input?: string): string {
-  const value = (input ?? '').trim();
-  if (value && ALLOWED_EVENTS.has(value)) return value;
-  return 'push';
-}
+type CreateParams = object;
 
 @Injectable()
 export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
@@ -35,7 +28,7 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
   constructor(
     private readonly discordService: DiscordTriggerService,
     private readonly serviceService: ServiceService,
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    private readonly areaService: AreaService,
     @InjectModel(Trigger.name) private readonly triggerModel: Model<Trigger>,
     @InjectModel(Area.name) private readonly areaModel: Model<Area>,
     private readonly responseService: ResponseService,
@@ -108,34 +101,44 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
         );
         break;
       case 'MESSAGE_CREATE':
-        this.logger.log(
-          `Message created by ${data.author.username}: ${data.content}\nOn server: ${data.guild_id}`,
-        );
-        await this.fire_triggers('New message', data);
+        await this.handle_message('New message', data);
         break;
       case 'MESSAGE_REACTION_ADD':
-        this.logger.log(
-          `Reaction added: ${data.emoji.name} on message ${data.message_id}`,
-        );
+        await this.handle_reaction('New reaction', data);
         break;
       default:
         break;
     }
   }
 
-  private async fire_triggers(event_name: string, payload: any) {
+  private async handle_reaction(event_name, payload) {
     const triggers: Trigger[] = await this.triggerModel.find({
       name: event_name,
     });
-    if (triggers.length === 0) this.logger.warn(`No triggers found.`);
     for (const trigger of triggers) {
-      if (trigger.input?.guild_id === payload.guild_id) {
-        if (!trigger.input?.channel_id) {
-          await this.fire(trigger, payload);
-        } else if (trigger.input?.channel_id === payload.channel_id) {
-          await this.fire(trigger, payload);
-        }
+      if (trigger.input?.guild_id !== payload.guild_id) continue;
+      if (trigger.input?.message_id) {
+        if (trigger.input?.message_id !== payload.message_id) continue;
+        await this.fire(trigger, payload);
+        continue;
       }
+      await this.fire(trigger, payload);
+    }
+  }
+
+  private async handle_message(event_name: string, payload: any) {
+    if (payload.author.id === process.env.DISCORD_APP_ID) return;
+    const triggers: Trigger[] = await this.triggerModel.find({
+      name: event_name,
+    });
+    for (const trigger of triggers) {
+      if (trigger.input?.guild_id !== payload.guild_id) continue;
+      if (!trigger.input?.channel_id) {
+        await this.fire(trigger, payload);
+        continue;
+      }
+      if (trigger.input?.channel_id === payload.channel_id)
+        await this.fire(trigger, payload);
     }
   }
 
@@ -146,13 +149,17 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
 
   private async findEnabledAreaByTriggerUUID(
     trigger_uuid: string,
-  ): Promise<Area[]> {
+  ): Promise<Area> {
     const now = new Date();
-    return this.areaModel.find({
+    const area: Area | null = await this.areaModel.findOne({
       trigger_uuid,
       enabled: true,
       $or: [{ disabled_until: null }, { disabled_until: { $lte: now } }],
     });
+    if (area) {
+      return area;
+    }
+    throw new NotFoundException("This shouldn't happen lol");
   }
 
   async onCreate(
@@ -165,6 +172,13 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
   async onRemove(trigger: Trigger, _params?: any) {}
 
   async fire(trigger: Trigger, payload?: Record<string, any>): Promise<void> {
-    this.logger.verbose(`there is a ${trigger.name} on ${payload?.guild_id}, ${payload?.channel_id}`);
+    const area = await this.findEnabledAreaByTriggerUUID(trigger.uuid);
+    const response = await this.responseService.findByUUID(
+      area.response_uuid,
+    );
+    if (!payload) payload = {};
+    if (!response) throw new NotFoundException('Response not found');
+    const result = await this.responseService.dispatch(response, payload);
+    await this.areaService.appendHistory(area.uuid, result.ok ? 'ok' : 'ko');
   }
 }
