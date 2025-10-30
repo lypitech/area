@@ -1,4 +1,4 @@
-import 'package:area/data/provider/areas_provider.dart';
+import 'package:area/data/provider/area_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/user_model.dart';
@@ -21,46 +21,71 @@ class MyAreasPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
-    final areas = ref.watch(areasProvider);
 
-    return MainPageLayout(
-      title: l10n.my_areas_page_title,
-      children: [
-        if (areas.isEmpty) ... {
-          Text(
-            'You have no AREA created for now.',
-            style: textTheme.titleMedium,
-          ),
-        } else ... {
-          ...areas.map((e) => AreaCard(area: e))
-        },
-        Divider(
-          color: Colors.grey.shade300,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 10,
-          children: [
-            Text(
-              'Want to add an AREA?'
-            ),
-            ClickableFrame(
-              onTap: () {
-                context.push('/new_area');
-              },
-              borderRadius: 10,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                child: Text(
-                  'Add AREA',
-                  style: textTheme.titleSmall,
+    final asyncAreasState = ref.watch(areaStateProvider(user));
+
+    return asyncAreasState.when(
+      data: (state) {
+        final areas = state.areas;
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            (await ref.read(areaNotifierProvider(user).future)).syncAreas();
+          },
+          child: MainPageLayout(
+            title: l10n.my_areas_page_title,
+            children: [
+              if (areas.isEmpty) ... {
+                Text(
+                  'You have no AREA created for now.',
+                  style: textTheme.titleMedium,
                 ),
+              } else ... {
+                ...areas.map((e) => AreaCard(area: e))
+              },
+              Divider(
+                color: Colors.grey.shade300,
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  (await ref.read(areaNotifierProvider(user).future)).syncAreas();
+                },
+                child: Text('Refresh (TMP)')
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 10,
+                children: [
+                  Text(
+                    'Want to add an AREA?'
+                  ),
+                  ClickableFrame(
+                    onTap: () {
+                      context.push('/new_area');
+                    },
+                    borderRadius: 10,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      child: Text(
+                        'Add AREA',
+                        style: textTheme.titleSmall,
+                      ),
+                    )
+                  )
+                ],
               )
-            )
-          ],
-        )
-      ],
+            ],
+          ),
+        );
+      },
+      error: (err, stack) {
+        return Center(
+          child: Text(err.toString()),
+        );
+      },
+      loading: () => CircularProgressIndicator()
     );
+
   }
 
 }
