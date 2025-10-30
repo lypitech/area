@@ -147,7 +147,7 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
             ? areaModal.trigger!.name
             : l10n.choose_trigger,
           subtitle: areaModal.actionPlatform != null
-            ? '${areaModal.actionPlatform!.name} (${areaModal.actionPlatform!.uuid})'
+            ? areaModal.actionPlatform!.name
             : l10n.choose_platform,
           icon: areaModal.actionPlatform?.icon,
           onTap: () {
@@ -160,7 +160,7 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
             ? areaModal.action!.name
             : l10n.choose_action,
           subtitle: areaModal.reactionPlatform != null
-            ? '${areaModal.reactionPlatform!.name} (${areaModal.reactionPlatform!.uuid})'
+            ? areaModal.reactionPlatform!.name
             : l10n.choose_platform,
           icon: areaModal.reactionPlatform?.icon,
           onTap: () {
