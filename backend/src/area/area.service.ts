@@ -121,6 +121,11 @@ export class AreaService {
   }
 
   async remove(uuid: string): Promise<boolean> {
+    const found = await this.findByUUID(uuid);
+    if (found) {
+      await this.triggerService.remove(found.trigger_uuid);
+      await this.responseService.remove(found.response_uuid);
+    }
     const result = await this.areaModel.deleteOne({ uuid });
     if (!result) {
       throw new NotFoundException(`No area with uuid ${uuid}.`);
