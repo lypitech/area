@@ -22,7 +22,7 @@ class PlatformModel {
     return PlatformModel(
       uuid: json['uuid'] as String,
       name: json['name'] as String,
-      iconBase64: json['iconBase64'] as String?,
+      iconBase64: json['icon'] as String?,
       triggers: (json['actions'] as List<dynamic>?)
           ?.map((e) => TriggerModel.fromJson(JsonData.from(e)))
           .toList()
@@ -37,7 +37,7 @@ class PlatformModel {
   JsonData toJson() => {
     'uuid': uuid,
     'name': name,
-    'iconBase64': iconBase64,
+    'icon': iconBase64,
     'actions': triggers.map((t) => t.toJson()).toList(),
     'reactions': actions.map((a) => a.toJson()).toList(),
   };
