@@ -15,6 +15,7 @@ import { OauthService } from 'src/oauth/oauth.service';
 import { UserService } from 'src/user/user.service';
 import { Oauth, OauthSchema } from 'src/oauth/schema/Oauth.schema';
 import { HttpModule } from '@nestjs/axios';
+import { TwitchModule } from '../twitch/twitch.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { HttpModule } from '@nestjs/axios';
     ResponseModule,
     GithubModule,
     IntervalModule,
+    TwitchModule,
     MongooseModule.forFeature([
       { name: Oauth.name, schema: OauthSchema },
       { name: User.name, schema: UserSchema },
