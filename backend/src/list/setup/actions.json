@@ -5,8 +5,14 @@
     "description": "triggers when a new message is posted in the specified server",
     "parameters": [
       {
-        "guild_id": "The id of the server to watch",
-        "channel_id": "The id of the channel to watch (optional)"
+        "name": "guild_id",
+        "type": "string",
+        "description": "The id of the server to watch"
+      },
+      {
+        "name": "channel_id",
+        "type": "string",
+        "description": "The id of the channel to watch (optional)"
       }
     ],
     "trigger_types": ["webhook"]
@@ -18,9 +24,19 @@
     "description": "triggers when a new reaction is added on a server",
     "parameters": [
       {
-        "guild_id": "The id of the server to watch",
-        "channel_id": "The id of the channel to watch (optional)",
-        "message_id": "The id of the message to monitor(optional)"
+        "name": "guild_id",
+        "type": "string",
+        "description": "The id of the Server to watch"
+      },
+      {
+        "name": "channel_id",
+        "type": "string",
+        "description": "The id of the channel to watch (optional)"
+      },
+      {
+        "name": "message_id",
+        "type": "string",
+        "description": "The id of the message to watch(optional)"
       }
     ],
     "trigger_types": ["webhook"]
@@ -32,9 +48,19 @@
     "description": "trigger when a push is made on the given repository",
     "parameters": [
       {
-        "owner": "owner name",
-        "repo": "repo name",
-        "event": "push"
+        "name": "owner",
+        "type":  "string",
+        "description": "The owner of the repository"
+      },
+      {
+        "name": "repo",
+        "type": "string",
+        "description": "The full repository name (e.g., user/repo)"
+      },
+      {
+        "name": "event",
+        "type": "string",
+        "description": "push"
       }
     ],
     "trigger_types": ["webhook"]
@@ -46,9 +72,19 @@
     "description": "trigger when a pull request is opened",
     "parameters": [
       {
-        "owner": "owner name",
-        "repo": "repo name",
-        "event": "pull_request"
+        "name": "owner",
+        "type":  "string",
+        "description": "The owner of the repository"
+      },
+      {
+        "name": "repo",
+        "type": "string",
+        "description": "The full repository name (e.g., user/repo)"
+      },
+      {
+        "name": "event",
+        "type": "string",
+        "description": "pull_request"
       }
     ],
     "trigger_types": ["webhook"]
@@ -60,9 +96,19 @@
     "description": "trigger when a new issue is opened",
     "parameters": [
       {
-        "owner": "owner name",
-        "repo": "repo name",
-        "event": "issues"
+        "name": "owner",
+        "type":  "string",
+        "description": "The owner of the repository"
+      },
+      {
+        "name": "repo",
+        "type": "string",
+        "description": "The full repository name (e.g., user/repo)"
+      },
+      {
+        "name": "event",
+        "type": "string",
+        "description": "issues"
       }
     ],
     "trigger_types": ["webhook"]
