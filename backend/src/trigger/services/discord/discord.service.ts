@@ -6,50 +6,31 @@ import { discord_intents, discord_op } from './types';
 export class DiscordTriggerService {
   private readonly logger = new Logger(DiscordTriggerService.name);
   private heartbeatInterval: NodeJS.Timeout | null = null;
-  private ws: WebSocket;
   private lastSeq: number;
   private sessionId: string;
 
   constructor() {}
 
-  handleGatewayMessage(ws: WebSocket, message: any) {
-    this.ws = ws;
-    const payload = JSON.parse(message.toString());
-    const { t, s, op, d } = payload;
-
-    if (s) this.lastSeq = s as number;
-
-    switch (op) {
-      case discord_op.HELLO:
-        this.handleHello(d);
-        break;
-      case discord_op.HEARTBEAT:
-        this.logger.verbose('Heartbeat ACK');
-        break;
-      case discord_op.DISPATCH:
-        this.handleDispatch(t, d);
-        break;
-      case discord_op.RECONNECT:
-        this.logger.warn('Gateway requested reconnect');
-        this.reconnect();
-        break;
-      case discord_op.INVALID:
-        this.logger.warn('Invalid session, re-identifying soon...');
-        setTimeout(() => this.identify(), 5000);
-        break;
-      default:
-        this.logger.debug(`Unhandled opcode ${op}`);
-    }
+  setLastSeq(lastSeq: number) {
+    this.lastSeq = lastSeq;
   }
 
-  handleHello(data: any) {
+  setSessionId(sessionId: string) {
+    this.sessionId = sessionId;
+  }
+
+  getSessionId(): string {
+    return this.sessionId;
+  }
+
+  handleHello(ws: WebSocket, data: any) {
     const interval = data.heartbeat_interval as number;
     this.logger.log(`Received Hello, heartbeat every ${interval}ms`);
-    this.startHeartbeat(interval);
-    this.identify();
+    this.startHeartbeat(ws, interval);
+    this.identify(ws);
   }
 
-  private startHeartbeat(interval: number) {
+  private startHeartbeat(ws: WebSocket, interval: number) {
     if (this.heartbeatInterval) clearInterval(this.heartbeatInterval);
     this.heartbeatInterval = setInterval(() => {
       const payload = {
@@ -57,7 +38,7 @@ export class DiscordTriggerService {
         d: this.lastSeq,
       };
       this.logger.verbose('Sending heartbeat...');
-      this.ws?.send(JSON.stringify(payload));
+      ws.send(JSON.stringify(payload));
     }, interval);
   }
 
@@ -66,34 +47,13 @@ export class DiscordTriggerService {
     this.heartbeatInterval = null;
   }
 
-  handleDispatch(event: any, data: any) {
-    switch (event) {
-      case 'READY':
-        this.sessionId = data.session_id as string;
-        this.logger.log(`READY received. Session ID: ${this.sessionId}`);
-        break;
-      case 'MESSAGE_CREATE':
-        this.logger.log(
-          `Message created by ${data.author.username}: ${data.content}`,
-        );
-        break;
-      case 'MESSAGE_REACTION_ADD':
-        this.logger.log(
-          `Reaction added: ${data.emoji.name} on message ${data.message_id}`,
-        );
-        break;
-      default:
-        break;
-    }
-  }
-
-  private reconnect() {
+  reconnect(ws: WebSocket) {
     this.logger.warn('Reconnecting to Discord Gateway...');
     this.stopHeartbeat();
-    this.ws?.close();
+    ws.close();
   }
 
-  private identify() {
+  identify(ws: WebSocket) {
     const token = process.env.DISCORD_BOT_TOKEN;
     if (!token) {
       this.logger.error('Missing DISCORD_BOT_TOKEN');
@@ -118,6 +78,6 @@ export class DiscordTriggerService {
     };
 
     this.logger.log('Sending Identify payload...');
-    this.ws.send(JSON.stringify(payload));
+    ws.send(JSON.stringify(payload));
   }
 }

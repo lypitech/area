@@ -9,6 +9,7 @@ import { ResponseService } from 'src/response/response.service';
 import { ServiceService } from 'src/list/service.service';
 import { WebSocket } from 'ws';
 import { DiscordTriggerService } from './discord.service';
+import { discord_op } from './types';
 
 type CreateParams = {
   owner: string;
@@ -49,18 +50,13 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
     }
     // this.logger.log('Connecting to discord Gateway...');
     // this.connectGateway();
-    // this.logger.log('Successfully connected to discord Gateway');
   }
 
   private connectGateway() {
     if (this.ws) this.ws.removeAllListeners();
     this.ws = new WebSocket('wss://gateway.discord.gg/?v=10&encoding=json');
-    this.ws.on('open', () => {
-      this.logger.log('Websocket Connected.');
-    });
-    this.ws.on('message', (message) => {
-      this.discordService.handleGatewayMessage(this.ws, message);
-    });
+    this.ws.on('open', () => this.logger.log('Websocket Connected.'));
+    this.ws.on('message', (message) => this.handleGatewayEvent(message));
 
     this.ws.once('close', (code, reason) => {
       this.logger.warn(`WebSocket closed (${code}): ${reason}`);
@@ -72,6 +68,58 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
     this.ws.on('error', (err) => {
       this.logger.error(`WebSocket error: ${err.message}`);
     });
+  }
+
+  handleGatewayEvent(message) {
+    const payload = JSON.parse(message.toString());
+    const { t, s, op, d } = payload;
+
+    if (s) this.discordService.setLastSeq(s);
+
+    switch (op) {
+      case discord_op.HELLO:
+        this.discordService.handleHello(this.ws, d);
+        break;
+      case discord_op.HEARTBEAT:
+        this.logger.verbose('Heartbeat ACK');
+        break;
+      case discord_op.DISPATCH:
+        this.handleDispatch(t, d);
+        break;
+      case discord_op.RECONNECT:
+        this.logger.warn('Gateway requested reconnect');
+        this.discordService.reconnect(this.ws);
+        break;
+      case discord_op.INVALID:
+        this.logger.warn('Invalid session, re-identifying soon...');
+        setTimeout(() => this.discordService.identify(this.ws), 5000);
+        break;
+      default:
+        this.logger.debug(`Unhandled opcode: [${op}]`);
+    }
+  }
+
+  handleDispatch(event, data) {
+    switch (event) {
+      case 'READY':
+        this.discordService.setSessionId(data.session_id as string);
+        this.logger.log(
+          `READY received. Session ID: ${this.discordService.getSessionId()}`,
+        );
+        break;
+      case 'MESSAGE_CREATE':
+        this.logger.log(
+          `Message created by ${data.author.username}: ${data.content}\nOn server: ${data.guild_id}`,
+        );
+        break;
+      case 'MESSAGE_REACTION_ADD':
+        this.logger.log(
+          `Reaction added: ${data.emoji.name} on message ${data.message_id}`,
+        );
+        break;
+      default:
+        break;
+    }
   }
 
   supports(trigger: Trigger): boolean {
