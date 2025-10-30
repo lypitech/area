@@ -75,6 +75,7 @@ export class SeederService {
         actionList.push({
           uuid: action.uuid,
           name: action.name,
+          parameters: action.parameters,
           description: action.description,
         } as unknown as ActionServiceType);
       }
@@ -87,6 +88,7 @@ export class SeederService {
         reactionList.push({
           uuid: reaction.uuid,
           name: reaction.name,
+          parameters: reaction.parameters,
           description: reaction.description,
         } as unknown as ReactionServiceType);
       }

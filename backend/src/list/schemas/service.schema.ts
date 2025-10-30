@@ -5,12 +5,14 @@ import { v4 as uuid_v4 } from 'uuid';
 export type ActionServiceType = {
   uuid: string;
   name: string;
+  parameters: Record<string, any>;
   description: string;
 };
 
 export type ReactionServiceType = {
   uuid: string;
   name: string;
+  parameters: Record<string, any>;
   description: string;
 };
 
