@@ -48,8 +48,8 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
     for (const res of tmp) {
       this.triggers.push(res);
     }
-    // this.logger.log('Connecting to discord Gateway...');
-    // this.connectGateway();
+    this.logger.log('Connecting to discord Gateway...');
+    this.connectGateway();
   }
 
   private connectGateway() {
@@ -111,7 +111,7 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
         this.logger.log(
           `Message created by ${data.author.username}: ${data.content}\nOn server: ${data.guild_id}`,
         );
-        await this.fire_triggers(event, data);
+        await this.fire_triggers('New message', data);
         break;
       case 'MESSAGE_REACTION_ADD':
         this.logger.log(
@@ -130,7 +130,11 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
     if (triggers.length === 0) this.logger.warn(`No triggers found.`);
     for (const trigger of triggers) {
       if (trigger.input?.guild_id === payload.guild_id) {
-        await this.fire(trigger, payload);
+        if (!trigger.input?.channel_id) {
+          await this.fire(trigger, payload);
+        } else if (trigger.input?.channel_id === payload.channel_id) {
+          await this.fire(trigger, payload);
+        }
       }
     }
   }
@@ -161,6 +165,6 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
   async onRemove(trigger: Trigger, _params?: any) {}
 
   async fire(trigger: Trigger, payload?: Record<string, any>): Promise<void> {
-    this.logger.verbose(`there is a ${trigger.name} on ${payload?.guild_id}`);
+    this.logger.verbose(`there is a ${trigger.name} on ${payload?.guild_id}, ${payload?.channel_id}`);
   }
 }

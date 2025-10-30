@@ -1,5 +1,18 @@
 [
   {
+    "service_name": "Discord",
+    "name": "New message",
+    "description": "triggers when a new message is posted in the specified server",
+    "parameters": [
+      {
+        "guild_id": "The id of the server to watch",
+        "channel_id": "The id of the channel to watch (optional)"
+      }
+    ],
+    "trigger_types": ["webhook"]
+  },
+
+  {
     "service_name": "Github",
     "name": "Push on repository",
     "description": "trigger when a push is made on the given repository",
