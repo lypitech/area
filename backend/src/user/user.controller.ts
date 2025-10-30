@@ -5,9 +5,12 @@ import {
   Param,
   UsePipes,
   ValidationPipe,
+  Patch,
+  Body,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AreaService } from '../area/area.service';
+import { UserDto } from './types/userDto';
 
 @Controller('users')
 export class UserController {
@@ -61,6 +64,14 @@ export class UserController {
   @UsePipes(new ValidationPipe({ whitelist: true }))
   getUser(@Param('refreshtoken') refreshtoken: string) {
     return this.userService.findUserByRefreshToken(refreshtoken);
+  }
+
+  @Patch(':uuid')
+  async updateUser(
+    @Param('uuid') uuid: string,
+    @Body() userDto: Partial<UserDto>,
+  ): Promise<string> {
+    return this.userService.updateUser(uuid, userDto);
   }
 
   @Delete(':uuid')
