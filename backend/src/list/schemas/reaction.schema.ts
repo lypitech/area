@@ -17,19 +17,15 @@ export class Reaction extends Document {
   description!: string;
 
   @Prop({ type: Object, required: true })
-  parameters!: Record<string, any>;
-
-  @Prop({ type: Object, required: true })
-  schema_input: Record<string, any>; // this field is required to be a json with expected fields by the service
+  parameters!: Record<string, any>[];
 }
 
 export interface ReactionType {
   uuid?: string;
   service_name: string;
   name: string;
-  parameters: Record<string, any>;
+  parameters: Record<string, any>[];
   description: string;
-  schema_input: Record<string, any>;
 }
 
 export const ReactionSchema = SchemaFactory.createForClass(Reaction);
