@@ -146,4 +146,24 @@ export class UserService {
 
     throw new NotFoundException(`No OAuth token found for service ${service}.`);
   }
+
+  async updateUser(uuid: string, updateData: Partial<UserDto>): Promise<string> {
+    const user: User | null = await this.userModel.findOne({ uuid });
+    if (!user) {
+      throw new NotFoundException(`No user with uuid ${uuid} found.`);
+    }
+    if (updateData.password) {
+      const salt = await bcrypt.genSalt();
+      updateData.password = await bcrypt.hash(updateData.password, salt);
+    }
+    const updatedUser: User | null = await this.userModel.findOneAndUpdate(
+      { uuid },
+      { $set: updateData },
+      { new: true, runValidators: true },
+    );
+    if (!updatedUser) {
+      throw new NotFoundException(`Failed to update user with uuid ${uuid}.`);
+    }
+    return `User successfully updated.`;
+  }
 }
