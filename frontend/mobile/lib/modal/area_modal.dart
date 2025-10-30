@@ -68,6 +68,15 @@ class AreaModal {
 
     return true;
   }
+
+  void reset() {
+    title = null;
+    actionPlatform = null;
+    trigger = null;
+    triggerParameters = null;
+    reactionPlatform = null;
+    action = null;
+    actionParameters = null;
   }
 
 }
@@ -109,4 +118,9 @@ class AreaModalNotifier extends StateNotifier<AreaModal> {
   void setActionParameters(Map<String, dynamic>? parameters) {
     state = state.copyWith(actionParameters: parameters);
   }
+
+  void reset() {
+    state.reset();
+  }
+
 }
