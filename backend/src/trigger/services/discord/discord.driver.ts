@@ -70,7 +70,7 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
     });
   }
 
-  handleGatewayEvent(message) {
+  async handleGatewayEvent(message) {
     const payload = JSON.parse(message.toString());
     const { t, s, op, d } = payload;
 
@@ -84,7 +84,7 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
         this.logger.verbose('Heartbeat ACK');
         break;
       case discord_op.DISPATCH:
-        this.handleDispatch(t, d);
+        await this.handleDispatch(t, d);
         break;
       case discord_op.RECONNECT:
         this.logger.warn('Gateway requested reconnect');
@@ -99,18 +99,19 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
     }
   }
 
-  handleDispatch(event, data) {
+  async handleDispatch(event, data) {
     switch (event) {
       case 'READY':
         this.discordService.setSessionId(data.session_id as string);
         this.logger.log(
-          `READY received. Session ID: ${this.discordService.getSessionId()}`,
+          `READY: Session ID: ${this.discordService.getSessionId()}`,
         );
         break;
       case 'MESSAGE_CREATE':
         this.logger.log(
           `Message created by ${data.author.username}: ${data.content}\nOn server: ${data.guild_id}`,
         );
+        await this.fire_triggers(event, data);
         break;
       case 'MESSAGE_REACTION_ADD':
         this.logger.log(
@@ -119,6 +120,18 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
         break;
       default:
         break;
+    }
+  }
+
+  private async fire_triggers(event_name: string, payload: any) {
+    const triggers: Trigger[] = await this.triggerModel.find({
+      name: event_name,
+    });
+    if (triggers.length === 0) this.logger.warn(`No triggers found.`);
+    for (const trigger of triggers) {
+      if (trigger.input?.guild_id === payload.guild_id) {
+        await this.fire(trigger, payload);
+      }
     }
   }
 
@@ -131,14 +144,11 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
     trigger_uuid: string,
   ): Promise<Area[]> {
     const now = new Date();
-    return this.areaModel
-      .find({
-        trigger_uuid,
-        enabled: true,
-        $or: [{ disabled_until: null }, { disabled_until: { $lte: now } }],
-      })
-      .lean()
-      .exec();
+    return this.areaModel.find({
+      trigger_uuid,
+      enabled: true,
+      $or: [{ disabled_until: null }, { disabled_until: { $lte: now } }],
+    });
   }
 
   async onCreate(
@@ -150,5 +160,7 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
 
   async onRemove(trigger: Trigger, _params?: any) {}
 
-  async fire(trigger: Trigger, payload?: Record<string, any>): Promise<void> {}
+  async fire(trigger: Trigger, payload?: Record<string, any>): Promise<void> {
+    this.logger.verbose(`there is a ${trigger.name} on ${payload?.guild_id}`);
+  }
 }
