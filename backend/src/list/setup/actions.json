@@ -13,6 +13,20 @@
   },
 
   {
+    "service_name": "Discord",
+    "name": "New reaction",
+    "description": "triggers when a new reaction is added on a server",
+    "parameters": [
+      {
+        "guild_id": "The id of the server to watch",
+        "channel_id": "The id of the channel to watch (optional)",
+        "message_id": "The id of the message to monitor(optional)"
+      }
+    ],
+    "trigger_types": ["webhook"]
+  },
+
+  {
     "service_name": "Github",
     "name": "Push on repository",
     "description": "trigger when a push is made on the given repository",
