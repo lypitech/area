@@ -1,5 +1,6 @@
 import 'package:area/core/constant/constants.dart';
 import 'package:area/model/area_model.dart';
+import 'package:area/model/parameter_model.dart';
 import 'package:area/model/platform_model.dart';
 import 'package:area/presentation/auth/login_page.dart';
 import 'package:area/presentation/auth/registration/register_page.dart';
@@ -10,6 +11,7 @@ import 'package:area/presentation/main_page.dart';
 import 'package:area/presentation/new_area/choose_platform_page.dart';
 import 'package:area/presentation/new_area/choose_trigger_action_page.dart';
 import 'package:area/presentation/new_area/new_area_page.dart';
+import 'package:area/presentation/new_area/parameter_input_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -82,6 +84,24 @@ final routerProvider = Provider<GoRouter>((ref) {
                         mode: mode,
                       );
                     },
+                    routes: [
+                      GoRoute(
+                        name: 'parameter_input',
+                        path: 'parameters',
+                        builder: (_, state) {
+                          final extra = state.extra as Map<String, dynamic>;
+                          final parameters = extra['parameters'] as List<ParameterModel>;
+                          final name = extra['name'] as String;
+                          final isAction = extra['isAction'] as bool;
+
+                          return ParameterInputPage(
+                            parameters: parameters,
+                            triggerOrActionName: name,
+                            isAction: isAction,
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
