@@ -2,7 +2,10 @@
   {
     "service_name": "Discord",
     "name": "Send message",
-    "description": "Send a message to the specified webhook",
+    "description": "Send a message to the specified channel",
+    "parameters": {
+      "guild_id": "string"
+    },
     "schema_input": {
       "message": "string"
     }
@@ -10,6 +13,11 @@
   {
     "service_name": "Discord",
     "name": "Add role",
+    "parameters": {
+      "guild_id": "string",
+      "user_id": "string",
+      "role_id": "string"
+    },
     "description": "Adds the specified role to the specified user",
     "schema_input": {}
   }
