@@ -8,40 +8,66 @@ class AreaModal {
   String? title;
   PlatformModel? actionPlatform;
   TriggerModel? trigger;
+  Map<String, dynamic>? triggerParameters;
   PlatformModel? reactionPlatform;
   ActionModel? action;
+  Map<String, dynamic>? actionParameters;
 
   AreaModal({
     this.title,
     this.actionPlatform,
     this.trigger,
+    this.triggerParameters,
     this.reactionPlatform,
-    this.action
+    this.action,
+    this.actionParameters
   });
 
   AreaModal copyWith({
     String? title,
     PlatformModel? actionPlatform,
     TriggerModel? trigger,
+    Map<String, dynamic>? triggerParameters,
     PlatformModel? reactionPlatform,
     ActionModel? action,
+    Map<String, dynamic>? actionParameters,
   }) {
     return AreaModal(
       title: title ?? this.title,
       actionPlatform: actionPlatform ?? this.actionPlatform,
       trigger: trigger ?? this.trigger,
+      triggerParameters: triggerParameters ?? this.triggerParameters,
       reactionPlatform: reactionPlatform ?? this.reactionPlatform,
       action: action ?? this.action,
+      actionParameters: actionParameters ?? this.actionParameters,
     );
   }
 
   bool isComplete() {
-    return title != null
+    final hasBasicInfo =
+      title != null
       && title!.isNotEmpty
       && actionPlatform != null
       && trigger != null
       && reactionPlatform != null
       && action != null;
+
+    if (!hasBasicInfo) {
+      return false;
+    }
+
+    if (trigger!.requiredParams.isNotEmpty &&
+        (triggerParameters == null || triggerParameters!.isEmpty)) {
+      return false;
+    }
+
+    if (action!.requiredParams.isNotEmpty &&
+        (actionParameters == null || actionParameters!.isEmpty)) {
+      return false;
+    }
+
+    return true;
+  }
   }
 
 }
@@ -59,7 +85,14 @@ class AreaModalNotifier extends StateNotifier<AreaModal> {
   }
 
   void setTrigger(TriggerModel? trigger) {
-    state = state.copyWith(trigger: trigger);
+    state = state.copyWith(
+      trigger: trigger,
+      triggerParameters: {}
+    );
+  }
+
+  void setTriggerParameters(Map<String, dynamic>? parameters) {
+    state = state.copyWith(triggerParameters: parameters);
   }
 
   void setReactionPlatform(PlatformModel? platform) {
@@ -67,7 +100,13 @@ class AreaModalNotifier extends StateNotifier<AreaModal> {
   }
 
   void setAction(ActionModel? action) {
-    state = state.copyWith(action: action);
+    state = state.copyWith(
+      action: action,
+      actionParameters: {},
+    );
   }
 
+  void setActionParameters(Map<String, dynamic>? parameters) {
+    state = state.copyWith(actionParameters: parameters);
+  }
 }
