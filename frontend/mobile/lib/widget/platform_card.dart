@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:area/model/platform_model.dart';
 import 'package:area/widget/clickable_frame.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +38,13 @@ class PlatformCard extends ConsumerWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                 ),
-                child: Placeholder(), // TODO: Put platform icon
+                child: platform.icon
+                  ?? Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      shape: BoxShape.circle
+                    ),
+                  ),
               ),
               Gap(10),
               Text(

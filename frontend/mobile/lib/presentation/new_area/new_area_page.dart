@@ -149,6 +149,7 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
           subtitle: areaModal.actionPlatform != null
             ? '${areaModal.actionPlatform!.name} (${areaModal.actionPlatform!.uuid})'
             : l10n.choose_platform,
+          icon: areaModal.actionPlatform?.icon,
           onTap: () {
             context.pushNamed('choose_platform', pathParameters: { 'mode': 'action' });
           }
@@ -161,6 +162,7 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
           subtitle: areaModal.reactionPlatform != null
             ? '${areaModal.reactionPlatform!.name} (${areaModal.reactionPlatform!.uuid})'
             : l10n.choose_platform,
+          icon: areaModal.reactionPlatform?.icon,
           onTap: () {
             context.pushNamed('choose_platform', pathParameters: { 'mode': 'reaction' });
           }
