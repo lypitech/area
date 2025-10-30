@@ -4,14 +4,14 @@ import 'package:dio/dio.dart';
 
 class PlatformApi {
 
-  final Dio _dio;
+  final Dio dio;
 
   PlatformApi(
-    this._dio
+    this.dio
   );
 
   Future<List<PlatformModel>> fetchPlatforms() async {
-    final response = await _dio.get('/services');
+    final response = await dio.get('/services');
     final list = response.data as List<dynamic>;
 
     return list
