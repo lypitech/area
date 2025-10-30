@@ -71,13 +71,13 @@ class _ChooseTriggerActionPageState extends ConsumerState<ChooseTriggerActionPag
         } else ... {
           ...widget.platform.actions
             .map((e) => TriggerActionCard(
-            title: e.name,
-            description: e.description,
-            onTap: () {
-              ref.read(areaModalProvider.notifier).setAction(e);
-              context.goNamed('new_area');
-            }
-          ))
+              title: e.name,
+              description: e.description,
+              onTap: () {
+                ref.read(areaModalProvider.notifier).setAction(e);
+                context.goNamed('new_area');
+              }
+            ))
         }
       ]
     );

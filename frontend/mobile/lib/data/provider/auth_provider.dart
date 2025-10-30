@@ -202,7 +202,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       if (access != null && refresh != null) {
         await service.saveTokens(accessToken: access, refreshToken: refresh);
+
         final user = await api.getUser(refreshToken: refresh);
+
         state = AuthState.authenticated(user);
       } else {
         throw Exception('Invalid login response after register (register may have been unsuccessful)');
