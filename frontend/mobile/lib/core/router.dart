@@ -1,3 +1,4 @@
+import 'package:area/core/constant/constants.dart';
 import 'package:area/model/area_model.dart';
 import 'package:area/model/platform_model.dart';
 import 'package:area/presentation/auth/login_page.dart';
@@ -15,7 +16,14 @@ import 'package:go_router/go_router.dart';
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/init',
-    errorBuilder: (_,__) => ErrorPage(),
+    errorBuilder: (_, __) => ErrorPage(),
+    redirect: (context, state) {
+      final uri = state.uri;
+      if (uri.scheme == Constants.oAuthUrlScheme) {
+        return '/';
+      }
+      return null;
+    },
     routes: [
       // ---------- INIT ----------
       GoRoute(
