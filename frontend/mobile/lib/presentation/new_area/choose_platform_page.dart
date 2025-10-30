@@ -81,12 +81,18 @@ class _ChoosePlatformPageState extends ConsumerState<ChoosePlatformPage> {
                         String mode = '';
 
                         if (widget.mode == ChoosePlatformPageMode.triggers) {
+                          if (e.triggers.isEmpty) {
+                            return;
+                          }
                           modal.setActionPlatform(e);
                           modal.setTrigger(null);
                           mode = 'action';
                         }
 
                         else if (widget.mode == ChoosePlatformPageMode.actions) {
+                          if (e.actions.isEmpty) {
+                            return;
+                          }
                           modal.setReactionPlatform(e);
                           modal.setAction(null);
                           mode = 'reaction';
