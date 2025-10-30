@@ -23,6 +23,14 @@ export class Oauth {
 
   @Prop()
   expires_at?: Date;
+
+  @Prop({ type: Object, default: {} })
+  meta: {
+    twitch_user_id?: string;
+    twitch_login?: string;
+    twitch_display_name?: string;
+    profile_image_url?: string;
+  };
 }
 
 export const OauthSchema = SchemaFactory.createForClass(Oauth);
