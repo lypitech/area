@@ -16,15 +16,7 @@ class TriggerModel {
   });
 
   factory TriggerModel.fromJson(JsonData json) {
-    // final requiredParams = (json['parameters'] ?? []) as List<dynamic>;
-
-    final requiredParams = [
-      ParameterModel(
-        name: 'crampter',
-        type: 'int',
-        description: 'o sucre'
-      ).toJson()
-    ];
+    final requiredParams = (json['parameters'] ?? []) as List<dynamic>;
 
     return TriggerModel(
       uuid: json['uuid'] as String,
