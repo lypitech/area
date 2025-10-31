@@ -103,8 +103,7 @@
       },
       {
         "name": "event",
-        "type": "string",
-        "description": "issues"
+        "content": "issues"
       }
     ],
     "trigger_types": ["webhook"]
