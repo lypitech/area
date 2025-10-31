@@ -18,8 +18,8 @@ export class ReactionInstance {
   @Prop()
   oauth_token?: string;
 
-  @Prop({ required: true, default: [] })
-  resource_ids!: string[];
+  @Prop({ type: Object, required: true, default: [] })
+  resource_ids!: Record<string, string>;
 
   @Prop()
   payload?: string;
