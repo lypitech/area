@@ -37,6 +37,83 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
     super.initState();
   }
 
+  Future<void> _createArea() async {
+    final areaModal = ref.watch(areaModalProvider);
+    ref.read(areaModalProvider.notifier).setTitle(_titleController.text);
+
+    if (!areaModal.isComplete()) {
+      // fixme: tmp
+      showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: Text('Please fill everything up.'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('or consequences')
+              ]
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  context.pop();
+                },
+                child: Text('OK')
+              )
+            ],
+          );
+        }
+      );
+      return;
+    }
+
+    setState(() => _isCreating = true);
+
+    final authNotifierAsync = ref.watch(authNotifierProvider);
+
+    return authNotifierAsync.when(
+      data: (authNotifier) async {
+        final user = authNotifier.getUser();
+
+        if (user == null) {
+          return;
+        }
+
+        final area = AreaModel.fromModal(areaModal);
+        final res = await (await ref.read(areaNotifierProvider(user).future))
+          .createArea(area: area);
+
+        if (res != null) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('AREA creation failed: $res')),
+            );
+          }
+        }
+
+        setState(() => _isCreating = false);
+
+        Fluttertoast.showToast(
+          msg: 'Successfully created AREA'
+        );
+
+        if (context.mounted) {
+          context.pop();
+        }
+      },
+      loading: () => null,
+      error: (err, stack) {
+        setState(() => _isCreating = false);
+        Fluttertoast.showToast(
+          msg: 'Failed to create AREA. Error: $err'
+        );
+        return null;
+      }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -52,79 +129,7 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
         }
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          ref.read(areaModalProvider.notifier).setTitle(_titleController.text);
-
-          if (!areaModal.isComplete()) {
-            // fixme: tmp
-            showDialog(
-              context: context,
-              builder: (_) {
-                return AlertDialog(
-                  title: Text('Please fill everything up.'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('or consequences')
-                    ]
-                  ),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () {
-                        context.pop();
-                      },
-                      child: Text('OK')
-                    )
-                  ],
-                );
-              }
-            );
-            return;
-          }
-
-          setState(() => _isCreating = true);
-
-          final authNotifierAsync = ref.watch(authNotifierProvider);
-
-          return authNotifierAsync.when(
-            data: (authNotifier) async {
-              final user = authNotifier.getUser();
-
-              if (user == null) {
-                return;
-              }
-
-              final area = AreaModel.fromModal(areaModal);
-              final res = await (await ref.read(areaNotifierProvider(user).future))
-                .createArea(area: area);
-
-              if (res != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('AREA creation failed: $res')),
-                );
-              }
-
-              setState(() => _isCreating = false);
-
-              Fluttertoast.showToast(
-                msg: 'Successfully created AREA'
-              );
-
-              if (context.mounted) {
-                context.pop();
-              }
-            },
-            loading: () => null,
-            error: (err, stack) {
-              setState(() => _isCreating = false);
-              Fluttertoast.showToast(
-                msg: 'Failed to create AREA. Error: $err'
-              );
-              return null;
-            }
-          );
-        },
+        onPressed: _createArea,
         label: Text(
           l10n.create_area,
           style: textTheme.titleLarge?.copyWith(
