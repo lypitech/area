@@ -37,7 +37,7 @@ export async function createArea(
   selectedReactionService: any,
   userUuid: string,
   input: any,
-  resourceId: string[],
+  resourceId: Record<string, string>,
   reactionPayload: string
 ): Promise<Area> {
 
