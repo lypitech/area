@@ -3,9 +3,11 @@ import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/data/provider/oauth_provider.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/user_model.dart';
+import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/areaction_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class OauthPage extends ConsumerWidget {
 
@@ -20,6 +22,10 @@ class OauthPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MainPageLayout(
       title: 'Linked accounts',
+      leading: AppbarButton(
+        icon: Icons.arrow_back_ios_rounded,
+        onTap: () => context.pop()
+      ),
       children: [
         PlatformLoginCard(
           name: 'Github',
