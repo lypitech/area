@@ -22,7 +22,9 @@ export class DiscordReactionService {
       .pipe(
         catchError((err): Observable<null> => {
           throw new BadRequestException(
-            err.status == 404 ? 'Invalid channelID' : `Cannot access to channelId (${err.status})`,
+            err.status == 404
+              ? 'Invalid channelID'
+              : `Cannot access to channelId (${err.status})`,
           );
         }),
       );
@@ -119,11 +121,10 @@ export class DiscordReactionService {
   }
 
   async sendMessage(
-    reaction: ReactionInstance,
+    response: ReactionInstance,
     action_payload: Record<string, any>,
   ) {
-    const channelId = reaction.resource_ids[0];
-    const url = `${this._base_url}/channels/${channelId}/messages`;
+    const url = `${this._base_url}/channels/${response.resource_ids.channel_id}/messages`;
     const message = JSON.stringify(action_payload); // create helper function to retrieve the infos
     const payload = {
       content: message,
@@ -133,13 +134,10 @@ export class DiscordReactionService {
   }
 
   async addRole(
-    reaction: ReactionInstance,
+    response: ReactionInstance,
     action_payload: Record<string, any>,
   ) {
-    const guildId = reaction.resource_ids[0];
-    const userId = reaction.resource_ids[1];
-    const roleId = reaction.resource_ids[2];
-    const url = `${this._base_url}/guilds/${guildId}/members/${userId}/roles/${roleId}`;
+    const url = `${this._base_url}/guilds/${response.resource_ids.guild_id}/members/${response.resource_ids.user_id}/roles/${response.resource_ids.role_id}`;
     return this.sendPutRequest(url);
   }
 }

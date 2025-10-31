@@ -3,22 +3,34 @@
     "service_name": "Discord",
     "name": "Send message",
     "description": "Send a message to the specified channel",
-    "parameters": {
-      "guild_id": "string"
-    },
-    "schema_input": {
-      "message": "string"
-    }
+    "parameters": [
+      {
+        "name": "guild_id",
+        "type": "string",
+        "description": "The id of the discord server to watch."
+      }
+    ]
   },
   {
     "service_name": "Discord",
     "name": "Add role",
-    "parameters": {
-      "guild_id": "string",
-      "user_id": "string",
-      "role_id": "string"
-    },
-    "description": "Adds the specified role to the specified user",
-    "schema_input": {}
+    "parameters": [
+      {
+        "name": "guild_id",
+        "type": "string",
+        "description": "The id of the Server to watch"
+      },
+      {
+        "name": "user_id",
+        "type": "string",
+        "description": "The id of the user to add the role to"
+      },
+      {
+        "name": "role_id",
+        "type": "string",
+        "description": "The id of the role to add"
+      }
+    ],
+    "description": "Adds the specified role to the specified user"
   }
 ]

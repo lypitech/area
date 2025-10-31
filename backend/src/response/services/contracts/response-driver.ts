@@ -1,5 +1,5 @@
 import { ReactionInstance } from 'src/response/schemas/response.schema';
-import { ResponseCreationDto } from '../../types/responseCreationDto';
+import { ResponseCreationDto } from 'src/area/types/areaCreationDto';
 
 export interface ResponseDriver {
   /*'service_name' */

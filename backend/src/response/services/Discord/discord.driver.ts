@@ -9,10 +9,10 @@ import {
 } from '@nestjs/common';
 import { ResponseDriver } from 'src/response/services/contracts/response-driver';
 import { ServiceService } from 'src/list/service.service';
-import { ResponseCreationDto } from '../../types/responseCreationDto';
+import { ResponseCreationDto } from 'src/area/types/areaCreationDto';
 import { DiscordReactionService } from './discord.service';
-import { ReactionInstance } from '../../schemas/response.schema';
-import { DispatchFunction } from '../../types/dispatchFunction';
+import { ReactionInstance } from 'src/response/schemas/response.schema';
+import { DispatchFunction } from 'src/response/types/dispatchFunction';
 
 @Injectable()
 export class DiscordResponseDriver
@@ -139,14 +139,10 @@ export class DiscordResponseDriver
     const validator = this.responseValidator.get(response.name);
     if (!validator) {
       this.logger.warn(`Validator not found for ${response.name}.`);
-      throw new NotFoundException(
-        `No Discord response ${response.service_name}.`,
-      );
+      throw new NotFoundException(`No Discord response ${response.name}.`);
     }
     if (!(await validator(response))) {
-      throw new BadRequestException(
-        'The bot is missing the manage roles right in the server.',
-      );
+      throw new BadRequestException('The bot is missing rights in the server.');
     }
   }
 
@@ -159,27 +155,19 @@ export class DiscordResponseDriver
   }
 
   private async sendMessageValidator(response: ResponseCreationDto) {
-    const resource_ids: string[] = response.resource_ids ?? [];
-    if (resource_ids.length !== 1)
-      throw new BadRequestException(
-        resource_ids.length > 1
-          ? 'There must be a single element in resource_ids.'
-          : 'Missing field resource_ids.',
-      );
-    return await this.assertChannelPermissions(resource_ids[0], [
-      'ViewChannel',
-      'SendMessages',
-    ]);
+    if (!response.resource_ids.channel_id)
+      throw new BadRequestException('Missing `channel_id` for Discord.');
+    return await this.assertChannelPermissions(
+      response.resource_ids.channel_id,
+      ['ViewChannel', 'SendMessages'],
+    );
   }
 
   private async addRoleValidator(response: ResponseCreationDto) {
-    const resource_ids: string[] = response.resource_ids ?? [];
-    if (resource_ids.length !== 3)
-      throw new BadRequestException(
-        resource_ids.length > 3
-          ? 'There must be a single element in resource_ids.'
-          : 'Missing field resource_ids.',
-      );
-    return await this.assertRolePermissions(resource_ids[0]);
+    const required = ['guild_id', 'user_id', 'role_id'];
+    const missing = required.filter((k) => !response.resource_ids[k]);
+    if (missing.length)
+      throw new BadRequestException(`Missing ${missing.join('and ')}`);
+    return await this.assertRolePermissions(response.resource_ids.guild_id);
   }
 }
