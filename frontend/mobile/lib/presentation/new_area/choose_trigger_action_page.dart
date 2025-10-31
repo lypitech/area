@@ -52,6 +52,7 @@ class _ChooseTriggerActionPageState extends ConsumerState<ChooseTriggerActionPag
           'parameters': triggerOrAction.requiredParams,
           'name': triggerOrAction.name,
           'isAction': !isTrigger,
+          'requiresPayload': !isTrigger && triggerOrAction.isPayloadRequired,
         },
       );
 
@@ -60,8 +61,12 @@ class _ChooseTriggerActionPageState extends ConsumerState<ChooseTriggerActionPag
           modal.setTrigger(triggerOrAction);
           modal.setTriggerParameters(result);
         } else {
+          final payload = result['payload'];
+          result.remove('payload');
+
           modal.setAction(triggerOrAction);
           modal.setActionParameters(result);
+          modal.setActionPayload(payload);
         }
 
         if (mounted) {

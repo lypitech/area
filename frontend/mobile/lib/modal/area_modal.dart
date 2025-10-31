@@ -12,6 +12,7 @@ class AreaModal {
   PlatformModel? reactionPlatform;
   ActionModel? action;
   Map<String, dynamic>? actionParameters;
+  String? actionPayload;
 
   AreaModal({
     this.title,
@@ -20,7 +21,8 @@ class AreaModal {
     this.triggerParameters,
     this.reactionPlatform,
     this.action,
-    this.actionParameters
+    this.actionParameters,
+    this.actionPayload
   });
 
   AreaModal copyWith({
@@ -31,6 +33,7 @@ class AreaModal {
     PlatformModel? reactionPlatform,
     ActionModel? action,
     Map<String, dynamic>? actionParameters,
+    String? actionPayload
   }) {
     return AreaModal(
       title: title ?? this.title,
@@ -40,6 +43,7 @@ class AreaModal {
       reactionPlatform: reactionPlatform ?? this.reactionPlatform,
       action: action ?? this.action,
       actionParameters: actionParameters ?? this.actionParameters,
+      actionPayload: actionPayload ?? this.actionPayload
     );
   }
 
@@ -66,6 +70,10 @@ class AreaModal {
       return false;
     }
 
+    if (action!.isPayloadRequired && (actionPayload == null || actionPayload!.isEmpty)) {
+      return false;
+    }
+
     return true;
   }
 
@@ -77,6 +85,7 @@ class AreaModal {
     reactionPlatform = null;
     action = null;
     actionParameters = null;
+    actionPayload = null;
   }
 
 }
@@ -117,6 +126,10 @@ class AreaModalNotifier extends StateNotifier<AreaModal> {
 
   void setActionParameters(Map<String, dynamic>? parameters) {
     state = state.copyWith(actionParameters: parameters);
+  }
+
+  void setActionPayload(String? payload) {
+    state = state.copyWith(actionPayload: payload);
   }
 
   void reset() {

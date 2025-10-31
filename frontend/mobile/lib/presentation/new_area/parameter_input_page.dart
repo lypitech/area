@@ -14,12 +14,14 @@ class ParameterInputPage extends ConsumerStatefulWidget {
   final List<ParameterModel> parameters;
   final String triggerOrActionName;
   final bool isAction;
+  final bool requiresPayload;
 
   const ParameterInputPage({
     super.key,
     required this.parameters,
     required this.triggerOrActionName,
     required this.isAction,
+    required this.requiresPayload
   });
 
   @override
@@ -30,6 +32,7 @@ class ParameterInputPage extends ConsumerStatefulWidget {
 class _ParameterInputPageState extends ConsumerState<ParameterInputPage> {
   late Map<String, TextEditingController> _controllers;
   late Map<String, String?> _errors;
+  late TextEditingController _payloadController;
 
   @override
   void initState() {
@@ -41,12 +44,20 @@ class _ParameterInputPageState extends ConsumerState<ParameterInputPage> {
       _controllers[param.name] = TextEditingController();
       _errors[param.name] = null;
     }
+
+    if (widget.requiresPayload) {
+      _payloadController = TextEditingController();
+      _errors['payload'] = null;
+    }
   }
 
   @override
   void dispose() {
     for (var controller in _controllers.values) {
       controller.dispose();
+    }
+    if (widget.requiresPayload) {
+      _payloadController.dispose();
     }
     super.dispose();
   }
@@ -82,6 +93,14 @@ class _ParameterInputPageState extends ConsumerState<ParameterInputPage> {
           }
         }
       }
+
+      if (widget.requiresPayload) {
+        final payloadValue = _payloadController.text.trim();
+        if (payloadValue.isEmpty) {
+          _errors['payload'] = 'Payload is required';
+          isValid = false;
+        }
+      }
     });
 
     return isValid;
@@ -110,6 +129,10 @@ class _ParameterInputPageState extends ConsumerState<ParameterInputPage> {
         default:
           values[param.name] = value;
       }
+    }
+
+    if (widget.requiresPayload) {
+      values['payload'] = _payloadController.text.trim();
     }
 
     return values;
@@ -189,10 +212,59 @@ class _ParameterInputPageState extends ConsumerState<ParameterInputPage> {
                   ),
                 ),
               ],
-              Gap(20),
             ],
           );
         }),
+        if (widget.requiresPayload) ...[
+          if (widget.parameters.isNotEmpty) ...[
+            Divider(
+              color: Colors.grey.shade300,
+            ),
+          ],
+
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.data_object,
+                    size: 20,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  const Gap(8),
+                  Text(
+                    'Payload',
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              Gap(5),
+              Text(
+                'The data that will be sent with this action',
+                style: textTheme.bodySmall?.copyWith(
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              Gap(10),
+              ATextField(
+                title: '',
+                controller: _payloadController,
+                hintText: 'Enter payload data...',
+                errorText: _errors['payload'],
+                onChange: (value) {
+                  if (_errors['payload'] != null) {
+                    setState(() {
+                      _errors['payload'] = null;
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+        ]
       ],
     );
   }

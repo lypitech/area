@@ -93,11 +93,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                           final parameters = extra['parameters'] as List<ParameterModel>;
                           final name = extra['name'] as String;
                           final isAction = extra['isAction'] as bool;
+                          final requiresPayload = extra['requiresPayload'] as bool? ?? false;
 
                           return ParameterInputPage(
                             parameters: parameters,
                             triggerOrActionName: name,
                             isAction: isAction,
+                            requiresPayload: requiresPayload,
                           );
                         },
                       ),
