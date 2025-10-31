@@ -6,6 +6,7 @@ import 'package:area/widget/a_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:restart_app/restart_app.dart';
 
 class AppSettingsDialog {
 
@@ -46,10 +47,20 @@ class AppSettingsDialog {
                     }
 
                     try {
-                      await ref.read(appSettingsProvider.notifier).saveSettings(
-                        apiUrl: apiUrlController.text.trim(),
-                        apiPort: apiPortController.text.trim(),
+                      final newApiUrl = apiUrlController.text.trim();
+                      final newApiPort = apiPortController.text.trim();
+
+                      final appSettings = ref.read(appSettingsProvider.notifier);
+
+                      if (await appSettings.equals(newApiUrl, newApiPort)) {
+                        return true;
+                      }
+
+                      await appSettings.saveSettings(
+                        apiUrl: newApiUrl,
+                        apiPort: newApiPort,
                       );
+                      Restart.restartApp();
                     } catch (error) {
                       /// TODO: Show toast?
                       return false;
