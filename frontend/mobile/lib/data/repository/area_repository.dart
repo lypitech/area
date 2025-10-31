@@ -1,4 +1,5 @@
 import 'package:area/api/area_api.dart';
+import 'package:area/modal/area_modal.dart';
 import 'package:area/model/area_model.dart';
 import 'package:area/model/user_model.dart';
 
@@ -19,18 +20,18 @@ class AreaRepository {
 
   Future<AreaModel> createArea({
     required UserModel user,
-    required AreaModel area
+    required AreaModal area
   }) async {
-    try {
+    // try {
       final response = await api.createArea(
         userUuid: user.uuid,
         area: area
       );
 
       return AreaModel.fromJson(response);
-    } catch (_) {
-      return area.copyWith(isSyncing: true);
-    }
+    // } catch (_) {
+      // return area.copyWith(isSyncing: true);
+    // }
   }
 
   Future<void> deleteArea({

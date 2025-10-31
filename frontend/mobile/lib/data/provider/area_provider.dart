@@ -2,6 +2,7 @@
 import 'package:area/api/area_api.dart';
 import 'package:area/data/provider/dio_provider.dart';
 import 'package:area/data/repository/area_repository.dart';
+import 'package:area/modal/area_modal.dart';
 import 'package:area/model/area_model.dart';
 import 'package:area/model/user_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,10 +78,13 @@ class AreaNotifier extends StateNotifier<AreaState> {
   }
 
   Future<String?> createArea({
-    required AreaModel area
+    required AreaModal area
   }) async {
     try {
-      final createdArea = await repository.createArea(user: user, area: area);
+      final createdArea = await repository.createArea(
+        user: user,
+        area: area
+      );
 
       state = state.copyWith(
         areas: [
@@ -117,16 +121,16 @@ class AreaNotifier extends StateNotifier<AreaState> {
 
   Future<void> syncAreas() async {
     final remoteAreas = await repository.fetchAreas(user: user);
-    final syncingAreas = state.areas.where((a) => a.isSyncing);
-
-    for (final localArea in syncingAreas) {
-      final synced = await repository.createArea(
-        user: user,
-        area: localArea
-      );
-
-      _replaceLocal(localArea, synced);
-    }
+    // final syncingAreas = state.areas.where((a) => a.isSyncing);
+    //
+    // for (final localArea in syncingAreas) {
+    //   final synced = await repository.createArea(
+    //     user: user,
+    //     area: localArea
+    //   );
+    //
+    //   _replaceLocal(localArea, synced);
+    // }
 
     state = state.copyWith(areas: remoteAreas);
   }

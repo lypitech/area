@@ -81,9 +81,8 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
           return;
         }
 
-        final area = AreaModel.fromModal(areaModal);
         final res = await (await ref.read(areaNotifierProvider(user).future))
-          .createArea(area: area);
+          .createArea(area: areaModal);
 
         if (res != null) {
           if (context.mounted) {

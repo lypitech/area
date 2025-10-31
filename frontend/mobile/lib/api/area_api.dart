@@ -1,5 +1,5 @@
 import 'package:area/core/constant/constants.dart';
-import 'package:area/model/area_model.dart';
+import 'package:area/modal/area_modal.dart';
 import 'package:dio/dio.dart';
 
 class AreaApi {
@@ -22,7 +22,7 @@ class AreaApi {
 
   Future<JsonData> createArea({
     required String userUuid,
-    required AreaModel area
+    required AreaModal area
   }) async {
     print('AREA_CREATE: Creating...');
 
