@@ -6,9 +6,9 @@
     "requires_payload": true,
     "parameters": [
       {
-        "name": "guild_id",
+        "name": "channel_id",
         "type": "string",
-        "description": "The id of the discord server to watch."
+        "description": "The id of the discord channel to send a message to."
       }
     ]
   },
