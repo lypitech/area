@@ -77,6 +77,7 @@ export class SeederService {
           name: action.name,
           parameters: action.parameters,
           description: action.description,
+          trigger_types: action.trigger_types,
         } as unknown as ActionServiceType);
       }
       service.actions = actionList;

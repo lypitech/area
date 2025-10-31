@@ -7,6 +7,7 @@ export type ActionServiceType = {
   name: string;
   parameters: Record<string, any>;
   description: string;
+  trigger_types: string[];
 };
 
 export type ReactionServiceType = {
