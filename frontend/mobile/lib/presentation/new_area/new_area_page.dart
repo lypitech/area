@@ -1,10 +1,8 @@
 import 'package:area/data/provider/area_modal_provider.dart';
 import 'package:area/data/provider/area_provider.dart';
-import 'package:area/data/provider/areas_provider.dart';
 import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
-import 'package:area/model/area_model.dart';
 import 'package:area/widget/a_text_field.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/areaction_card.dart';
