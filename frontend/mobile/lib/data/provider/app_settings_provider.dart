@@ -12,6 +12,7 @@ final appSettingsProvider =
   );
 
 class AppSettingsNotifier extends AsyncNotifier<AppSettingsModel> {
+
   @override
   Future<AppSettingsModel> build() async {
     final sharedPreferences = await SharedPreferences.getInstance();
@@ -58,6 +59,11 @@ class AppSettingsNotifier extends AsyncNotifier<AppSettingsModel> {
       apiUrl: apiUrl,
       apiPort: current.apiPort
     );
+  }
+
+  Future<bool> equals(String apiUrl, String apiPort) async {
+    final s = await state;
+    return s.value?.equals(apiUrl, apiPort) ?? false;
   }
 
 }
