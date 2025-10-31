@@ -305,6 +305,7 @@ void authLogout(BuildContext context, WidgetRef ref) async {
   final authNotifier = await ref.read(authNotifierProvider.future);
 
   await authNotifier.logout();
+  ref.read(mainPageRouteProvider.notifier).state = 'myareas';
 
   if (context.mounted) {
     context.go('/login');

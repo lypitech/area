@@ -22,16 +22,6 @@ class ProfilePage extends ConsumerWidget {
     required this.user,
   });
 
-  void _logout(BuildContext context, WidgetRef ref) async {
-    final authNotifier = await ref.read(authNotifierProvider.future);
-
-    await authNotifier.logout();
-    if (context.mounted) {
-      context.go('/login');
-    }
-    ref.read(areasProvider).clear();
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
