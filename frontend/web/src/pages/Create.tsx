@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { getServices } from "../services/serviceService";
 import { useArea } from "../context/AreaContext";
 import { Button } from "../components/Button";
-import { getLogo } from "../utils/getLogo";
 import Footer from "../components/Footer";
 
 export default function Create() {
@@ -46,9 +45,7 @@ export default function Create() {
           {selectedAction ? (
             <div className="flex flex-row items-center p-4 gap-4">
               <img
-                src={getLogo(
-                  selectedActionService?.name.toLocaleLowerCase() || ""
-                )}
+                src={`data:image/png;base64,${selectedActionService?.icon}`}
                 alt={selectedActionService?.name}
                 className="w-12 h-12 object-contain rounded-full"
               />
@@ -74,9 +71,7 @@ export default function Create() {
           {selectedReaction ? (
             <div className="flex flex-row items-center p-4 gap-4">
               <img
-                src={getLogo(
-                  selectedReactionService?.name.toLocaleLowerCase() || ""
-                )}
+                src={`data:image/png;base64,${selectedReactionService?.icon}`}
                 alt={selectedReactionService?.name}
                 className="w-12 h-12 object-contain rounded-full"
               />

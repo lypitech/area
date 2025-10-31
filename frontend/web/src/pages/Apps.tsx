@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { useArea } from "../context/AreaContext";
-import { getLogo } from "../utils/getLogo";
 import { isOauthNeeded } from "../utils/isOauthNeeded";
 import { getServices } from "../services/serviceService";
 import OAuthParser from "../services/OAuth/oauthParser";
@@ -37,7 +36,7 @@ export default function Apps() {
               className="bg-white rounded-2xl shadow hover:shadow-lg transition cursor-pointer flex flex-col items-center p-6"
             >
               <img
-                src={getLogo(app.name.toLowerCase())}
+                src={`data:image/png;base64,${app.icon}`}
                 alt={app.name}
                 className="w-16 h-16 object-contain mb-4 rounded-full"
               />

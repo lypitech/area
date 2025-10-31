@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
-import { getLogo } from "../utils/getLogo";
 import type { Service } from "../types";
 
 export default function AppDetails() {
@@ -16,7 +15,7 @@ export default function AppDetails() {
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-6">
         <div className="flex items-center gap-4 pb-6">
           <img
-            src={getLogo(appData.name.toLowerCase())}
+            src={`data:image/png;base64,${appData.icon}`}
             alt={appData.name}
             className="w-16 h-16"
           />

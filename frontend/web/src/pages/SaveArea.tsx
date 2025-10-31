@@ -22,7 +22,7 @@ export default function SaveArea() {
     selectedActionService,
     selectedReactionService,
     input,
-    ressourceId,
+    resourceId,
     payload,
   } = useArea();
 
@@ -41,7 +41,7 @@ export default function SaveArea() {
         selectedReactionService,
         userUuid,
         input,
-        ressourceId,
+        resourceId,
         payload
       );
 
