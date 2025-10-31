@@ -22,28 +22,16 @@ class _ANavbarState extends ConsumerState<ANavbar> {
 
   final List<NavbarElementModel> _navbarElements = [
     NavbarElementModel(
-      icon: Icons.home_outlined,
-      iconEnabled: Icons.home,
-      title: 'Home',
-      route: 'home'
-    ),
-    NavbarElementModel(
-      icon: AreaIcons.compass_outline,
-      iconEnabled: AreaIcons.compass,
-      title: 'Discover',
-      route: 'discover'
+      icon: Icons.list_alt_rounded,
+      iconEnabled: Icons.view_list,
+      title: 'My AREAs',
+      route: 'myareas'
     ),
     NavbarElementModel(
       icon: Icons.add_box_outlined,
       iconEnabled: Icons.add_box,
       title: 'Add AREA',
       route: '/new_area'
-    ),
-    NavbarElementModel(
-      icon: Icons.list_alt_rounded,
-      iconEnabled: Icons.view_list,
-      title: 'My AREAs',
-      route: 'myareas'
     ),
     NavbarElementModel(
       icon: Icons.person_outline_rounded,
@@ -95,7 +83,10 @@ class _ANavbarState extends ConsumerState<ANavbar> {
                         borderRadius: BorderRadius.circular(24),
                         child: Padding(
                           padding: const EdgeInsets.all(12),
-                          child: Icon(icon),
+                          child: Icon(
+                            icon,
+                            size: 28,
+                          ),
                         ),
                       ),
                     );

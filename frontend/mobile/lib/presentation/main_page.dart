@@ -1,7 +1,5 @@
 import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/data/provider/main_page_route_provider.dart';
-import 'package:area/presentation/main/discover_page.dart';
-import 'package:area/presentation/main/home_page.dart';
 import 'package:area/presentation/main/my_areas_page.dart';
 import 'package:area/presentation/main/profile_page.dart';
 import 'package:area/widget/a_navbar.dart';
@@ -30,8 +28,6 @@ class MainPage extends ConsumerWidget {
         }
 
         final Widget body = switch (currentRoute) {
-          'home' => HomePage(),
-          'discover' => DiscoverPage(),
           'myareas' => MyAreasPage(user: user),
           'profile' => ProfilePage(user: user),
           String() => throw UnimplementedError(),
