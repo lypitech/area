@@ -30,6 +30,7 @@ export class OauthService {
       refresh_token: data.refresh_token,
       token_type: data.token_type,
       expires_at: data.expires_at,
+      meta: data.meta,
     });
     await this.userService.addOauthToken(
       user_uuid,
@@ -98,7 +99,7 @@ export class OauthService {
           client_secret: process.env.TWITCH_CLIENT_SECRET ?? '',
           code,
           grant_type: 'authorization_code',
-          redirect_uri: 'http://localhost:8081/callback'
+          redirect_uri: 'http://localhost:8081/callback',
         }).toString(),
 
         {
@@ -114,12 +115,32 @@ export class OauthService {
     if (!accessToken) {
       throw new Error('Twitch OAuth failed: no access token returned');
     }
+
+    const userInfoResponse = await firstValueFrom(
+      this.httpService.get('https://api.twitch.tv/helix/users', {
+        headers: {
+          'Client-Id': process.env.TWITCH_CLIENT_ID ?? '',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }),
+    );
+
+    const twitchUser = userInfoResponse.data?.data?.[0];
+    if (!twitchUser) {
+      throw new Error('Twitch OAuth failed: could not fetch user info');
+    }
     const token = {
       service_name: 'twitch',
       token: accessToken,
       refresh_token: tokenData.refreshToken,
       token_type: tokenData.token_type,
       expires_at: tokenData.expires_at,
+      meta: {
+        twitch_user_id: twitchUser.id,
+        twitch_login: twitchUser.login,
+        twitch_display_name: twitchUser.display_name,
+        profile_image_url: twitchUser.profile_image_url,
+      },
     };
 
     return this.addToken(user_uuid, token);

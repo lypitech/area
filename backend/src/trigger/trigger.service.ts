@@ -21,6 +21,15 @@ export class TriggerService {
     this.drivers = [this.intervalDriver, this.githubDriver, this.TwitchDriver];
   }
 
+  async findByUUID(uuid: string) {
+    const trigger = await this.triggerModel.findOne({ uuid }).lean().exec();
+    if (!trigger) {
+      this.logger.warn(`Trigger not found for uuid=${uuid}`);
+      return null;
+    }
+    return trigger;
+  }
+
   async getAll(): Promise<Trigger[]> {
     return this.triggerModel.find();
   }

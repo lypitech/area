@@ -23,6 +23,9 @@ export class Oauth {
 
   @Prop()
   expires_at?: Date;
+
+  @Prop({ type: Object, default: {} })
+  meta: Record<string, any>;
 }
 
 export const OauthSchema = SchemaFactory.createForClass(Oauth);
