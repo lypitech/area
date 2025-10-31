@@ -3,6 +3,7 @@
     "service_name": "Discord",
     "name": "Send message",
     "description": "Send a message to the specified channel",
+    "requires_payload": true,
     "parameters": [
       {
         "name": "guild_id",
@@ -14,6 +15,7 @@
   {
     "service_name": "Discord",
     "name": "Add role",
+    "description": "Adds the specified role to the specified user",
     "parameters": [
       {
         "name": "guild_id",
@@ -30,7 +32,6 @@
         "type": "string",
         "description": "The id of the role to add"
       }
-    ],
-    "description": "Adds the specified role to the specified user"
+    ]
   }
 ]
