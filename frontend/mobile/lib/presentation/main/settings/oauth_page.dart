@@ -16,15 +16,10 @@ class OauthPage extends ConsumerWidget {
     required this.user
   });
 
-  /**
-   * todo: OAUTH:
-   * - Github
-   * - Twitch
-   */
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MainPageLayout(
-      title: 'External accounts',
+      title: 'Linked accounts',
       children: [
         PlatformLoginCard(
           name: 'Github',
