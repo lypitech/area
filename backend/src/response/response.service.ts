@@ -3,10 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ReactionInstance } from './schemas/response.schema';
 import { DiscordReactionService } from './services/Discord/discord.service';
-import { ResponseCreationDto } from './types/responseCreationDto';
 import { DispatchFunction } from './types/dispatchFunction';
 import { ResponseDriver } from './services/contracts/response-driver';
 import { DiscordResponseDriver } from './services/Discord/discord.driver';
+import { ResponseCreationDto } from 'src/area/types/areaCreationDto';
 
 @Injectable()
 export class ResponseService {

@@ -1,7 +1,7 @@
 import { IsArray, IsNotEmpty, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
-class TriggerCreationDto {
+export class TriggerCreationDto {
   @IsNotEmpty()
   service_name: string;
 
@@ -17,7 +17,7 @@ class TriggerCreationDto {
   trigger_type: string | null;
 }
 
-class ResponseCreationDto {
+export class ResponseCreationDto {
   @IsNotEmpty()
   service_name: string;
 
@@ -25,10 +25,9 @@ class ResponseCreationDto {
   name: string;
 
   description: string | null;
-  @IsArray()
-  resource_ids: string[];
   oauth_token: string | null;
-
+  @IsNotEmpty()
+  resource_ids: Record<string, string>;
   @IsNotEmpty()
   payload: string;
 }
