@@ -7,12 +7,14 @@ class TriggerModel {
   final String name;
   final String description;
   final List<ParameterModel> requiredParams;
+  final String type;
 
   TriggerModel({
     required this.uuid,
     required this.name,
     required this.description,
     this.requiredParams = const [],
+    required this.type,
   });
 
   factory TriggerModel.fromJson(JsonData json) {
@@ -24,7 +26,8 @@ class TriggerModel {
       description: json['description'] as String,
       requiredParams: requiredParams
         .map((e) => ParameterModel.fromJson(JsonData.from(e)))
-        .toList()
+        .toList(),
+      type: json['trigger_type'] ?? 'webhook'
     );
   }
 
@@ -33,6 +36,7 @@ class TriggerModel {
     'name': name,
     'description': description,
     'parameters': requiredParams.map((e) => e.toJson()).toList(),
+    'trigger_type': type
   };
 
 }
