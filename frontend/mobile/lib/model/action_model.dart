@@ -7,12 +7,14 @@ class ActionModel {
   final String name;
   final String description;
   final List<ParameterModel> requiredParams;
+  final bool isPayloadRequired;
 
   ActionModel({
     required this.uuid,
     required this.name,
     required this.description,
     this.requiredParams = const [],
+    this.isPayloadRequired = true
   });
 
   factory ActionModel.fromJson(JsonData json) {
@@ -24,7 +26,8 @@ class ActionModel {
       description: json['description'] as String,
       requiredParams: requiredParams
         .map((e) => ParameterModel.fromJson(JsonData.from(e)))
-        .toList()
+        .toList(),
+      isPayloadRequired: json['requires_payload'] as bool? ?? false
     );
   }
 
@@ -33,6 +36,7 @@ class ActionModel {
     'name': name,
     'description': description,
     'parameters': requiredParams.map((e) => e.toJson()).toList(),
+    'requires_payload': isPayloadRequired
   };
 
 }
