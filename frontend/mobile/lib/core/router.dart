@@ -8,6 +8,8 @@ import 'package:area/presentation/auth/registration/register_page.dart';
 import 'package:area/presentation/error_page.dart';
 import 'package:area/presentation/init_page.dart';
 import 'package:area/presentation/main/area_details_page.dart';
+import 'package:area/presentation/main/settings/about_page.dart';
+import 'package:area/presentation/main/settings/oauth_page.dart';
 import 'package:area/presentation/main/settings/settings_page.dart';
 import 'package:area/presentation/main_page.dart';
 import 'package:area/presentation/new_area/choose_platform_page.dart';
@@ -127,7 +129,25 @@ final routerProvider = Provider<GoRouter>((ref) {
               return SettingsPage(
                 user: state.extra as UserModel
               );
-            }
+            },
+            routes: [
+              GoRoute(
+                name: 'link',
+                path: 'link',
+                builder: (_, state) {
+                  return OauthPage(
+                    user: state.extra as UserModel
+                  );
+                }
+              ),
+              GoRoute(
+                name: 'about',
+                path: 'about',
+                builder: (_, __) {
+                  return AboutPage();
+                }
+              )
+            ]
           )
         ],
       ),
