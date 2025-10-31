@@ -1,5 +1,4 @@
 import type { Service } from "../../types";
-import { getLogo } from "../../utils/getLogo";
 
 interface ServiceTableProps {
   services: Service[];
@@ -19,7 +18,7 @@ export default function ServiceTable({
           className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-transform transform hover:-translate-y-1 p-6 flex flex-col items-center gap-4 cursor-pointer border border-gray-100 hover:outline-2 hover:outline-black"
         >
           <img
-            src={getLogo(service.name.toLowerCase())}
+            src={`data:image/png;base64,${service.icon}`}
             alt={service.name}
             className="w-20 h-20 object-contain rounded-full"
           />

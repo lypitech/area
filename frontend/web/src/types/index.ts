@@ -9,12 +9,10 @@ interface User {
   Area: string[];
 }
 
-export type TriggerType = 'webhook' | 'polling' | 'interval';
-// The names of the interfaces will be the name of the class
-
 interface Service {
   uuid: string;
   name: string;
+  icon: string; // Base64
   actions: Action[];
   reactions: Reaction[];
 }
@@ -24,13 +22,11 @@ interface Action {
   service_name: string;
   name: string;
   description: string;
-  trigger_types: TriggerType[];
+  trigger_types: string[];
   parameters: Array<{
     name: string;
     type: string;
     description?: string;
-    required?: boolean;
-    [key: string]: any;
   }>;
 }
 
@@ -48,7 +44,12 @@ interface Reaction {
 	service_name: string;
 	name: string;
 	description: string;
-	schema_input: Record<string, any>; // => json
+  requires_payload: boolean;
+  parameters: Array<{
+    name: string;
+    type: string;
+    description?: string;
+  }>;
 }
 
 interface Response { // The real name of the class is ReactionInstance to avoid http Response collision

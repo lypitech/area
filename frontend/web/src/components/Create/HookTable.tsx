@@ -1,5 +1,4 @@
 import type { Service } from "../../types";
-import { getLogo } from "../../utils/getLogo";
 
 interface HookTableProps {
   services: Service[];
@@ -31,7 +30,7 @@ export default function HookTable({
             {/* Service Logo + Name */}
             <div className="flex items-center gap-4 w-full">
               <img
-                src={getLogo(service.name.toLowerCase())}
+                src={`data:image/png;base64,${service.icon}`}
                 alt={service.name}
                 className="w-12 h-12 object-contain rounded-full"
               />

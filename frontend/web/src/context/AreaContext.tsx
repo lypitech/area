@@ -24,8 +24,8 @@ interface AreaContextType {
   // AreaSaving additional fields
   input: any;
   setInput: (i: any) => void;
-  ressourceId: string[];
-  setRessourceId: (r: string[]) => void;
+  resourceId: Record<string, string>;
+  setResourceId: (r: Record<string, string>) => void;
   payload: string;
   setPayload: (p: string) => void;
 }
@@ -47,7 +47,8 @@ export function AreaProvider({ children }: { children: React.ReactNode }) {
 
   const [input, setInput] = useState<any>("");
 
-  const [ressourceId, setRessourceId] = useState([""]);
+  const [resourceId, setResourceId] = useState<Record<string, string>>({});
+
   const [payload, setPayload] = useState("");
 
   return (
@@ -67,8 +68,8 @@ export function AreaProvider({ children }: { children: React.ReactNode }) {
         setSelectedReaction,
         input,
         setInput,
-        ressourceId,
-        setRessourceId,
+        resourceId,
+        setResourceId,
         payload,
         setPayload,
       }}

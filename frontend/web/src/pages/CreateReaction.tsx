@@ -8,8 +8,8 @@ import { useArea } from "../context/AreaContext";
 import { Button } from "../components/Button";
 import Icon from "../components/icons/icons";
 import Modal from "../components/Modal";
-import { getForm } from "../utils/parser";
 import Footer from "../components/Footer";
+import DynamicReactionForm from "../components/DynamicHooksForm";
 
 export default function CreateReaction() {
   const nav = useNavigate();
@@ -20,8 +20,8 @@ export default function CreateReaction() {
     setSelectedReactionService,
     selectedReaction,
     setSelectedReaction,
-    ressourceId,
-    setRessourceId,
+    resourceId,
+    setResourceId,
     payload,
     setPayload,
   } = useArea();
@@ -62,14 +62,14 @@ export default function CreateReaction() {
   };
 
   const handleHookSelection = (hook: Reaction) => {
-    if (ressourceId || payload) {
+    if (resourceId || payload) {
       setIsOpen(true);
     }
     setSelectedReaction(hook);
   };
 
   useEffect(() => {
-    if (selectedReaction && !ressourceId && !payload) {
+    if (selectedReaction && !resourceId && !payload) {
       setIsOpen(true);
     }
   }, [selectedReaction]);
@@ -80,7 +80,7 @@ export default function CreateReaction() {
     } else {
       setSelectedReaction(null);
       setSelectedReactionService(null);
-      setRessourceId("");
+      setResourceId({});
       setPayload("");
     }
   };
@@ -88,7 +88,7 @@ export default function CreateReaction() {
   const handleModalClose = () => {
     setIsOpen(false);
     setSelectedReaction(null);
-    setRessourceId("");
+    setResourceId({});
     setPayload("");
   };
 
@@ -158,12 +158,16 @@ export default function CreateReaction() {
         )}
 
         <Modal isOpen={isOpen} onClose={handleModalClose}>
-          {getForm(selectedReactionService?.name.toLowerCase() || "", {
-            onClose: () => {
+          <DynamicReactionForm
+            parameters={selectedReaction?.parameters || []}
+            serviceName={selectedReactionService?.name || ""}
+            requiredPayload={selectedReaction?.requires_payload}
+            type="reaction"
+            onClose={() => {
               setIsOpen(false);
               nav("/create");
-            },
-          })}
+            }}
+          />
         </Modal>
       </div>
       <Footer />

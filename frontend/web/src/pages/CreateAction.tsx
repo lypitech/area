@@ -8,7 +8,7 @@ import { useArea } from "../context/AreaContext";
 import { Button } from "../components/Button";
 import Icon from "../components/icons/icons";
 import Modal from "../components/Modal";
-import { getForm } from "../utils/parser";
+import DynamicReactionForm from "../components/DynamicHooksForm";
 import { isOauthNeeded } from "../utils/isOauthNeeded";
 import OAuthParser from "../services/OAuth/oauthParser";
 import Footer from "../components/Footer";
@@ -169,12 +169,15 @@ export default function CreateAction() {
         )}
 
         <Modal isOpen={isOpen} onClose={handleModalClose}>
-          {getForm(selectedActionService?.name.toLowerCase() || "", {
-            onClose: () => {
+          <DynamicReactionForm
+            parameters={selectedAction?.parameters || []}
+            serviceName={selectedActionService?.name || ""}
+            type="action"
+            onClose={() => {
               setIsOpen(false);
               nav("/create");
-            },
-          })}
+            }}
+          />
         </Modal>
       </div>
 
