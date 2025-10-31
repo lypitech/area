@@ -20,36 +20,45 @@ class AreaApi {
     return (response.data as List).cast<JsonData>();
   }
 
-  Future<JsonData> createArea({
+  Future<JsonData?> createArea({
     required String userUuid,
     required AreaModal area
   }) async {
     print('AREA_CREATE: Creating...');
 
-    final response = await dio.post(
-      '/areas',
-      data: {
-        'name': area.name,
-        'description': '',
-        'trigger': {
-          'service_name': area.actionPlatform.name,
-          'name': area.trigger.name,
-          'description': area.trigger.description,
+    try {
+      final response = await dio.post(
+        '/areas',
+        data: {
+          'name': area.title,
+          'description': 'Sample description',
+          'trigger': {
+            'service_name': area.actionPlatform?.name,
+            'name': area.trigger?.name,
+            'description': area.trigger?.description,
+            'input': area.triggerParameters,
+            'trigger_type': area.trigger?.type
+          },
+          'response': {
+            'service_name': area.reactionPlatform?.name,
+            'name': area.action?.name,
+            'description': area.action?.description,
+            'resource_ids': area.actionParameters,
+            'payload': area.actionPayload
+          },
+          'user_uuid': userUuid,
+          'enabled': 'true',
         },
-        'response': {
-          'service_name': area.reactionPlatform.name,
-          'name': area.action.name,
-          'description': area.action.description,
-        },
-        'user_uuid': userUuid,
-        'enabled': 'true',
-      },
-    );
+      );
 
-    print('AREA_CREATE: Created! Here is the response');
-    print(response.data);
+      print('AREA_CREATE: Created! Here is the response');
+      print(response.data);
 
-    return response.data as JsonData;
+      return response.data as JsonData;
+    } on DioException catch (exception) {
+      return exception.response?.data as JsonData?;
+    }
+
   }
 
   Future<void> deleteArea(String userUuid, String areaUuid) async {
