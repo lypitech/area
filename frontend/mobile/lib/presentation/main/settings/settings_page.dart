@@ -52,7 +52,10 @@ class SettingsPage extends ConsumerWidget {
                 iconBackgroundColor: tile.color,
                 icon: tile.icon,
                 onTap: () {
-                  context.push('/settings/${tile.route}');
+                  context.push(
+                    '/settings/${tile.route}',
+                    extra: user
+                  );
                 },
               ),
             }
