@@ -2,11 +2,13 @@ import 'package:area/core/constant/constants.dart';
 import 'package:area/model/area_model.dart';
 import 'package:area/model/parameter_model.dart';
 import 'package:area/model/platform_model.dart';
+import 'package:area/model/user_model.dart';
 import 'package:area/presentation/auth/login_page.dart';
 import 'package:area/presentation/auth/registration/register_page.dart';
 import 'package:area/presentation/error_page.dart';
 import 'package:area/presentation/init_page.dart';
 import 'package:area/presentation/main/area_details_page.dart';
+import 'package:area/presentation/main/settings/settings_page.dart';
 import 'package:area/presentation/main_page.dart';
 import 'package:area/presentation/new_area/choose_platform_page.dart';
 import 'package:area/presentation/new_area/choose_trigger_action_page.dart';
@@ -118,6 +120,15 @@ final routerProvider = Provider<GoRouter>((ref) {
               );
             },
           ),
+          GoRoute(
+            name: 'settings',
+            path: 'settings',
+            builder: (_, state) {
+              return SettingsPage(
+                user: state.extra as UserModel
+              );
+            }
+          )
         ],
       ),
     ],
