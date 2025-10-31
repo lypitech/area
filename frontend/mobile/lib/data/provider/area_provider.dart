@@ -86,10 +86,6 @@ class AreaNotifier extends StateNotifier<AreaState> {
         area: area
       );
 
-      if (createdArea.error != null) {
-        throw Exception(createdArea.error);
-      }
-
       state = state.copyWith(
         areas: [
           ...state.areas,
