@@ -25,12 +25,7 @@ export class Oauth {
   expires_at?: Date;
 
   @Prop({ type: Object, default: {} })
-  meta: {
-    twitch_user_id?: string;
-    twitch_login?: string;
-    twitch_display_name?: string;
-    profile_image_url?: string;
-  };
+  meta: Record<string, any>;
 }
 
 export const OauthSchema = SchemaFactory.createForClass(Oauth);

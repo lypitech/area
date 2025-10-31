@@ -30,7 +30,7 @@ export class OauthService {
       refresh_token: data.refresh_token,
       token_type: data.token_type,
       expires_at: data.expires_at,
-      meta: data.meta ?? {}
+      meta: data.meta,
     });
     await this.userService.addOauthToken(
       user_uuid,
@@ -99,7 +99,7 @@ export class OauthService {
           client_secret: process.env.TWITCH_CLIENT_SECRET ?? '',
           code,
           grant_type: 'authorization_code',
-          redirect_uri: 'http://localhost:8081/callback'
+          redirect_uri: 'http://localhost:8081/callback',
         }).toString(),
 
         {
