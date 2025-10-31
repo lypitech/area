@@ -1,11 +1,12 @@
 import 'package:area/core/constant/constants.dart';
+import 'package:area/model/parameter_model.dart';
 
 class ActionModel {
 
   final String uuid;
   final String name;
   final String description;
-  final List<String> requiredParams;
+  final List<ParameterModel> requiredParams;
 
   ActionModel({
     required this.uuid,
@@ -15,11 +16,15 @@ class ActionModel {
   });
 
   factory ActionModel.fromJson(JsonData json) {
+    final requiredParams = (json['parameters'] ?? []) as List<dynamic>;
+
     return ActionModel(
       uuid: json['uuid'] as String,
       name: json['name'] as String,
       description: json['description'] as String,
-      requiredParams: List<String>.from(json['requiredParams'] ?? const []),
+      requiredParams: requiredParams
+        .map((e) => ParameterModel.fromJson(JsonData.from(e)))
+        .toList()
     );
   }
 
@@ -27,7 +32,7 @@ class ActionModel {
     'uuid': uuid,
     'name': name,
     'description': description,
-    'requiredParams': requiredParams,
+    'parameters': requiredParams.map((e) => e.toJson()).toList(),
   };
 
 }
