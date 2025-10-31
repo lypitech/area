@@ -22,16 +22,16 @@ class AreaRepository {
     required UserModel user,
     required AreaModal area
   }) async {
-    // try {
-      final response = await api.createArea(
-        userUuid: user.uuid,
-        area: area
-      );
+    final response = await api.createArea(
+      userUuid: user.uuid,
+      area: area
+    );
 
-      return AreaModel.fromJson(response);
-    // } catch (_) {
-      // return area.copyWith(isSyncing: true);
-    // }
+    if (response == null || response.containsKey('error')) {
+      throw Exception(response?['message'] ?? 'Unknown error.');
+    }
+
+    return AreaModel.fromJson(response);
   }
 
   Future<void> deleteArea({
