@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:area/api/auth_api.dart';
 import 'package:area/core/constant/constants.dart';
 import 'package:area/data/provider/app_settings_provider.dart';
+import 'package:area/data/provider/main_page_route_provider.dart';
 import 'package:area/model/user_model.dart';
 import 'package:area/service/auth_service.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:go_router/go_router.dart';
 
 final authDioProvider = FutureProvider<Dio>((ref) async {
   final appSettings = await ref.watch(appSettingsProvider.future);
@@ -290,7 +293,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
 }
 
-
 final authNotifierProvider = FutureProvider<AuthNotifier>((ref) async {
   final api = await ref.watch(authApiProvider.future);
   final service = await ref.watch(authServiceProvider.future);
@@ -298,3 +300,13 @@ final authNotifierProvider = FutureProvider<AuthNotifier>((ref) async {
 
   return notifier;
 });
+
+void authLogout(BuildContext context, WidgetRef ref) async {
+  final authNotifier = await ref.read(authNotifierProvider.future);
+
+  await authNotifier.logout();
+
+  if (context.mounted) {
+    context.go('/login');
+  }
+}
