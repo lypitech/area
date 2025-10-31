@@ -60,7 +60,10 @@ class AreaNotifier extends StateNotifier<AreaState> {
   AreaState get debugState => state;
 
   Future<void> loadAreas() async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(
+      isLoading: true,
+      error: null
+    );
 
     try {
       final fetched = await repository.fetchAreas(user: user);
@@ -149,16 +152,14 @@ class AreaNotifier extends StateNotifier<AreaState> {
 
 }
 
-// final areaNotifierProvider =
-//   StateNotifierProvider.family<AreaNotifier, AreaState, UserModel>((ref, user) {
-//     final repo = ref.watch(areaRepositoryProvider).requireValue;
-//     return AreaNotifier(repository: repo, user: user);
-//   });
-
 final areaNotifierProvider =
   FutureProvider.family<AreaNotifier, UserModel>((ref, user) async {
     final repo = await ref.watch(areaRepositoryProvider.future);
-    return AreaNotifier(repository: repo, user: user);
+
+    return AreaNotifier(
+      repository: repo,
+      user: user
+    );
   });
 
 final areaStateProvider =
