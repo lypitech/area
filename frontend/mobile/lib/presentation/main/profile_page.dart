@@ -1,13 +1,10 @@
-import 'package:area/core/oauth/oauth_github.dart';
-import 'package:area/data/provider/areas_provider.dart';
 import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/user_model.dart';
-import 'package:area/presentation/dialog/app_settings_dialog.dart';
 import 'package:area/widget/a_card.dart';
-import 'package:area/widget/appbar_button.dart';
-import 'package:area/widget/clickable_frame.dart';
+import 'package:area/widget/popup_menu_button.dart';
+import 'package:area/widget/popup_menu_single_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
@@ -28,10 +25,55 @@ class ProfilePage extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return MainPageLayout(
-      leading: AppbarButton(
-        icon: Icons.settings,
-        onTap: () => AppSettingsDialog.show(context, ref)
-      ),
+      trailing: [
+        PopupMenuButton<String>(
+          child: AppbarPopupMenuButton(),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0)
+          ),
+          itemBuilder: (_) => [
+            const PopupMenuItem(
+              value: 'edit_profile',
+              child: PopupMenuSingleItem(
+                text: 'Edit profile',
+                icon: Icons.edit_rounded
+              )
+            ),
+            const PopupMenuItem(
+              value: 'settings',
+              child: PopupMenuSingleItem(
+                text: 'Settings',
+                icon: Icons.settings_rounded
+              )
+            ),
+            const PopupMenuDivider(),
+            const PopupMenuItem(
+              value: 'log_out',
+              child: PopupMenuSingleItem(
+                text: 'Log out',
+                icon: Icons.logout_rounded,
+              )
+            )
+          ],
+          onSelected: (String? value) {
+            switch (value) {
+              case 'edit_profile':
+                break;
+              case 'settings':
+                context.push(
+                  '/settings',
+                  extra: user
+                );
+                break;
+              case 'log_out':
+                authLogout(context, ref);
+                break;
+              default:
+                break;
+            }
+          },
+        )
+      ],
       children: [
         Column(
           children: [
@@ -60,14 +102,6 @@ class ProfilePage extends ConsumerWidget {
                 color: Colors.grey.shade400
               ),
             ),
-            Gap(10),
-            ClickableFrame(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              onTap: () {
-                // ...
-              },
-              child: Text('Edit profile')
-            ),
           ],
         ),
         ACard(
@@ -75,19 +109,6 @@ class ProfilePage extends ConsumerWidget {
           children: [
             Text("Email: ${user.email}")
           ],
-        ),
-        ClickableFrame(
-          color: Colors.red,
-          onTap: () async => _logout(context, ref),
-          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-          child: Center(
-            child: Text(
-              'Log out',
-              style: textTheme.titleMedium?.copyWith(
-                  color: Colors.white
-              ),
-            ),
-          ),
         ),
         Text(
           'Account UUID:\n${user.uuid}',
