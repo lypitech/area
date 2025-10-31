@@ -13,6 +13,7 @@ export type ActionServiceType = {
 export type ReactionServiceType = {
   uuid: string;
   name: string;
+  requires_payload: boolean;
   parameters: Record<string, any>;
   description: string;
 };

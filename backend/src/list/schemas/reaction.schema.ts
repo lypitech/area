@@ -16,6 +16,9 @@ export class Reaction extends Document {
   @Prop({ required: true })
   description!: string;
 
+  @Prop()
+  requires_payload?: boolean;
+
   @Prop({ type: Object, required: true })
   parameters!: Record<string, any>[];
 }
@@ -24,6 +27,7 @@ export interface ReactionType {
   uuid?: string;
   service_name: string;
   name: string;
+  requires_payload: boolean;
   parameters: Record<string, any>[];
   description: string;
 }

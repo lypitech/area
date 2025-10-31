@@ -89,6 +89,7 @@ export class SeederService {
         reactionList.push({
           uuid: reaction.uuid,
           name: reaction.name,
+          requires_payload: reaction.requires_payload,
           parameters: reaction.parameters,
           description: reaction.description,
         } as unknown as ReactionServiceType);
