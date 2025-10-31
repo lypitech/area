@@ -59,8 +59,7 @@
       },
       {
         "name": "event",
-        "type": "string",
-        "description": "push"
+        "content": "push"
       }
     ],
     "trigger_types": ["webhook"]
@@ -82,8 +81,7 @@
       },
       {
         "name": "event",
-        "type": "string",
-        "description": "pull_request"
+        "content": "pull_request"
       }
     ],
     "trigger_types": ["webhook"]
@@ -128,8 +126,13 @@
     "service_name": "Twitch",
     "name": "Stream started",
     "description": "notify when you start a stream",
+
+
     "parameters": [
-      { "event": "stream.online" }
+      {
+        "name": "event",
+        "content": "stream.online"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -138,7 +141,10 @@
     "name": "Stream ended",
     "description": "notify when your stream stops",
     "parameters": [
-      { "event": "stream.offline" }
+      {
+        "name": "event",
+        "content": "stream.offline"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -147,7 +153,10 @@
     "name": "Channel updated",
     "description": "notify when you change title/category/tags",
     "parameters": [
-      { "event": "channel.update" }
+      {
+        "name": "event",
+        "content": "channel.update"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -156,7 +165,10 @@
     "name": "New subscription",
     "description": "notify when someone subscribes to your channel",
     "parameters": [
-      { "event": "channel.subscribe" }
+      {
+        "name": "event",
+        "content": "channel.subscribe"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -165,7 +177,10 @@
     "name": "Subscription ended",
     "description": "notify when a subscription ends or is cancelled",
     "parameters": [
-      { "event": "channel.subscription.end" }
+      {
+        "name": "event",
+        "content": "channel.subscription.end"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -174,7 +189,10 @@
     "name": "Subscription gifted",
     "description": "notify when a viewer gifts a sub",
     "parameters": [
-      { "event": "channel.subscription.gift" }
+      {
+        "name": "event",
+        "content": "channel.subscription.gift"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -183,7 +201,10 @@
     "name": "Subscription message",
     "description": "notify when a sub sends a resub message",
     "parameters": [
-      { "event": "channel.subscription.message" }
+      {
+        "name": "event",
+        "content": "channel.subscription.message"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -192,7 +213,10 @@
     "name": "Channel point reward added",
     "description": "notify when you add a custom reward",
     "parameters": [
-      { "event": "channel.channel_points_custom_reward.add" }
+      {
+        "name": "event",
+        "content": "channel.channel_points_custom_reward.add"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -201,7 +225,10 @@
     "name": "Channel point reward updated",
     "description": "notify when a custom reward is edited",
     "parameters": [
-      { "event": "channel.channel_points_custom_reward.update" }
+      {
+        "name": "event",
+        "content": "channel.channel_points_custom_reward.update"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -210,7 +237,10 @@
     "name": "Channel point reward removed",
     "description": "notify when a custom reward is removed",
     "parameters": [
-      { "event": "channel.channel_points_custom_reward.remove" }
+      {
+        "name": "event",
+        "content": "channel.channel_points_custom_reward.remove"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -219,7 +249,10 @@
     "name": "Reward redeemed",
     "description": "notify when someone redeems a channel point reward",
     "parameters": [
-      { "event": "channel.channel_points_custom_reward_redemption.add" }
+      {
+        "name": "event",
+        "content": "channel.channel_points_custom_reward_redemption.add"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -228,7 +261,10 @@
     "name": "Reward redemption updated",
     "description": "notify when a redemption is fulfilled/cancelled",
     "parameters": [
-      { "event": "channel.channel_points_custom_reward_redemption.update" }
+      {
+        "name": "event",
+        "content": "channel.channel_points_custom_reward_redemption.update"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -237,7 +273,10 @@
     "name": "Poll started",
     "description": "notify when a new poll begins",
     "parameters": [
-      { "event": "channel.poll.begin" }
+      {
+        "name": "event",
+        "content": "channel.poll.begin"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -246,7 +285,10 @@
     "name": "Poll progress",
     "description": "notify as a poll receives votes",
     "parameters": [
-      { "event": "channel.poll.progress" }
+      {
+        "name": "event",
+        "content": "channel.poll.progress"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -255,7 +297,10 @@
     "name": "Poll ended",
     "description": "notify when a poll ends",
     "parameters": [
-      { "event": "channel.poll.end" }
+      {
+        "name": "event",
+        "content": "channel.poll.end"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -264,7 +309,10 @@
     "name": "Prediction started",
     "description": "notify when a prediction is created",
     "parameters": [
-      { "event": "channel.prediction.begin" }
+      {
+        "name": "event",
+        "content": "channel.prediction.begin"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -273,7 +321,10 @@
     "name": "Prediction progress",
     "description": "notify when a prediction is being voted on",
     "parameters": [
-      { "event": "channel.prediction.progress" }
+      {
+        "name": "event",
+        "content": "channel.prediction.progress"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -282,7 +333,10 @@
     "name": "Prediction locked",
     "description": "notify when a prediction stops accepting votes",
     "parameters": [
-      { "event": "channel.prediction.lock" }
+      {
+        "name": "event",
+        "content": "channel.prediction.lock"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -291,7 +345,10 @@
     "name": "Prediction ended",
     "description": "notify when a prediction finishes and a result is chosen",
     "parameters": [
-      { "event": "channel.prediction.end" }
+      {
+        "name": "event",
+        "content": "channel.prediction.end"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -300,7 +357,10 @@
     "name": "Moderator added",
     "description": "notify when a user becomes moderator on the channel",
     "parameters": [
-      { "event": "channel.moderator.add" }
+      {
+        "name": "event",
+        "content": "channel.moderator.add"
+      }
     ],
     "trigger_types": ["webhook"]
   },
@@ -309,7 +369,10 @@
     "name": "Moderator removed",
     "description": "notify when a user is removed from moderators",
     "parameters": [
-      { "event": "channel.moderator.remove" }
+      {
+        "name": "event",
+        "content": "channel.moderator.remove"
+      }
     ],
     "trigger_types": ["webhook"]
   }
