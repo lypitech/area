@@ -86,28 +86,6 @@ class ProfilePage extends ConsumerWidget {
             Text("Email: ${user.email}")
           ],
         ),
-        ACard(
-          title: 'Services',
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Github'),
-                ElevatedButton(
-                  onPressed: () async {
-                    final code = await githubSignIn();
-
-                    if (code == null) {
-                      return;
-                    }
-                    // push to api lol
-                  },
-                  child: Text('Login')
-                )
-              ],
-            )
-          ],
-        ),
         ClickableFrame(
           color: Colors.red,
           onTap: () async => _logout(context, ref),
