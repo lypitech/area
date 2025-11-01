@@ -43,6 +43,9 @@ class OauthPage extends ConsumerWidget {
             final code = await githubSignIn();
 
             if (code.startsWith('AR3AERR:')) {
+              if (code.contains('CANCELED')) {
+                return;
+              }
               if (context.mounted) {
                 ErrorDialog.show(
                   context: context,
@@ -82,6 +85,9 @@ class OauthPage extends ConsumerWidget {
             final code = await twitchSignIn();
 
             if (code.startsWith('AR3AERR:')) {
+              if (code.contains('CANCELED')) {
+                return;
+              }
               if (context.mounted) {
                 ErrorDialog.show(
                   context: context,

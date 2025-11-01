@@ -47,6 +47,14 @@ class AreaDetailsPage extends ConsumerWidget {
           ),
           itemBuilder: (_) => [
             const PopupMenuItem(
+              value: 'logs',
+              child: PopupMenuSingleItem(
+                text: 'Show logs',
+                icon: Icons.list,
+              )
+            ),
+            const PopupMenuDivider(),
+            const PopupMenuItem(
               value: 'delete',
               child: PopupMenuSingleItem(
                 text: 'Delete AREA',
@@ -100,7 +108,7 @@ class AreaDetailsPage extends ConsumerWidget {
               spacing: 5,
               children: [
                 Text(
-                  'Created on: ',
+                  'Created on:',
                   style: textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w500
                   )
@@ -117,7 +125,7 @@ class AreaDetailsPage extends ConsumerWidget {
               spacing: 5,
               children: [
                 Text(
-                  'Last run: ',
+                  'Last run:',
                   style: textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w500
                   )
