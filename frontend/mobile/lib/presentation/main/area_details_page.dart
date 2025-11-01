@@ -68,7 +68,9 @@ class AreaDetailsPage extends StatelessWidget {
                   )
                 ),
                 Text(
-                  '...',
+                  area.createdAt != null
+                    ? Utils.formatDate(area.createdAt!)
+                    : 'Unknown',
                   style: textTheme.bodyLarge,
                 )
               ],
@@ -96,7 +98,7 @@ class AreaDetailsPage extends StatelessWidget {
           ],
         ),
         Text(
-          'AREA UUID: ...',
+          'AREA UUID:\n${area.uuid}',
           style: textTheme.bodyMedium?.copyWith(
             color: Colors.grey.shade400
           ),
