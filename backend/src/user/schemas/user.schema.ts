@@ -2,8 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { v4 as uuid_v4 } from 'uuid';
 
-type oauth_uuid = string;
-type service_name = string;
+type UserOauthLink = { service_name: string; token_uuid: string };
 
 @Schema()
 export class User extends Document {
@@ -28,8 +27,12 @@ export class User extends Document {
   @Prop({ required: false, default: null })
   refreshToken?: string;
 
-  @Prop({ required: true, default: [] })
-  oauth_uuids!: [service_name, oauth_uuid];
+  @Prop({
+    required: true,
+    default: [],
+    type: [{ service_name: String, token_uuid: String }],
+  })
+  oauth_uuids!: UserOauthLink[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
