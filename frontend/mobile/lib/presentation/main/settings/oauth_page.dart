@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:area/core/oauth/oauth_github.dart';
 import 'package:area/core/oauth/oauth_twitch.dart';
 import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/data/provider/oauth_provider.dart';
+import 'package:area/data/provider/platforms_icons_provider.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/user_model.dart';
 import 'package:area/presentation/dialog/error_dialog.dart';
@@ -22,6 +25,8 @@ class OauthPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final iconsMap = ref.watch(platformsImageProvider);
+
     return MainPageLayout(
       title: 'Linked accounts',
       leading: AppbarButton(
@@ -32,6 +37,7 @@ class OauthPage extends ConsumerWidget {
         PlatformLoginCard(
           name: 'Github',
           user: user,
+          icon: iconsMap['github'],
           loginLogic: () async {
             final oauthRepository = await ref.watch(oauthRepositoryProvider.future);
             final code = await githubSignIn();
@@ -70,6 +76,7 @@ class OauthPage extends ConsumerWidget {
         PlatformLoginCard(
           name: 'Twitch',
           user: user,
+          icon: iconsMap['twitch'],
           loginLogic: () async {
             final oauthRepository = await ref.watch(oauthRepositoryProvider.future);
             final code = await twitchSignIn();
@@ -116,12 +123,14 @@ class PlatformLoginCard extends StatelessWidget {
   final String name;
   final UserModel user;
   final VoidCallback loginLogic;
+  final Image? icon;
 
   const PlatformLoginCard({
     super.key,
     required this.name,
     required this.user,
-    required this.loginLogic
+    required this.loginLogic,
+    required this.icon
   });
 
   @override
@@ -132,6 +141,7 @@ class PlatformLoginCard extends StatelessWidget {
       title: name,
       subtitle: isLoggedIn ? 'Logged in' : 'Not logged in',
       onTap: isLoggedIn ? null : loginLogic,
+      icon: icon,
     );
   }
 
