@@ -19,6 +19,7 @@ import { ReactionModule } from './list/reaction/reaction.module';
 import { ServiceModule } from './list/service.module';
 import { Service, ServiceSchema } from './list/schemas/service.schema';
 import { ScheduleModule } from '@nestjs/schedule';
+import { UtilsService } from './response/utils.service';
 
 @Module({
   imports: [
@@ -46,6 +47,6 @@ import { ScheduleModule } from '@nestjs/schedule';
     ReactionModule,
   ],
   controllers: [AppController],
-  providers: [AppService, SeederService],
+  providers: [UtilsService, AppService, SeederService],
 })
 export class AppModule {}
