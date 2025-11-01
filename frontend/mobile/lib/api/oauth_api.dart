@@ -22,7 +22,7 @@ class OauthApi {
           'front': false // Telling the API we're mobile client.
         }
       );
-      return response as JsonData;
+      return response.data as JsonData;
     } on DioException catch (exception) {
       return exception.response?.data as JsonData?;
     }
@@ -37,10 +37,10 @@ class OauthApi {
         '/oauth/twitch',
         data: {
           'uuid': userUuid,
-          'code': code
+          'code': code,
         }
       );
-      return response as JsonData;
+      return response.data as JsonData;
     } on DioException catch (exception) {
       return exception.response?.data as JsonData?;
     }
