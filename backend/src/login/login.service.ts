@@ -2,6 +2,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
@@ -10,31 +11,46 @@ import { UserService } from 'src/user/user.service';
 import { UserDto } from 'src/user/types/userDto';
 import { User } from 'src/user/schemas/user.schema';
 import { plainToInstance } from 'class-transformer';
+import { OauthService } from '../oauth/oauth.service';
+
+type OauthFunction = (code: string) => Promise<UserDto>;
 
 @Injectable()
 export class LoginService {
+  private readonly oauthServices = new Map<string, OauthFunction>();
   constructor(
     private readonly userService: UserService,
+    private readonly oauthService: OauthService,
     private jwtService: JwtService,
-  ) {}
+  ) {
+    this.oauthServices.set('github', (code) => {
+      return this.oauthService.registerWithGithub(code);
+    });
+    // this.oauthServices.set('twitch', (code) => {
+    //   return this.oauthService.registerWithTwitch(code);
+    // });
+  }
+
+  async registerWith(code: string, service: string) {
+    const oauthCreator = this.oauthServices.get(service.toLowerCase());
+    if (oauthCreator) return oauthCreator(code);
+    throw new NotFoundException(`Service ${service} not supported`);
+  }
 
   async register(
     email: string,
     password: string,
     nickname: string,
     username: string,
-    profilePicture
+    profilePicture: string,
   ): Promise<UserDto> {
-    const user: User = await this.userService.create(
+    return this.userService.create(
       email,
       password,
       username,
       nickname,
-      profilePicture
+      profilePicture,
     );
-    return plainToInstance(UserDto, user.toObject(), {
-      excludeExtraneousValues: true,
-    });
   }
 
   async login(email: string, password: string) {
