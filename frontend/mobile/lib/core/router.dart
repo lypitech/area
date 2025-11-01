@@ -114,8 +114,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: 'area_details',
             path: 'area_details',
             builder: (_, state) {
+              final l = state.extra as List;
+
               return AreaDetailsPage(
-                area: state.extra as AreaModel
+                user: l[0] as UserModel,
+                area: l[1] as AreaModel
               );
             },
             routes: [

@@ -42,7 +42,7 @@ class MyAreasPage extends ConsumerWidget {
                   style: textTheme.titleMedium,
                 ),
               } else ... {
-                ...areas.map((e) => AreaCard(area: e))
+                ...areas.map((e) => AreaCard(user: user, area: e))
               },
               Divider(
                 color: Colors.grey.shade300,

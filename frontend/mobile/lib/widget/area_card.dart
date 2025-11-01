@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:area/data/provider/platforms_icons_provider.dart';
 import 'package:area/model/area_model.dart';
+import 'package:area/model/user_model.dart';
 import 'package:area/widget/clickable_frame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,9 +8,11 @@ import 'package:go_router/go_router.dart';
 
 class AreaCard extends ConsumerWidget {
 
+  final UserModel user;
   final AreaModel area;
 
   const AreaCard({
+    required this.user,
     required this.area,
     super.key
   });
@@ -28,7 +29,7 @@ class AreaCard extends ConsumerWidget {
       onTap: () {
         context.pushNamed(
           'area_details',
-          extra: area
+          extra: [user, area]
         );
       },
       padding: const EdgeInsets.all(20),
