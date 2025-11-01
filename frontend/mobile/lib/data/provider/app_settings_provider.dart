@@ -18,9 +18,9 @@ class AppSettingsNotifier extends AsyncNotifier<AppSettingsModel> {
     final sharedPreferences = await SharedPreferences.getInstance();
 
     final apiUrl = sharedPreferences.getString(Constants.apiUrlKey)
-      ?? dotenv.env['API_URL']!;
+      ?? dotenv.env[Constants.envApiUrlKey]!;
     final apiPort = sharedPreferences.getString(Constants.apiPortKey)
-      ?? dotenv.env['API_PORT']!;
+      ?? dotenv.env[Constants.envApiPortKey]!;
 
     return AppSettingsModel(
       apiUrl: apiUrl,

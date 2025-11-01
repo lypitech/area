@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - API_URL=http://10.56.82.29
-        - API_KEY=${API_KEY:-default_key}
+        - DEFAULT_API_URL=http://10.56.82.29
+        - DEFAULT_API_KEY=${API_KEY:-default_key}
     volumes:
       - ./output:/output
     container_name: flutter_apk_builder
