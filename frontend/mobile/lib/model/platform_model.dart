@@ -15,7 +15,7 @@ class PlatformModel {
   final List<ActionModel> actions;
 
   PlatformModel({
-    required this.uuid,
+    this.uuid = '',
     required this.name,
     this.iconBase64,
     this.icon,
