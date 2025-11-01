@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:area/data/provider/main_page_route_provider.dart';
-import 'package:area/icon/area_icons.dart';
 import 'package:area/model/navbar_element_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -41,7 +41,7 @@ class _RegisterPageFinalStepState extends ConsumerState<RegisterPageFinalStep> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             ErrorDialog.show(
               context: context,
-              error: '${e}'
+              error: '$e'
             );
             context.go('/login');
           });

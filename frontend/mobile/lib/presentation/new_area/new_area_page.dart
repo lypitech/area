@@ -3,7 +3,6 @@ import 'package:area/data/provider/area_provider.dart';
 import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
-import 'package:area/model/user_model.dart';
 import 'package:area/presentation/dialog/error_dialog.dart';
 import 'package:area/widget/a_text_field.dart';
 import 'package:area/widget/appbar_button.dart';

@@ -23,7 +23,7 @@ class AppSettingsModel {
   }
 
   bool equals(String url, String port) {
-    return this.apiUrl == url && this.apiPort == port;
+    return apiUrl == url && apiPort == port;
   }
 
 }

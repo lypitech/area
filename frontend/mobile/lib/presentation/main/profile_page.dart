@@ -27,7 +27,6 @@ class ProfilePage extends ConsumerWidget {
     return MainPageLayout(
       trailing: [
         PopupMenuButton<String>(
-          child: AppbarPopupMenuButton(),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15.0)
           ),
@@ -72,6 +71,7 @@ class ProfilePage extends ConsumerWidget {
                 break;
             }
           },
+          child: AppbarPopupMenuButton(),
         )
       ],
       children: [

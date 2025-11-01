@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:area/core/constant/constants.dart';
 import 'package:area/model/platform_model.dart';
 import 'package:area/model/user_model.dart';
