@@ -26,7 +26,7 @@ class _DialogButtonState extends State<DialogButton> {
   @override
   Widget build(BuildContext context) {
     Color color = widget.style == DialogButtonStyle.primary
-      ? Theme.of(context).primaryColor
+      ? Theme.of(context).colorScheme.primary
       : Colors.transparent;
 
     return AnimatedScale(
