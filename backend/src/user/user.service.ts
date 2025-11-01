@@ -173,7 +173,7 @@ export class UserService {
     }
 
     for (const oauth_uuid of user.oauth_uuids) {
-      const oauth = await this.OauthModel.findOne({ uuid: oauth_uuid });
+      const oauth = await this.oauthModel.findOne({ uuid: oauth_uuid });
       if (oauth && oauth.service_name === service) {
         return oauth;
       }
