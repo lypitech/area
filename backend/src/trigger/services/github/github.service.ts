@@ -94,53 +94,77 @@ export class GithubService {
 
     if (this.isDebug) {
       this.logger.debug(
-        `[resolveGithubToken] No ENV PAT found. Falling back to OAuth in DB for user ${this.mask(
-          userId,
-          {
-            showStart: 4,
-            showEnd: 4,
-          },
-        )}`,
+        `[resolveGithubToken] No ENV PAT found. Falling back to OAuth in DB for user ${this.mask(userId, { showStart: 4, showEnd: 4 })}`,
       );
     }
 
-    const user = await this.userModel.findOne({ uuid: userId });
+    const user = await this.userModel
+      .findOne({ uuid: userId }, { oauth_uuids: 1, _id: 0 })
+      .lean();
+
     if (!user) {
       this.logger.warn(`[resolveGithubToken] User not found: ${userId}`);
       throw new UnauthorizedException('User not found');
     }
 
-    const oauth = await this.oauthModel.findOne({
-      uuid: { $in: user.oauth_uuids ?? [] },
-      service_name: 'github',
-    });
+    const links: Array<{ service_name: string; token_uuid: string }> = (
+      user.oauth_uuids ?? []
+    )
+      .map((entry: any) => {
+        if (!entry) return null;
+        if (Array.isArray(entry) && entry.length === 2) {
+          return {
+            service_name: String(entry[0]),
+            token_uuid: String(entry[1]),
+          };
+        }
+        if (
+          typeof entry === 'object' &&
+          entry.service_name &&
+          entry.token_uuid
+        ) {
+          return {
+            service_name: String(entry.service_name),
+            token_uuid: String(entry.token_uuid),
+          };
+        }
+        return null;
+      })
+      .filter(Boolean) as any[];
+
+    const ghLinks = links.filter(
+      (l) => l.service_name.toLowerCase() === 'github',
+    );
+    const tokenUuids = ghLinks.map((l) => l.token_uuid);
+
+    if (tokenUuids.length === 0) {
+      this.logger.warn(
+        `[resolveGithubToken] No GitHub OAuth link for user ${this.mask(userId, { showStart: 4, showEnd: 4 })}`,
+      );
+      throw new UnauthorizedException('GitHub authentication required');
+    }
+
+    const oauth = await this.oauthModel
+      .findOne({
+        uuid: { $in: tokenUuids },
+        service_name: 'github',
+      })
+      .lean();
 
     if (!oauth?.token) {
       this.logger.warn(
-        `[resolveGithubToken] No GitHub OAuth token found for user ${this.mask(
-          userId,
-          {
-            showStart: 4,
-            showEnd: 4,
-          },
-        )}`,
+        `[resolveGithubToken] No GitHub OAuth token doc found for user ${this.mask(userId, { showStart: 4, showEnd: 4 })}`,
       );
       throw new UnauthorizedException('GitHub authentication required');
     }
 
     if (this.isDebug) {
       this.logger.debug(
-        `[resolveGithubToken] Using OAuth token from DB for user ${this.mask(
-          userId,
-          {
-            showStart: 4,
-            showEnd: 4,
-          },
-        )}`,
+        `[resolveGithubToken] Using OAuth token from DB for user ${this.mask(userId, { showStart: 4, showEnd: 4 })}`,
       );
     }
 
-    return oauth.token;
+    return oauth.token as string;
   }
 
   async configureWebhook(parameters: {

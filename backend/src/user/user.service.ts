@@ -147,7 +147,10 @@ export class UserService {
     throw new NotFoundException(`No OAuth token found for service ${service}.`);
   }
 
-  async updateUser(uuid: string, updateData: Partial<UserDto>): Promise<string> {
+  async updateUser(
+    uuid: string,
+    updateData: Partial<UserDto>,
+  ): Promise<string> {
     const user: User | null = await this.userModel.findOne({ uuid });
     if (!user) {
       throw new NotFoundException(`No user with uuid ${uuid} found.`);
