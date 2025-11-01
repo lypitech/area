@@ -1,3 +1,4 @@
+import 'package:area/data/provider/area_provider.dart';
 import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/data/provider/platform_provider.dart';
 import 'package:area/presentation/dialog/app_settings_dialog.dart';
@@ -54,6 +55,9 @@ class _InitPageState extends ConsumerState<InitPage> {
 
         switch (authState.status) {
           case AuthStatus.authenticated:
+            final notifier = await ref.read(areaNotifierProvider(authState.user!).future);
+            await notifier.syncAreas();
+
             context.go('/');
             break;
           case AuthStatus.unauthenticated:
