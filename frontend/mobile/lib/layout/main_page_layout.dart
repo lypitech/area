@@ -31,6 +31,7 @@ class MainPageLayout extends StatelessWidget {
         trailing: trailing,
       ),
       body: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
