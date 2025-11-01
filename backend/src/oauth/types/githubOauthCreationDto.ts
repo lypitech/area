@@ -1,4 +1,5 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsIn, IsNotEmpty } from 'class-validator';
+import type { OauthClient } from './oauthClient';
 
 export class GithubOauthCreationDto {
   @IsNotEmpty()
@@ -6,4 +7,7 @@ export class GithubOauthCreationDto {
 
   @IsNotEmpty()
   uuid: string;
+
+  @IsIn(['web', 'mobile'])
+  client: OauthClient;
 }

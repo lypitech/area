@@ -6,6 +6,9 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { InjectModel } from '@nestjs/mongoose';
 import { OauthDto } from './types/oauthDto';
+import { OauthClient } from './types/oauthClient';
+
+type Provider = 'github' | 'twitch';
 
 @Injectable()
 export class OauthService {
@@ -16,7 +19,7 @@ export class OauthService {
   ) {}
 
   async findByUUID(uuid: string): Promise<Oauth> {
-    const oauth: Oauth | null = await this.oauthModel.findOne({ uuid: uuid });
+    const oauth: Oauth | null = await this.oauthModel.findOne({ uuid });
     if (!oauth) {
       throw new NotFoundException(`No user with uuid ${uuid} found.`);
     }
@@ -44,28 +47,74 @@ export class OauthService {
     user_uuid: string,
     service_name: string,
   ): Promise<Oauth | null> {
-    const user = await this.userService.findByUUID(user_uuid);
-
-    const wanted = service_name.toLowerCase();
-    const link = user.oauth_uuids.find(
-      (o) => o.service_name.toLowerCase() === wanted,
-    );
-    if (!link) return null;
-
-    return this.oauthModel.findOne({ uuid: link.token_uuid });
+    const userOauths = (await this.userService.findByUUID(user_uuid))
+      .oauth_uuids;
+    for (const oauth of userOauths) {
+      if (oauth[0] === service_name) {
+        return this.oauthModel.findOne({ uuid: oauth[1] });
+      }
+    }
+    return null;
   }
 
-  async getGithubToken(code: string, user_uuid: string) {
+  private getProviderCreds(provider: Provider, client: OauthClient) {
+    if (provider === 'github') {
+      const clientId =
+        client === 'web'
+          ? process.env.GITHUB_WEB_CLIENT_ID
+          : process.env.GITHUB_MOBILE_CLIENT_ID;
+
+      const clientSecret =
+        client === 'web'
+          ? process.env.GITHUB_WEB_CLIENT_SECRET
+          : process.env.GITHUB_MOBILE_CLIENT_SECRET;
+
+      if (!clientId || !clientSecret) {
+        throw new Error(
+          `Missing GitHub ${client.toUpperCase()} client credentials`,
+        );
+      }
+      return {
+        clientId,
+        clientSecret,
+        redirectUri: undefined as string | undefined,
+      };
+    }
+
+    const clientId =
+      client === 'web'
+        ? process.env.TWITCH_WEB_CLIENT_ID
+        : process.env.TWITCH_MOBILE_CLIENT_ID;
+
+    const clientSecret =
+      client === 'web'
+        ? process.env.TWITCH_WEB_CLIENT_SECRET
+        : process.env.TWITCH_MOBILE_CLIENT_SECRET;
+
+    const redirectUri =
+      client === 'web'
+        ? process.env.TWITCH_WEB_REDIRECT_URI
+        : process.env.TWITCH_MOBILE_REDIRECT_URI;
+
+    if (!clientId || !clientSecret || !redirectUri) {
+      throw new Error(
+        `Missing Twitch ${client.toUpperCase()} credentials or redirect URI`,
+      );
+    }
+    return { clientId, clientSecret, redirectUri };
+  }
+
+  async getGithubToken(code: string, user_uuid: string, client: OauthClient) {
+    const { clientId, clientSecret } = this.getProviderCreds('github', client);
+
     const tokenResponse = await firstValueFrom(
       this.httpService.post(
         'https://github.com/login/oauth/access_token',
-
         new URLSearchParams({
-          client_id: process.env.GITHUB_CLIENT_ID ?? '',
-          client_secret: process.env.GITHUB_CLIENT_SECRET ?? '',
+          client_id: clientId,
+          client_secret: clientSecret,
           code,
         }).toString(),
-
         {
           headers: {
             Accept: 'application/json',
@@ -74,35 +123,52 @@ export class OauthService {
         },
       ),
     );
-    const tokenData = tokenResponse.data;
+
+    const tokenData = tokenResponse.data as {
+      access_token?: string;
+      token_type?: string;
+      scope?: string;
+      refresh_token?: string;
+      expires_in?: number;
+      refresh_token_expires_in?: number;
+    };
+
     const accessToken = tokenData.access_token;
     if (!accessToken) {
       throw new Error('GitHub OAuth failed: no access token returned');
     }
-    const token = {
+
+    const expiresAt = tokenData.expires_in
+      ? new Date(Date.now() + tokenData.expires_in * 1000)
+      : undefined;
+
+    const token: OauthDto = {
       service_name: 'github',
       token: accessToken,
-      refresh_token: tokenData.refreshToken,
-      token_type: tokenData.token_type,
-      expires_at: tokenData.expires_at,
-    };
+      refresh_token: tokenData.refresh_token,
+      token_type: tokenData.token_type ?? 'bearer',
+      expires_at: expiresAt ?? null,
+    } as unknown as OauthDto;
 
     return this.addToken(user_uuid, token);
   }
 
-  async getTwitchToken(code: string, user_uuid: string) {
+  async getTwitchToken(code: string, user_uuid: string, client: OauthClient) {
+    const { clientId, clientSecret, redirectUri } = this.getProviderCreds(
+      'twitch',
+      client,
+    );
+
     const tokenResponse = await firstValueFrom(
       this.httpService.post(
         'https://id.twitch.tv/oauth2/token',
-
         new URLSearchParams({
-          client_id: process.env.TWITCH_CLIENT_ID ?? '',
-          client_secret: process.env.TWITCH_CLIENT_SECRET ?? '',
+          client_id: clientId,
+          client_secret: clientSecret,
           code,
           grant_type: 'authorization_code',
-          redirect_uri: 'http://localhost:8081/callback',
+          redirect_uri: redirectUri!, // requis par Twitch
         }).toString(),
-
         {
           headers: {
             Accept: 'application/json',
@@ -111,16 +177,25 @@ export class OauthService {
         },
       ),
     );
-    const tokenData = tokenResponse.data;
+
+    const tokenData = tokenResponse.data as {
+      access_token?: string;
+      refresh_token?: string;
+      expires_in?: number; // seconds
+      token_type?: string;
+      scope?: string[];
+    };
+
     const accessToken = tokenData.access_token;
     if (!accessToken) {
       throw new Error('Twitch OAuth failed: no access token returned');
     }
 
+    // Récupération des infos utilisateur Twitch
     const userInfoResponse = await firstValueFrom(
       this.httpService.get('https://api.twitch.tv/helix/users', {
         headers: {
-          'Client-Id': process.env.TWITCH_CLIENT_ID ?? '',
+          'Client-Id': clientId,
           Authorization: `Bearer ${accessToken}`,
         },
       }),
@@ -130,17 +205,23 @@ export class OauthService {
     if (!twitchUser) {
       throw new Error('Twitch OAuth failed: could not fetch user info');
     }
-    const token = {
+
+    const expiresAt = tokenData.expires_in
+      ? new Date(Date.now() + tokenData.expires_in * 1000)
+      : null;
+
+    const token: OauthDto = {
       service_name: 'twitch',
       token: accessToken,
-      refresh_token: tokenData.refreshToken,
-      token_type: tokenData.token_type,
-      expires_at: tokenData.expires_at,
+      refresh_token: tokenData.refresh_token,
+      token_type: tokenData.token_type ?? 'bearer',
+      expires_at: expiresAt,
       meta: {
         twitch_user_id: twitchUser.id,
         twitch_login: twitchUser.login,
         twitch_display_name: twitchUser.display_name,
         profile_image_url: twitchUser.profile_image_url,
+        client,
       },
     };
 
