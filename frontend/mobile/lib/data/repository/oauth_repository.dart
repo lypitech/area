@@ -22,4 +22,18 @@ class OauthRepository {
     }
   }
 
+  Future<void> twitchLogin({
+    required String userUuid,
+    required String code,
+  }) async {
+    final response = await api.twitchLogin(
+      userUuid: userUuid,
+      code: code
+    );
+
+    if (response == null || response.containsKey('error') || response.containsKey('message')) {
+      throw Exception(response?['message'] ?? 'Unknown error.');
+    }
+  }
+
 }
