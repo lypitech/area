@@ -1,5 +1,6 @@
 import 'package:area/core/utils.dart';
 import 'package:area/layout/main_page_layout.dart';
+import 'package:area/model/area_history_entry.dart';
 import 'package:area/model/area_model.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/areaction_card.dart';
@@ -23,6 +24,10 @@ class AreaDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
+
+    final int areaRuns = area.history.length;
+    final AreaHistoryEntry? lastHistoryEntry = areaRuns == 0 ? null : area.history.last;
+    final bool isLastRunOk = lastHistoryEntry?.status == 'ok';
 
     return MainPageLayout(
       title: area.name,
@@ -112,15 +117,26 @@ class AreaDetailsPage extends StatelessWidget {
                     fontWeight: FontWeight.w500
                   )
                 ),
-                Icon(Icons.check),
+                if (areaRuns > 0) ... {
+                  Icon(
+                    isLastRunOk
+                      ? Icons.check
+                      : Icons.close_rounded,
+                    color: isLastRunOk
+                      ? Colors.green
+                      : Colors.red,
+                  ),
+                },
                 Text(
-                  '...',
+                  areaRuns == 0
+                    ? '--'
+                    : Utils.formatDate(lastHistoryEntry!.timestamp),
                   style: textTheme.bodyLarge,
                 )
               ],
             ),
             Text(
-              'Ran ... times',
+              'Ran ${areaRuns} time${areaRuns == 1 ? '' : 's'}',
               style: textTheme.bodyLarge,
             )
           ],
