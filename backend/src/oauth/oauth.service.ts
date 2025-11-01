@@ -31,6 +31,16 @@ export class OauthService {
     return oauth;
   }
 
+  private async fetchImageAsBase64(url: string): Promise<string> {
+    const response = await firstValueFrom(
+      this.httpService.get(url, {
+        responseType: 'arraybuffer',
+      }),
+    );
+
+    return Buffer.from(response.data, 'binary').toString('base64');
+  }
+
   private async addToken(user_uuid: string, data: OauthDto) {
     const token: Oauth = await this.oauthModel.create({
       service_name: data.service_name,
@@ -128,7 +138,7 @@ export class OauthService {
         '',
         userData.name,
         userData.log,
-        userData.avatar_url,
+        await this.fetchImageAsBase64(userData.avatar_url),
       );
       token.meta = { github_id: userData.id };
       await this.addToken(user.uuid, <OauthDto>token);
@@ -173,7 +183,49 @@ export class OauthService {
     return user_uuid ? this.addToken(user_uuid, token) : token;
   }
 
-  async getTwitchToken(code: string, user_uuid: string) {
+  async loginWithTwitch(code: string) {
+    try {
+      const token = await this.getTwitchToken(code);
+      const oauth: Oauth | null = await this.findByMetaMember(
+        'twitch_user_id',
+        token.meta.twitch_user_id as string,
+      );
+      if (!oauth)
+        throw new BadRequestException('User has never connected with twitch');
+      const login = await this.userService.login(oauth.uuid);
+      if (login) {
+        await this.updateToken(login.uuid, <OauthDto>token);
+        return login;
+      }
+      throw new BadRequestException('Wrong credentials.');
+    } catch (e: any) {
+      throw new BadRequestException(`Error: ${e.message}`);
+    }
+  }
+
+  async registerWithTwitch(code: string) {
+    try {
+      const token = await this.getTwitchToken(code);
+      const oauth: Oauth | null = await this.findByMetaMember(
+        'twitch_user_id',
+        token.meta.twitch_user_id as string,
+      );
+      if (oauth) throw new BadRequestException('User has already registered');
+      const user = await this.userService.create(
+        token.meta.twitch_email as string,
+        '',
+        token.meta.twitch_display_name as string,
+        token.meta.twitch_login as string,
+        await this.fetchImageAsBase64(token.meta.profile_image_url as string),
+      );
+      await this.addToken(user.uuid, <OauthDto>token);
+      return this.userService.findByUUID(user.uuid);
+    } catch (e: any) {
+      throw new BadRequestException(`Error: ${e.message}`);
+    }
+  }
+
+  async getTwitchToken(code: string, user_uuid: string = '') {
     const tokenResponse = await firstValueFrom(
       this.httpService.post(
         'https://id.twitch.tv/oauth2/token',
@@ -222,12 +274,13 @@ export class OauthService {
       meta: {
         twitch_user_id: twitchUser.id,
         twitch_login: twitchUser.login,
+        twitch_email: twitchUser.email,
         twitch_display_name: twitchUser.display_name,
         profile_image_url: twitchUser.profile_image_url,
       },
     };
 
-    return this.addToken(user_uuid, token);
+    return user_uuid ? this.addToken(user_uuid, token) : token;
   }
 
   async remove(uuid: string): Promise<boolean> {
