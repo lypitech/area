@@ -16,7 +16,7 @@ export class OauthController {
   @Post('github')
   @UsePipes(new ValidationPipe())
   async githubAuth(@Body() data: GithubOauthCreationDto) {
-    return this.authService.getGithubToken(data.code, data.uuid);
+    return this.authService.getGithubToken(data.code, data.front, data.uuid);
   }
 
   @Post('twitch')

@@ -3,13 +3,15 @@ import {
   Post,
   Body,
   UsePipes,
-  ValidationPipe, Param,
+  ValidationPipe,
+  Param,
 } from '@nestjs/common';
 import { LoginService } from './login.service';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './types/loginDto';
 import { CreateUserDto } from './types/createUserDto';
 import { RefreshTokenDto } from './types/tokenDto';
+import { GithubOauthCreationDto } from '../oauth/types/githubOauthCreationDto';
+import { OauthConnectionDto } from '../oauth/types/oauthConnectionDto';
 
 @Controller('user')
 export class LoginController {
@@ -28,13 +30,19 @@ export class LoginController {
   }
 
   @Post('register/:service')
-  registerOauth(@Body('code') code: string, @Param('service') service: string) {
-    return this.loginService.registerWith(code, service);
+  registerOauth(
+    @Body() data: OauthConnectionDto,
+    @Param('service') service: string,
+  ) {
+    return this.loginService.registerWith(data.code, data.front, service);
   }
 
   @Post('login/:service')
-  loginOauth(@Body('code') code: string, @Param('service') service: string) {
-    return this.loginService.loginWith(code, service);
+  loginOauth(
+    @Body() data: OauthConnectionDto,
+    @Param('service') service: string,
+  ) {
+    return this.loginService.loginWith(data.code, data.front, service);
   }
   @Post('login')
   @UsePipes(new ValidationPipe())

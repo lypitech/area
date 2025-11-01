@@ -103,9 +103,9 @@ export class OauthService {
     return userData as Record<string, string>;
   }
 
-  async loginWithGithub(code: string) {
+  async loginWithGithub(code: string, front: boolean) {
     try {
-      const token = await this.getGithubToken(code);
+      const token = await this.getGithubToken(code, front);
       const newData = await this.getGithubUserInfos(<OauthDto>token);
       const oauth: Oauth | null = await this.findByMetaMember(
         'github_id',
@@ -124,9 +124,9 @@ export class OauthService {
     }
   }
 
-  async registerWithGithub(code: string) {
+  async registerWithGithub(code: string, front: boolean) {
     try {
-      const token = await this.getGithubToken(code);
+      const token = await this.getGithubToken(code, front);
       const userData = await this.getGithubUserInfos(<OauthDto>token);
       const oauth: Oauth | null = await this.findByMetaMember(
         'github_id',
@@ -148,14 +148,20 @@ export class OauthService {
     }
   }
 
-  async getGithubToken(code: string, user_uuid: string = '') {
+  async getGithubToken(code: string, front: boolean, user_uuid: string = '') {
+    const clientId: string = front
+      ? (process.env.GITHUB_CLIENT_ID ?? '')
+      : (process.env.GITHUB_MOBILE_CLIENT_ID ?? '');
+    const clientSecret: string = front
+      ? (process.env.GITHUB_CLIENT_SECRET ?? '')
+      : (process.env.GITHUB_MOBILE_CLIENT_SECRET ?? '');
     const tokenResponse = await firstValueFrom(
       this.httpService.post(
         'https://github.com/login/oauth/access_token',
 
         new URLSearchParams({
-          client_id: process.env.GITHUB_CLIENT_ID ?? '',
-          client_secret: process.env.GITHUB_CLIENT_SECRET ?? '',
+          client_id: clientId,
+          client_secret: clientSecret,
           code,
         }).toString(),
 
