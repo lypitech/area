@@ -2,12 +2,12 @@ import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/settings_tile_model.dart';
 import 'package:area/model/user_model.dart';
+import 'package:area/presentation/dialog/app_settings_dialog.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/clickable_frame.dart';
 import 'package:area/widget/settings_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -25,6 +25,12 @@ class SettingsPage extends ConsumerWidget {
       color: const Color.fromRGBO(189, 171, 218, 1),
       title: 'Linked accounts',
       route: 'link'
+    ),
+    SettingsTileModel(
+      icon: Icons.settings_rounded,
+      color: Colors.grey,
+      title: 'API settings',
+      route: '\$api_settings'
     ),
     SettingsTileModel(
       icon: Icons.info_rounded,
@@ -52,6 +58,11 @@ class SettingsPage extends ConsumerWidget {
                 iconBackgroundColor: tile.color,
                 icon: tile.icon,
                 onTap: () {
+                  if (tile.route == '\$api_settings') { // only special case
+                    AppSettingsDialog.show(context, ref);
+                    return;
+                  }
+
                   context.push(
                     '/settings/${tile.route}',
                     extra: user
