@@ -49,83 +49,82 @@ class _ChoosePlatformPageState extends ConsumerState<ChoosePlatformPage> {
     final platforms = ref.watch(platformsProvider);
     final l10n = AppLocalizations.of(context)!;
 
-    return MainPageLayout(
-      title: l10n.choose_platform,
-      leading: AppbarButton(
-        icon: Icons.arrow_back_ios_rounded,
-        onTap: () {
-          context.pop();
-        }
-      ),
-      children: [
-        CupertinoSearchTextField(
-          autocorrect: false,
-          controller: _searchBarController,
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        platforms.when(
-          data: (platformsList) {
-            return Wrap(
-              spacing: spacing,
-              runSpacing: spacing,
-              children: platformsList
-                .map((e) {
-                  final width = (MediaQuery.of(context).size.width / 2) - spacing - (spacing / 2);
-
-                  return SizedBox(
-                    width: width,
-                    child: PlatformCard(
-                      user: widget.user,
-                      platform: e,
-                      available: widget.mode == ChoosePlatformPageMode.triggers
-                        ? e.triggers.length
-                        : e.actions.length,
-                      onTap: () {
-                        final modal = ref.read(areaModalProvider.notifier);
-                        String mode = '';
-
-                        if (widget.mode == ChoosePlatformPageMode.triggers) {
-                          if (e.triggers.isEmpty) {
-                            return;
-                          }
-                          modal.setActionPlatform(e);
-                          modal.setTrigger(null);
-                          mode = 'action';
-                        }
-
-                        else if (widget.mode == ChoosePlatformPageMode.actions) {
-                          if (e.actions.isEmpty) {
-                            return;
-                          }
-                          modal.setReactionPlatform(e);
-                          modal.setAction(null);
-                          mode = 'reaction';
-                        }
-
-                        context.pushNamed('choose_trigger_action', pathParameters: { 'mode': mode }, extra: e);
-                      },
-                    ),
-                  );
-                })
-                .toList(),
-            );
-          },
-          error: (error, _) {
-            return Center(child: Text('Error: $error')); // todo: better ui lol
-          },
-          loading: () {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+    return RefreshIndicator(
+      onRefresh: () async {
+        await ref.read(platformsProvider.notifier).refresh(forceRefresh: true);
+      },
+      child: MainPageLayout(
+        title: l10n.choose_platform,
+        leading: AppbarButton(
+          icon: Icons.arrow_back_ios_rounded,
+          onTap: () {
+            context.pop();
           }
         ),
-        ElevatedButton(
-          onPressed: () {
-            ref.read(platformsProvider.notifier).refresh(forceRefresh: true);
-          },
-          child: Text('Refresh platforms (TMP)')
-        )
-      ]
+        children: [
+          CupertinoSearchTextField(
+            autocorrect: false,
+            controller: _searchBarController,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          platforms.when(
+            data: (platformsList) {
+              return Wrap(
+                spacing: spacing,
+                runSpacing: spacing,
+                children: platformsList
+                  .map((e) {
+                    final width = (MediaQuery.of(context).size.width / 2) - spacing - (spacing / 2);
+
+                    return SizedBox(
+                      width: width,
+                      child: PlatformCard(
+                        user: widget.user,
+                        platform: e,
+                        available: widget.mode == ChoosePlatformPageMode.triggers
+                          ? e.triggers.length
+                          : e.actions.length,
+                        onTap: () {
+                          final modal = ref.read(areaModalProvider.notifier);
+                          String mode = '';
+
+                          if (widget.mode == ChoosePlatformPageMode.triggers) {
+                            if (e.triggers.isEmpty) {
+                              return;
+                            }
+                            modal.setActionPlatform(e);
+                            modal.setTrigger(null);
+                            mode = 'action';
+                          }
+
+                          else if (widget.mode == ChoosePlatformPageMode.actions) {
+                            if (e.actions.isEmpty) {
+                              return;
+                            }
+                            modal.setReactionPlatform(e);
+                            modal.setAction(null);
+                            mode = 'reaction';
+                          }
+
+                          context.pushNamed('choose_trigger_action', pathParameters: { 'mode': mode }, extra: e);
+                        },
+                      ),
+                    );
+                  })
+                  .toList(),
+              );
+            },
+            error: (error, _) {
+              return Center(child: Text('Error: $error')); // todo: better ui lol
+            },
+            loading: () {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          ),
+        ]
+      ),
     );
   }
 

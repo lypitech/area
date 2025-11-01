@@ -30,7 +30,8 @@ class MyAreasPage extends ConsumerWidget {
 
         return RefreshIndicator(
           onRefresh: () async {
-            (await ref.read(areaNotifierProvider(user).future)).syncAreas();
+            final notifier = await ref.read(areaNotifierProvider(user).future);
+            await notifier.syncAreas();
           },
           child: MainPageLayout(
             title: l10n.my_areas_page_title,
@@ -45,13 +46,6 @@ class MyAreasPage extends ConsumerWidget {
               },
               Divider(
                 color: Colors.grey.shade300,
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final notifier = await ref.read(areaNotifierProvider(user).future);
-                  await notifier.syncAreas();
-                },
-                child: Text('Refresh (TMP)')
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
