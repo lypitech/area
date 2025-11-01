@@ -2,6 +2,7 @@ import 'package:area/core/constant/constants.dart';
 import 'package:area/core/constant/regexes.dart';
 import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/presentation/dialog/app_settings_dialog.dart';
+import 'package:area/presentation/dialog/error_dialog.dart';
 import 'package:area/widget/a_text_field.dart';
 import 'package:area/widget/clickable_frame.dart';
 import 'package:area/widget/logo.dart';
@@ -43,8 +44,9 @@ class LoginPage extends ConsumerWidget {
     } catch (e) {
       // Login failed for some reasons.
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed: $e')),
+        ErrorDialog.show(
+          context: context,
+          error: '$e'
         );
       }
     }

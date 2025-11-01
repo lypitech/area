@@ -3,6 +3,7 @@ import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/data/provider/oauth_provider.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/user_model.dart';
+import 'package:area/presentation/dialog/error_dialog.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/areaction_card.dart';
 import 'package:flutter/material.dart';
@@ -48,8 +49,9 @@ class OauthPage extends ConsumerWidget {
               final authNotifier = await ref.read(authNotifierProvider.future);
               await authNotifier.checkAuth();
             } catch (exception) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Link failed: $exception')),
+              ErrorDialog.show(
+                context: context,
+                error: 'For some reasons, the link has failed.\n($exception)'
               );
             }
           }

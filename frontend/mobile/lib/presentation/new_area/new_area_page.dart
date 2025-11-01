@@ -3,6 +3,7 @@ import 'package:area/data/provider/area_provider.dart';
 import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
+import 'package:area/presentation/dialog/error_dialog.dart';
 import 'package:area/widget/a_text_field.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/areaction_card.dart';
@@ -86,8 +87,9 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
 
         if (res != null) {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('AREA creation failed: $res')),
+            ErrorDialog.show(
+              context: context,
+              error: 'For some reasons, your AREA could not be created.\n($res)'
             );
           }
           return;

@@ -1,5 +1,6 @@
 import 'package:area/data/provider/registration_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
+import 'package:area/presentation/dialog/error_dialog.dart';
 import 'package:area/widget/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,8 +39,9 @@ class _RegisterPageFinalStepState extends ConsumerState<RegisterPageFinalStep> {
         },
         error: (e, _) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Registration failed: $e')),
+            ErrorDialog.show(
+              context: context,
+              error: '${e}'
             );
             context.go('/login');
           });
