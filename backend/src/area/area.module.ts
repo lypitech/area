@@ -11,9 +11,11 @@ import { Oauth, OauthSchema } from 'src/oauth/schema/Oauth.schema';
 import { TriggerModule } from '../trigger/trigger.module';
 import { ServiceModule } from '../list/service.module';
 import { ResponseModule } from '../response/response.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
+    JwtModule,
     HttpModule,
     TriggerModule,
     ServiceModule,

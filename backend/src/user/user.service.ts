@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -10,12 +11,14 @@ import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { UserDto } from './types/userDto';
 import { Oauth } from 'src/oauth/schema/Oauth.schema';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Oauth.name) private OauthModel: Model<Oauth>,
+    @InjectModel(Oauth.name) private oauthModel: Model<Oauth>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async findAll(): Promise<UserDto[]> {
@@ -29,6 +32,33 @@ export class UserService {
     );
   }
 
+  async login(oauth_uuid: string) {
+    const user: User | null = await this.userModel.findOne({
+      'oauth_uuids.token_uuid': oauth_uuid,
+    });
+    if (!user) throw new BadRequestException('No user found.');
+    const payload = { sub: user.uuid, email: user.email };
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_ACCESS_SECRET,
+      expiresIn: process.env.JWT_ACCESS_EXPIRES || '15m',
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: process.env.JWT_REFRESH_EXPIRES || '7d',
+    });
+
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.update(user.uuid, {
+      refreshToken: hashedRefreshToken,
+    });
+    return {
+      uuid: user.uuid,
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
+  }
+
   async findByUUID(uuid: string): Promise<UserDto> {
     const user: User | null = await this.userModel.findOne({ uuid });
     if (!user) {
@@ -39,11 +69,8 @@ export class UserService {
     });
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<User | null> {
     const user: User | null = await this.userModel.findOne({ email });
-    if (!user) {
-      throw new NotFoundException(`No user with email ${email}`);
-    }
     return user;
   }
 
@@ -87,14 +114,21 @@ export class UserService {
     nickname: string,
     username: string,
     profilePicture: string = '',
-  ): Promise<User> {
-    return new this.userModel({
+  ): Promise<UserDto> {
+    const existing = await this.findByEmail(email);
+    if (existing) {
+      throw new BadRequestException(`Email ${email} already exists`);
+    }
+    const created = await new this.userModel({
       email: email,
       password: await bcrypt.hash(password, 10),
       nickname: nickname,
       username: username,
       profilePicture: profilePicture,
     }).save();
+    return plainToInstance(UserDto, created.toObject(), {
+      excludeExtraneousValues: true,
+    });
   }
 
   async removeOauthTokenByUUID(oauth_token_uuid: string): Promise<User> {
@@ -102,6 +136,7 @@ export class UserService {
       { 'oauth_uuids.tokens': oauth_token_uuid },
       { $pull: { oauth_uuids: { oauth_token_uuid } } },
     );
+    await this.oauthModel.findOneAndDelete({ uuid: oauth_token_uuid });
     if (!updated) {
       throw new NotFoundException(`No user with oauth ${oauth_token_uuid}`);
     }

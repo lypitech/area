@@ -16,9 +16,11 @@ import { UserService } from 'src/user/user.service';
 import { Oauth, OauthSchema } from 'src/oauth/schema/Oauth.schema';
 import { HttpModule } from '@nestjs/axios';
 import { TwitchModule } from '../twitch/twitch.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
+    JwtModule,
     HttpModule,
     ServiceModule,
     ResponseModule,

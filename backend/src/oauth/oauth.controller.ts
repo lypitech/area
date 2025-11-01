@@ -9,7 +9,6 @@ import { OauthService } from './oauth.service';
 import { GithubOauthCreationDto } from './types/githubOauthCreationDto';
 import { TwitchOauthCreationDto } from './types/twitchOauthCreationDto';
 
-
 @Controller('oauth')
 export class OauthController {
   constructor(private readonly authService: OauthService) {}

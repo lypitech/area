@@ -11,7 +11,6 @@ export class DiscordMiddleware implements NestMiddleware {
     );
   }
   use(req: Request, res: Response, next: NextFunction) {
-    console.log('passing here');
     this.middlewareFn(req, res, (err?: any) => {
       if (err) {
         console.error('Discord verification failed:', err);
