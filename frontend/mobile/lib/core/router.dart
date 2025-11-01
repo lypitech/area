@@ -6,7 +6,8 @@ import 'package:area/presentation/auth/login_page.dart';
 import 'package:area/presentation/auth/registration/register_page.dart';
 import 'package:area/presentation/error_page.dart';
 import 'package:area/presentation/init_page.dart';
-import 'package:area/presentation/main/area_details_page.dart';
+import 'package:area/presentation/main/area/area_details_page.dart';
+import 'package:area/presentation/main/area/area_logs_page.dart';
 import 'package:area/presentation/main/settings/about_page.dart';
 import 'package:area/presentation/main/settings/oauth_page.dart';
 import 'package:area/presentation/main/settings/settings_page.dart';
@@ -117,6 +118,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                 area: state.extra as AreaModel
               );
             },
+            routes: [
+              GoRoute(
+                name: 'logs',
+                path: 'logs',
+                builder: (_, state) {
+                  return AreaLogsPage(
+                    area: state.extra as AreaModel
+                  );
+                }
+              )
+            ]
           ),
           GoRoute(
             name: 'settings',

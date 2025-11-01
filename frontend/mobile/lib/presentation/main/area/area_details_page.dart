@@ -64,6 +64,12 @@ class AreaDetailsPage extends ConsumerWidget {
           ],
           onSelected: (String? value) {
             switch (value) {
+              case 'logs':
+                context.pushNamed(
+                  'logs',
+                  extra: area
+                );
+                break;
               case 'delete':
                 break;
               default:
@@ -156,8 +162,9 @@ class AreaDetailsPage extends ConsumerWidget {
         ),
         Text(
           'AREA UUID:\n${area.uuid}',
-          style: textTheme.bodyMedium?.copyWith(
-            color: Colors.grey.shade400
+          style: textTheme.bodySmall?.copyWith(
+            color: Colors.grey.shade400,
+            fontWeight: FontWeight.w300
           ),
           textAlign: TextAlign.center,
         )
