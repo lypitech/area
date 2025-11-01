@@ -12,6 +12,7 @@ class AreaModel {
   final TriggerModel trigger;
   final PlatformModel reactionPlatform;
   final ActionModel action;
+  final DateTime? createdAt;
   final DateTime? updatedAt;
   final bool isSyncing;
 
@@ -22,6 +23,7 @@ class AreaModel {
     required this.trigger,
     required this.reactionPlatform,
     required this.action,
+    this.createdAt,
     this.updatedAt,
     this.isSyncing = false
   });
@@ -48,8 +50,11 @@ class AreaModel {
       trigger: TriggerModel.fromJson(data['trigger']),
       reactionPlatform: PlatformModel.fromJson(data['reaction_platform']),
       action: ActionModel.fromJson(data['action']),
-      updatedAt: data['updated_at'] != null
-        ? DateTime.parse(data['updated_at'])
+      createdAt: data['createdAt'] != null
+        ? DateTime.parse(data['createdAt'])
+        : null,
+      updatedAt: data['updatedAt'] != null
+        ? DateTime.parse(data['updatedAt'])
         : null,
     );
   }
@@ -62,7 +67,8 @@ class AreaModel {
       'trigger': trigger.toJson(),
       'reaction_platform': reactionPlatform.toJson(),
       'action': action.toJson(),
-      'updated_at': updatedAt?.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
     };
   }
 
@@ -73,6 +79,7 @@ class AreaModel {
     TriggerModel? trigger,
     PlatformModel? reactionPlatform,
     ActionModel? action,
+    DateTime? createdAt,
     DateTime? updatedAt,
     bool? isSyncing,
   }) {
@@ -83,6 +90,7 @@ class AreaModel {
       trigger: trigger ?? this.trigger,
       reactionPlatform: reactionPlatform ?? this.reactionPlatform,
       action: action ?? this.action,
+      createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isSyncing: isSyncing ?? this.isSyncing,
     );

@@ -41,7 +41,8 @@ class AreaRepository {
         action: action,
         actionPlatform: triggerPlatform,
         reactionPlatform: responsePlatform,
-        updatedAt: DateTime.tryParse(areaJson['updatedAt'] ?? areaJson['updated_at'] ?? ''),
+        createdAt: DateTime.tryParse(areaJson['createdAt'] ?? ''),
+        updatedAt: DateTime.tryParse(areaJson['updatedAt'] ?? ''),
         isSyncing: false,
       );
     }).toList();
@@ -74,7 +75,8 @@ class AreaRepository {
       action: ActionModel.fromJson(responseJson),
       actionPlatform: PlatformModel(name: triggerJson['service_name']),
       reactionPlatform: PlatformModel(name: responseJson['service_name']),
-      updatedAt: DateTime.tryParse(response['updatedAt'] ?? response['updated_at'] ?? ''),
+      createdAt: DateTime.tryParse(response['createdAt'] ?? ''),
+      updatedAt: DateTime.tryParse(response['updatedAt'] ?? ''),
       isSyncing: false,
     );
   }
@@ -101,7 +103,8 @@ class AreaRepository {
       action: ActionModel.fromJson(responseJson),
       actionPlatform: PlatformModel(name: triggerJson['service_name']),
       reactionPlatform: PlatformModel(name: responseJson['service_name']),
-      updatedAt: DateTime.tryParse(data['updatedAt'] ?? data['updated_at'] ?? ''),
+      createdAt: DateTime.tryParse(data['createdAt'] ?? ''),
+      updatedAt: DateTime.tryParse(data['updatedAt'] ?? ''),
       isSyncing: false,
     );
   }
