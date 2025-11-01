@@ -163,7 +163,10 @@ final areaNotifierProvider =
   });
 
 final areaStateProvider =
-  FutureProvider.family<AreaState, UserModel>((ref, user) async {
+  StreamProvider.family<AreaState, UserModel>((ref, user) async* {
     final notifier = await ref.watch(areaNotifierProvider(user).future);
-    return notifier.debugState;
+
+    yield notifier.debugState; // initial state
+
+    yield* notifier.stream; // weird magic to update ui lol
   });
