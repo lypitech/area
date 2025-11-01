@@ -95,52 +95,6 @@ class AreaDetailsPage extends StatelessWidget {
             )
           ],
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 20,
-          children: [
-            ClickableFrame(
-              color: theme.colorScheme.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              onTap: () {
-                // ...
-              },
-              child: Text(
-                'Publish',
-                style: textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white
-                ),
-              )
-            ),
-            ClickableFrame(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              onTap: () {
-                // ...
-              },
-              child: Text(
-                'Archive',
-                style: textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              )
-            ),
-            ClickableFrame(
-              color: Colors.red,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              onTap: () {
-                // ...
-              },
-              child: Text(
-                'Delete',
-                style: textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white
-                ),
-              )
-            )
-          ],
-        ),
         Text(
           'AREA UUID: ...',
           style: textTheme.bodyMedium?.copyWith(
