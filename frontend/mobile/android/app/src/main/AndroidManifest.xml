@@ -32,6 +32,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="fr.lypitech.area" android:host="oauth-callback" android:pathPrefix="/github" />
+                <data android:scheme="fr.lypitech.area" android:host="oauth-callback" android:pathPrefix="/twitch" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
