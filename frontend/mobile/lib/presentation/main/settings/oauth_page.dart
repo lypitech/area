@@ -1,4 +1,5 @@
 import 'package:area/core/oauth/oauth_github.dart';
+import 'package:area/core/oauth/oauth_twitch.dart';
 import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/data/provider/oauth_provider.dart';
 import 'package:area/layout/main_page_layout.dart';
@@ -70,7 +71,38 @@ class OauthPage extends ConsumerWidget {
           name: 'Twitch',
           user: user,
           loginLogic: () async {
-            // ...
+            final oauthRepository = await ref.watch(oauthRepositoryProvider.future);
+            final code = await twitchSignIn();
+
+            if (code.startsWith('AR3AERR:')) {
+              if (context.mounted) {
+                ErrorDialog.show(
+                  context: context,
+                  error: 'For some reasons, the link has failed.\n(${code.substring(8)})'
+                );
+              }
+              return;
+            }
+
+            print("CODE: $code");
+
+            try {
+              await oauthRepository.twitchLogin(
+                userUuid: user.uuid,
+                code: code
+              );
+
+              /* Basically reloading the user profile to update cache */
+              final authNotifier = await ref.read(authNotifierProvider.future);
+              await authNotifier.checkAuth();
+            } catch (exception) {
+              if (context.mounted) {
+                ErrorDialog.show(
+                  context: context,
+                  error: 'For some reasons, the link has failed.\n($exception)'
+                );
+              }
+            }
           }
         )
       ]
