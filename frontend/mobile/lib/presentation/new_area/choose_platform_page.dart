@@ -2,6 +2,7 @@ import 'package:area/data/provider/area_modal_provider.dart';
 import 'package:area/data/provider/platform_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
+import 'package:area/model/user_model.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/platform_card.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,9 +19,11 @@ enum ChoosePlatformPageMode {
 
 class ChoosePlatformPage extends ConsumerStatefulWidget {
 
+  final UserModel user;
   final ChoosePlatformPageMode mode;
 
   const ChoosePlatformPage({
+    required this.user,
     required this.mode,
     super.key
   });
@@ -72,6 +75,7 @@ class _ChoosePlatformPageState extends ConsumerState<ChoosePlatformPage> {
                   return SizedBox(
                     width: width,
                     child: PlatformCard(
+                      user: widget.user,
                       platform: e,
                       available: widget.mode == ChoosePlatformPageMode.triggers
                         ? e.triggers.length

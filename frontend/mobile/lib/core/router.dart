@@ -69,8 +69,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                     'reaction' => ChoosePlatformPageMode.actions,
                     _ => throw UnimplementedError(),
                   };
+                  final user = state.extra as UserModel;
 
-                  return ChoosePlatformPage(mode: mode);
+                  return ChoosePlatformPage(
+                    mode: mode,
+                    user: user
+                  );
                 },
                 routes: [
                   GoRoute(

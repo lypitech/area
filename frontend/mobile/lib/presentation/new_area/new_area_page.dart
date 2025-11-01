@@ -3,6 +3,7 @@ import 'package:area/data/provider/area_provider.dart';
 import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
+import 'package:area/model/user_model.dart';
 import 'package:area/presentation/dialog/error_dialog.dart';
 import 'package:area/widget/a_text_field.dart';
 import 'package:area/widget/appbar_button.dart';
@@ -120,63 +121,96 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
     final areaModal = ref.watch(areaModalProvider);
     final l10n = AppLocalizations.of(context)!;
 
-    return MainPageLayout(
-      title: l10n.new_area_title,
-      leading: AppbarButton(
-        icon: Icons.arrow_back_ios_rounded,
-        onTap: () {
-          context.pop();
+    final authNotifierAsync = ref.watch(authNotifierProvider);
+
+    return authNotifierAsync.when(
+      data: (authNotifier) {
+        final user = authNotifier.getUser();
+
+        if (user == null) {
+          context.go('/login');
+          return Container();
         }
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _createArea,
-        label: Text(
-          l10n.create_area,
-          style: textTheme.titleLarge?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w600
+
+        return MainPageLayout(
+          title: l10n.new_area_title,
+          leading: AppbarButton(
+            icon: Icons.arrow_back_ios_rounded,
+            onTap: () {
+              context.pop();
+            }
           ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      children: [
-        ATextField(
-          title: 'Title',
-          controller: _titleController,
-          onChange: (String? value) {
-            ref.read(areaModalProvider.notifier).setTitle(value);
-          },
-        ),
-        AreactionCard(
-          title: areaModal.trigger != null
-            ? areaModal.trigger!.name
-            : l10n.choose_trigger,
-          subtitle: areaModal.actionPlatform != null
-            ? areaModal.actionPlatform!.name
-            : l10n.choose_platform,
-          icon: areaModal.actionPlatform?.icon,
-          onTap: () {
-            context.pushNamed('choose_platform', pathParameters: { 'mode': 'action' });
-          }
-        ),
-        WhenThenDo(),
-        AreactionCard(
-          title: areaModal.action != null
-            ? areaModal.action!.name
-            : l10n.choose_action,
-          subtitle: areaModal.reactionPlatform != null
-            ? areaModal.reactionPlatform!.name
-            : l10n.choose_platform,
-          icon: areaModal.reactionPlatform?.icon,
-          onTap: () {
-            context.pushNamed('choose_platform', pathParameters: { 'mode': 'reaction' });
-          }
-        ),
-        if (_isCreating) ... {
-          Gap(10),
-          CircularProgressIndicator()
-        }
-      ]
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: _createArea,
+            label: Text(
+              l10n.create_area,
+              style: textTheme.titleLarge?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600
+              ),
+            ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          children: [
+            ATextField(
+              title: 'Title',
+              controller: _titleController,
+              onChange: (String? value) {
+                ref.read(areaModalProvider.notifier).setTitle(value);
+              },
+            ),
+            AreactionCard(
+                title: areaModal.trigger != null
+                  ? areaModal.trigger!.name
+                  : l10n.choose_trigger,
+                subtitle: areaModal.actionPlatform != null
+                  ? areaModal.actionPlatform!.name
+                  : l10n.choose_platform,
+                icon: areaModal.actionPlatform?.icon,
+                onTap: () {
+                  context.pushNamed(
+                    'choose_platform',
+                    pathParameters: {
+                      'mode': 'action'
+                    },
+                    extra: user
+                  );
+                }
+            ),
+            WhenThenDo(),
+            AreactionCard(
+              title: areaModal.action != null
+                ? areaModal.action!.name
+                : l10n.choose_action,
+              subtitle: areaModal.reactionPlatform != null
+                ? areaModal.reactionPlatform!.name
+                : l10n.choose_platform,
+              icon: areaModal.reactionPlatform?.icon,
+              onTap: () {
+                context.pushNamed(
+                  'choose_platform',
+                  pathParameters: {
+                    'mode': 'reaction'
+                  },
+                  extra: user
+                );
+              }
+            ),
+            if (_isCreating) ... {
+              Gap(10),
+              CircularProgressIndicator()
+            }
+          ]
+        );
+      },
+      error: (err, _) {
+        return Center(
+          child: Text('Error: $err')
+        );
+      },
+      loading: () {
+        return CircularProgressIndicator();
+      }
     );
   }
 
