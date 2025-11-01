@@ -9,48 +9,60 @@ class AuthApi {
     required this.dio
   });
 
-  Future<JsonData> login({
+  Future<JsonData?> login({
     required String email,
     required String password,
   }) async {
-    final response = await dio.post(
-      '/user/login',
-      data: {
-        'email': email,
-        'password': password,
-      },
-    );
-    return response.data as JsonData;
+    try {
+      final response = await dio.post(
+        '/user/login',
+        data: {
+          'email': email,
+          'password': password,
+        },
+      );
+      return response.data as JsonData;
+    } on DioException catch (e) {
+      return e.response?.data as JsonData?;
+    }
   }
 
-  Future<JsonData> register({
+  Future<JsonData?> register({
     required String email,
     required String password,
     required String nickname,
     required String username,
   }) async {
-    final response = await dio.post(
-      '/user/register',
-      data: {
-        'email': email,
-        'password': password,
-        'nickname': nickname,
-        'username': username,
-      },
-    );
-    return response.data as JsonData;
+    try {
+      final response = await dio.post(
+        '/user/register',
+        data: {
+          'email': email,
+          'password': password,
+          'nickname': nickname,
+          'username': username,
+        },
+      );
+      return response.data as JsonData;
+    } on DioException catch (e) {
+      return e.response?.data as JsonData?;
+    }
   }
 
-  Future<JsonData> refresh({
+  Future<JsonData?> refresh({
     required String refreshToken
   }) async {
-    final response = await dio.post(
-      '/user/refresh',
-      data: {
-        'refresh_token': refreshToken
-      }
-    );
-    return response.data as JsonData;
+    try {
+      final response = await dio.post(
+        '/user/refresh',
+        data: {
+          'refresh_token': refreshToken
+        }
+      );
+      return response.data as JsonData;
+    } on DioException catch (e) {
+      return e.response?.data as JsonData?;
+    }
   }
 
   Future<void> logout({

@@ -159,13 +159,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String password
   }) async {
     try {
-      final tokens = await api.login(
+      final loginResponse = await api.login(
         email: email,
         password: password
       );
 
-      final access = tokens['access_token'] as String?;
-      final refresh = tokens['refresh_token'] as String?;
+      if (loginResponse == null || loginResponse.containsKey('error')) {
+        throw Exception('Login failed. ${loginResponse?['message']}');
+      }
+
+      final access = loginResponse['access_token'] as String?;
+      final refresh = loginResponse['refresh_token'] as String?;
 
       if (access == null || refresh == null) {
         state = AuthState.unauthenticated();
@@ -188,17 +192,25 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String username,
   }) async {
     try {
-      await api.register(
+      final registerResponse = await api.register(
         email: email,
         password: password,
         nickname: nickname,
         username: username,
       );
 
+      if (registerResponse == null || registerResponse.containsKey('error')) {
+        throw Exception('Registration failed. ${registerResponse?['message']}');
+      }
+
       final loginResponse = await api.login(
         email: email,
         password: password,
       );
+
+      if (loginResponse == null || loginResponse.containsKey('error')) {
+        throw Exception('Login failed. ${loginResponse?['message']}');
+      }
 
       final access = loginResponse['access_token'] as String?;
       final refresh = loginResponse['refresh_token'] as String?;
