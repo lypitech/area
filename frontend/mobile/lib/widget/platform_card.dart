@@ -28,7 +28,7 @@ class PlatformCard extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     bool isLoggedIn = user.oauthUuids.containsKey(platform.name.toLowerCase());
 
-    if (platform.name.toLowerCase() == Constants.appName.toLowerCase()) {
+    if (Constants.platformsThatCanBeUsedWithoutOAuth.contains(platform.name.toLowerCase())) {
       isLoggedIn = true;
     }
 

@@ -17,4 +17,9 @@ class Constants {
   static const String envGithubClientIdKey = 'GITHUB_CLIENT_ID';
   static const String envTwitchClientIdKey = 'TWITCH_CLIENT_ID';
 
+  static List<String> platformsThatCanBeUsedWithoutOAuth = [
+    appName.toLowerCase(),
+    'discord'
+  ];
+
 }
