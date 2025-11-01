@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { Oauth } from './schema/Oauth.schema';
 import { DeleteResult, Model } from 'mongoose';
@@ -6,6 +11,9 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { InjectModel } from '@nestjs/mongoose';
 import { OauthDto } from './types/oauthDto';
+import { UserDto } from '../user/types/userDto';
+import { User } from '../user/schemas/user.schema';
+import { rethrow } from '@nestjs/core/helpers/rethrow';
 
 @Injectable()
 export class OauthService {
@@ -54,7 +62,41 @@ export class OauthService {
     return null;
   }
 
-  async getGithubToken(code: string, user_uuid: string) {
+  private async getGithubUserInfos(token: OauthDto) {
+    const headers = { Authorization: `${token.token_type} ${token.token}` };
+    const userResponse = await firstValueFrom(
+      this.httpService.get('https://api.github.com/user', { headers }),
+    );
+    const userData = userResponse.data;
+    if (!userData.email) {
+      const emailResponse = await firstValueFrom(
+        this.httpService.get('https://api.github.com/user/emails', { headers }),
+      );
+      const emails = emailResponse.data;
+      userData.email = emails.find((e) => e.primary && e.verified)?.email ?? emails[0]?.email ?? null;
+    }
+    return userData as Record<string, string>;
+  }
+
+  async registerWithGithub(code: string) {
+    try {
+      const token = await this.getGithubToken(code);
+      const userData = await this.getGithubUserInfos(<OauthDto>token);
+      const user = await this.userService.create(
+        userData.email,
+        '',
+        userData.name,
+        userData.log,
+        userData.avatar_url,
+      );
+      await this.addToken(user.uuid, <OauthDto>token);
+      return this.userService.findByUUID(user.uuid);
+    } catch (e: any) {
+      throw new BadRequestException(`Error: ${e.message}`);
+    }
+  }
+
+  async getGithubToken(code: string, user_uuid: string = '') {
     const tokenResponse = await firstValueFrom(
       this.httpService.post(
         'https://github.com/login/oauth/access_token',
@@ -78,7 +120,7 @@ export class OauthService {
     if (!accessToken) {
       throw new Error('GitHub OAuth failed: no access token returned');
     }
-    const token = {
+    const token: OauthDto = {
       service_name: 'github',
       token: accessToken,
       refresh_token: tokenData.refreshToken,
@@ -86,7 +128,7 @@ export class OauthService {
       expires_at: tokenData.expires_at,
     };
 
-    return this.addToken(user_uuid, token);
+    return user_uuid ? this.addToken(user_uuid, token) : token;
   }
 
   async getTwitchToken(code: string, user_uuid: string) {
