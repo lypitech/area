@@ -51,7 +51,7 @@ export class OauthService {
   private async updateToken(user_uuid: string, data: OauthDto) {
     const user = await this.userService.findByUUID(user_uuid);
     for (const oauth of user.oauth_uuids) {
-      if (oauth[0] === data.service_name) {
+      if (oauth.service_name === data.service_name) {
         this.oauthModel.findOneAndUpdate({ uuid: oauth[1] }, { data });
       }
     }
