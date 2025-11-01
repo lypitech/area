@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import type { Response, Request } from 'express';
 import { InteractionResponseType, InteractionType } from 'discord-interactions';
@@ -14,11 +14,6 @@ export class AppController {
   @Get('ping')
   ping() {
     return 'pong';
-  }
-
-  @Get()
-  Test(@Body() body: { template: string; payload: string }) {
-    return this.utils.getResult(body.template, body.payload);
   }
 
   // This is needed to set the `Interaction Endpoint URL`
