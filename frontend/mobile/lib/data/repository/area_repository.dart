@@ -1,6 +1,7 @@
 import 'package:area/api/area_api.dart';
 import 'package:area/modal/area_modal.dart';
 import 'package:area/model/action_model.dart';
+import 'package:area/model/area_history_entry.dart';
 import 'package:area/model/area_model.dart';
 import 'package:area/model/platform_model.dart';
 import 'package:area/model/trigger_model.dart';
@@ -44,6 +45,9 @@ class AreaRepository {
         createdAt: DateTime.tryParse(areaJson['createdAt'] ?? ''),
         updatedAt: DateTime.tryParse(areaJson['updatedAt'] ?? ''),
         isSyncing: false,
+        history: (areaJson['history'] as List<dynamic>)
+          .map((e) => AreaHistoryEntry.fromJson(e))
+          .toList()
       );
     }).toList();
 
@@ -78,6 +82,9 @@ class AreaRepository {
       createdAt: DateTime.tryParse(response['createdAt'] ?? ''),
       updatedAt: DateTime.tryParse(response['updatedAt'] ?? ''),
       isSyncing: false,
+      history: (response['history'] as List<dynamic>)
+        .map((e) => AreaHistoryEntry.fromJson(e))
+        .toList()
     );
   }
 
@@ -106,6 +113,9 @@ class AreaRepository {
       createdAt: DateTime.tryParse(data['createdAt'] ?? ''),
       updatedAt: DateTime.tryParse(data['updatedAt'] ?? ''),
       isSyncing: false,
+      history: (data['history'] as List<dynamic>)
+        .map((e) => AreaHistoryEntry.fromJson(e))
+        .toList()
     );
   }
 

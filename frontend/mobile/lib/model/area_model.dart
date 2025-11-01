@@ -1,6 +1,7 @@
 import 'package:area/core/constant/constants.dart';
 import 'package:area/modal/area_modal.dart';
 import 'package:area/model/action_model.dart';
+import 'package:area/model/area_history_entry.dart';
 import 'package:area/model/platform_model.dart';
 import 'package:area/model/trigger_model.dart';
 
@@ -15,6 +16,7 @@ class AreaModel {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final bool isSyncing;
+  final List<AreaHistoryEntry> history;
 
   AreaModel({
     this.uuid,
@@ -25,7 +27,8 @@ class AreaModel {
     required this.action,
     this.createdAt,
     this.updatedAt,
-    this.isSyncing = false
+    this.isSyncing = false,
+    this.history = const []
   });
 
   factory AreaModel.fromModal(AreaModal modal) {
@@ -56,6 +59,9 @@ class AreaModel {
       updatedAt: data['updatedAt'] != null
         ? DateTime.parse(data['updatedAt'])
         : null,
+      history: (data['history'] as List<dynamic>)
+        .map((e) => AreaHistoryEntry.fromJson(e))
+        .toList()
     );
   }
 
@@ -69,6 +75,7 @@ class AreaModel {
       'action': action.toJson(),
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
+      'history': history
     };
   }
 
@@ -82,6 +89,7 @@ class AreaModel {
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isSyncing,
+    List<AreaHistoryEntry>? history
   }) {
     return AreaModel(
       uuid: uuid ?? this.uuid,
@@ -93,6 +101,7 @@ class AreaModel {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isSyncing: isSyncing ?? this.isSyncing,
+      history: history ?? this.history
     );
   }
 
