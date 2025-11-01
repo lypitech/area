@@ -48,6 +48,20 @@ export class OauthService {
     return token;
   }
 
+  private async updateToken(user_uuid: string, data: OauthDto) {
+    const user = await this.userService.findByUUID(user_uuid);
+    for (const oauth of user.oauth_uuids) {
+      if (oauth[0] === data.service_name) {
+        this.oauthModel.findOneAndUpdate({ uuid: oauth[1] }, { data });
+      }
+    }
+  }
+
+  private async findByMetaMember(member: string, content: string) {
+    const query = { [`meta.${member}`]: content };
+    return this.oauthModel.findOne(query).exec();
+  }
+
   async findByUserUUIDAndService(
     user_uuid: string,
     service_name: string,
@@ -78,10 +92,36 @@ export class OauthService {
     return userData as Record<string, string>;
   }
 
+  async loginWithGithub(code: string) {
+    try {
+      const token = await this.getGithubToken(code);
+      const newData = await this.getGithubUserInfos(<OauthDto>token);
+      const oauth: Oauth | null = await this.findByMetaMember(
+        'github_id',
+        newData.id,
+      );
+      if (!oauth)
+        throw new BadRequestException('User has never connected with Github');
+      const login = await this.userService.login(oauth.uuid);
+      if (login) {
+        await this.updateToken(login.uuid, <OauthDto>token);
+        return login;
+      }
+      throw new BadRequestException('Wrong credentials.');
+    } catch (e: any) {
+      throw new BadRequestException(`Error: ${e.message}`);
+    }
+  }
+
   async registerWithGithub(code: string) {
     try {
       const token = await this.getGithubToken(code);
       const userData = await this.getGithubUserInfos(<OauthDto>token);
+      const oauth: Oauth | null = await this.findByMetaMember(
+        'github_id',
+        userData.id,
+      );
+      if (oauth) throw new BadRequestException('User has already registered');
       const user = await this.userService.create(
         userData.email,
         '',
@@ -89,6 +129,7 @@ export class OauthService {
         userData.log,
         userData.avatar_url,
       );
+      token.meta = { github_id: userData.id };
       await this.addToken(user.uuid, <OauthDto>token);
       return this.userService.findByUUID(user.uuid);
     } catch (e: any) {
