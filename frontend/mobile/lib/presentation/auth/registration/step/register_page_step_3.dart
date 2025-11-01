@@ -27,10 +27,11 @@ class _RegisterPage3State extends ConsumerState<RegisterPageStep3> {
   final _passwordConfirmationFieldController = TextEditingController();
 
   bool _onConfirm() {
-    final registerModal = ref.read(registerModalProvider);
-
-    registerModal.password = _passwordConfirmationFieldController.text;
-    registerModal.currentPage++;
+    ref.read(registerModalProvider.notifier).update((state) {
+      state.password = _passwordConfirmationFieldController.text;
+      state.currentPage++;
+      return state;
+    });
     return true;
   }
 

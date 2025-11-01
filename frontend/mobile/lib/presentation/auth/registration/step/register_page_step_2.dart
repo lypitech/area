@@ -25,10 +25,11 @@ class _RegisterPage2State extends ConsumerState<RegisterPageStep2> {
   final _emailFieldController = TextEditingController();
 
   bool _onConfirm() {
-    final registerModal = ref.read(registerModalProvider);
-
-    registerModal.emailAddress = _emailFieldController.text;
-    registerModal.currentPage++;
+    ref.read(registerModalProvider.notifier).update((state) {
+      state.emailAddress = _emailFieldController.text;
+      state.currentPage++;
+      return state;
+    });
     return true;
   }
 

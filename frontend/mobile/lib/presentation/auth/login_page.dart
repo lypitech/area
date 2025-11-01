@@ -1,6 +1,8 @@
 import 'package:area/core/constant/constants.dart';
 import 'package:area/core/constant/regexes.dart';
 import 'package:area/data/provider/auth_provider.dart';
+import 'package:area/data/provider/register_modal_provider.dart';
+import 'package:area/modal/register_modal.dart';
 import 'package:area/presentation/dialog/app_settings_dialog.dart';
 import 'package:area/presentation/dialog/error_dialog.dart';
 import 'package:area/widget/a_text_field.dart';
@@ -193,6 +195,9 @@ class LoginPage extends ConsumerWidget {
                             ),
                             TextButton(
                               onPressed: () {
+                                ref.read(registerModalProvider.notifier).update((_) {
+                                  return RegisterModal();
+                                });
                                 context.push('/register');
                               },
                               child: Text(
