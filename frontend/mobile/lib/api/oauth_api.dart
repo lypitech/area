@@ -27,4 +27,22 @@ class OauthApi {
     }
   }
 
+  Future<JsonData?> twitchLogin({
+    required String userUuid,
+    required String code
+  }) async {
+    try {
+      final response = await dio.post(
+        '/oauth/twitch',
+        data: {
+          'uuid': userUuid,
+          'code': code
+        }
+      );
+      return response as JsonData;
+    } on DioException catch (exception) {
+      return exception.response?.data as JsonData?;
+    }
+  }
+
 }
