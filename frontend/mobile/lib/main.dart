@@ -13,7 +13,7 @@ Future<bool> initAppSettings() async {
     Constants.envApiUrlKey,
     Constants.envApiPortKey,
     Constants.envGithubClientIdKey,
-    Constants.envGithubClientSecretKey
+    Constants.envTwitchClientIdKey
   ];
 
 

@@ -15,6 +15,6 @@ class Constants {
   static const String envApiUrlKey = 'DEFAULT_API_URL';
   static const String envApiPortKey = 'DEFAULT_API_PORT';
   static const String envGithubClientIdKey = 'GITHUB_CLIENT_ID';
-  static const String envGithubClientSecretKey = 'GITHUB_CLIENT_SECRET';
+  static const String envTwitchClientIdKey = 'TWITCH_CLIENT_ID';
 
 }
