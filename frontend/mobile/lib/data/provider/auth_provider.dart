@@ -299,6 +299,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> deleteAccount() async {
+    final user = state.user;
+    if (user == null) {
+      throw Exception('No user logged in'); // basically impossible but yk
+    }
+
+    try {
+      await api.deleteUser(userUuid: user.uuid);
+      await logout();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   UserModel? getUser() {
     return state.user;
   }

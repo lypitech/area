@@ -83,4 +83,11 @@ class AuthApi {
     return response.data as JsonData;
   }
 
+  Future<JsonData?> deleteUser({
+    required String userUuid
+  }) async {
+    final response = await dio.delete('/users/$userUuid');
+    return response.data as JsonData;
+  }
+
 }
