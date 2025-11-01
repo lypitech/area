@@ -5,5 +5,8 @@ export class GithubOauthCreationDto {
   code: string;
 
   @IsNotEmpty()
+  front: boolean;
+
+  @IsNotEmpty()
   uuid: string;
 }
