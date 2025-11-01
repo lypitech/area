@@ -11,8 +11,8 @@ import { UserService } from 'src/user/user.service';
 import { UserDto } from 'src/user/types/userDto';
 import { OauthService } from '../oauth/oauth.service';
 
-type OauthRegisterFunction = (code: string) => Promise<UserDto>;
-type OauthLoginFunction = (code: string) => Promise<{
+type OauthRegisterFunction = (code: string, front: boolean) => Promise<UserDto>;
+type OauthLoginFunction = (code: string, front: boolean) => Promise<{
   uuid: string;
   access_token: string;
   refresh_token: string;
@@ -30,29 +30,29 @@ export class LoginService {
     private readonly oauthService: OauthService,
     private jwtService: JwtService,
   ) {
-    this.oauthLoginServices.set('github', (code: string) => {
-      return this.oauthService.loginWithGithub(code);
+    this.oauthLoginServices.set('github', (code, front) => {
+      return this.oauthService.loginWithGithub(code, front);
     });
-    this.oauthLoginServices.set('twitch', (code: string) => {
+    this.oauthLoginServices.set('twitch', (code, front) => {
       return this.oauthService.loginWithTwitch(code);
     });
-    this.oauthRegisterServices.set('github', (code) => {
-      return this.oauthService.registerWithGithub(code);
+    this.oauthRegisterServices.set('github', (code, front) => {
+      return this.oauthService.registerWithGithub(code, front);
     });
-    this.oauthRegisterServices.set('twitch', (code) => {
+    this.oauthRegisterServices.set('twitch', (code, front) => {
       return this.oauthService.registerWithTwitch(code);
     });
   }
 
-  async registerWith(code: string, service: string) {
+  async registerWith(code: string, front: boolean, service: string) {
     const oauthCreator = this.oauthRegisterServices.get(service.toLowerCase());
-    if (oauthCreator) return oauthCreator(code);
+    if (oauthCreator) return oauthCreator(code, front);
     throw new NotFoundException(`Service ${service} not supported`);
   }
 
-  async loginWith(code: string, service: string) {
+  async loginWith(code: string, front: boolean, service: string) {
     const oauthLogin = this.oauthLoginServices.get(service.toLowerCase());
-    if (oauthLogin) return oauthLogin(code);
+    if (oauthLogin) return oauthLogin(code, front);
     throw new NotFoundException(`Service ${service} not supported`);
   }
 
