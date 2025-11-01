@@ -12,6 +12,7 @@ import { TriggerModule } from '../trigger/trigger.module';
 import { ServiceModule } from '../list/service.module';
 import { ResponseModule } from '../response/response.module';
 import { JwtModule } from '@nestjs/jwt';
+import { UtilsService } from '../response/utils.service';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { JwtModule } from '@nestjs/jwt';
     ]),
   ],
   controllers: [AreaController],
-  providers: [AreaService, UserService, OauthService],
+  providers: [UtilsService, AreaService, UserService, OauthService],
   exports: [AreaService],
 })
 export class AreaModule {}

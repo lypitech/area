@@ -2,10 +2,14 @@ import { Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import type { Response, Request } from 'express';
 import { InteractionResponseType, InteractionType } from 'discord-interactions';
+import { UtilsService } from './response/utils.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly utils: UtilsService,
+  ) {}
 
   @Get('ping')
   ping() {
