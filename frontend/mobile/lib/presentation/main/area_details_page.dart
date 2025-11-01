@@ -1,8 +1,11 @@
+import 'package:area/core/utils.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/area_model.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/areaction_card.dart';
 import 'package:area/widget/clickable_frame.dart';
+import 'package:area/widget/popup_menu_button.dart';
+import 'package:area/widget/popup_menu_single_item.dart';
 import 'package:area/widget/when_then_do.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -29,6 +32,31 @@ class AreaDetailsPage extends StatelessWidget {
           context.pop();
         }
       ),
+      trailing: [
+        PopupMenuButton<String>(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0)
+          ),
+          itemBuilder: (_) => [
+            const PopupMenuItem(
+              value: 'delete',
+              child: PopupMenuSingleItem(
+                text: 'Delete AREA',
+                icon: Icons.delete_rounded,
+              )
+            )
+          ],
+          onSelected: (String? value) {
+            switch (value) {
+              case 'delete':
+                break;
+              default:
+                break;
+            }
+          },
+          child: AppbarPopupMenuButton(),
+        )
+      ],
       children: [
         AreactionCard(
           title: area.trigger.name,
