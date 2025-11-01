@@ -20,7 +20,7 @@ export class UserDto {
   refreshToken: string;
 
   @Expose()
-  oauth_uuids: [string, string];
+  oauth_uuids!: { service_name: string; token_uuid: string }[];
 
   @Exclude()
   password?: string;

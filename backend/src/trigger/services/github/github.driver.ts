@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { TriggerDriver } from '../../contracts/trigger-driver';
 import { Trigger } from '../../schemas/trigger.schema';
-import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../../../user/schemas/user.schema';
@@ -24,11 +23,11 @@ type CreateParams = {
 };
 
 const ALLOWED_EVENTS = new Set<string>(['push', 'pull_request', 'issues']);
+const DEFAULT_EVENT = 'push';
 
 function normalizeEvent(input?: string): string {
-  const value = (input ?? '').trim();
-  if (value && ALLOWED_EVENTS.has(value)) return value;
-  return 'push';
+  const v = (input ?? '').trim();
+  return v && ALLOWED_EVENTS.has(v) ? v : DEFAULT_EVENT;
 }
 
 @Injectable()
@@ -37,13 +36,10 @@ export class GithubWebhookTriggerDriver implements TriggerDriver {
   private readonly logger = new Logger(GithubWebhookTriggerDriver.name);
 
   constructor(
-    private readonly config: ConfigService,
     @InjectModel(User.name) private readonly userModel: Model<User>,
     @InjectModel(Trigger.name) private readonly triggerModel: Model<Trigger>,
-
     @InjectModel(Area.name) private readonly areaModel: Model<Area>,
     private readonly responseService: ResponseService,
-
     private readonly githubService: GithubService,
   ) {}
 
@@ -71,11 +67,20 @@ export class GithubWebhookTriggerDriver implements TriggerDriver {
     trigger: Trigger,
     params?: Partial<CreateParams>,
   ): Promise<void> {
-    const owner = params?.owner?.trim();
-    const repo = params?.repo?.trim();
+    const owner =
+      params?.owner?.trim() ??
+      (trigger as any)?.input?.owner?.trim() ??
+      (trigger as any)?.meta?.owner?.trim();
+
+    const repo =
+      params?.repo?.trim() ??
+      (trigger as any)?.input?.repo?.trim() ??
+      (trigger as any)?.meta?.repo?.trim();
 
     if (!owner || !repo) {
-      throw new BadRequestException('Missing params: owner, repo');
+      throw new BadRequestException(
+        'Missing repository coordinates: owner & repo are required',
+      );
     }
 
     const userId =
@@ -88,10 +93,21 @@ export class GithubWebhookTriggerDriver implements TriggerDriver {
     }
 
     const actionId = trigger.uuid;
-    const actionToken = crypto.randomBytes(32).toString('hex');
 
-    const event = normalizeEvent(params?.event);
-    this.logger.debug(`Configured GitHub webhook event: ${event}`);
+    const actionToken =
+      (trigger as any)?.meta?.webhookSecret ??
+      (trigger as any)?.meta?.githubWebhookSecret ??
+      crypto.randomBytes(32).toString('hex');
+
+    const expectedEvent = normalizeEvent(
+      params?.event ??
+        (trigger as any)?.input?.event ??
+        (trigger as any)?.meta?.event,
+    );
+
+    this.logger.debug(
+      `onCreate(): owner=${owner} repo=${repo} user=${userId} event=${expectedEvent}`,
+    );
 
     try {
       const { id } = await this.githubService.configureWebhook({
@@ -100,7 +116,7 @@ export class GithubWebhookTriggerDriver implements TriggerDriver {
         userId,
         actionId,
         actionToken,
-        event,
+        event: expectedEvent,
       });
 
       await this.triggerModel.updateOne(
@@ -108,11 +124,12 @@ export class GithubWebhookTriggerDriver implements TriggerDriver {
         {
           $set: {
             meta: {
+              ...(trigger as any)?.meta,
               hookId: id,
               owner,
               repo,
+              event: expectedEvent,
               webhookSecret: actionToken,
-              event,
             },
           },
         },
@@ -120,7 +137,7 @@ export class GithubWebhookTriggerDriver implements TriggerDriver {
     } catch (e: any) {
       if (e instanceof HttpException) throw e;
       throw new HttpException(
-        `Couldn't setup github webhook: ${e?.message ?? 'unknown error'}`,
+        `Couldn't setup GitHub webhook: ${e?.message ?? 'unknown error'}`,
         HttpStatus.UNAUTHORIZED,
       );
     }
@@ -134,13 +151,14 @@ export class GithubWebhookTriggerDriver implements TriggerDriver {
       userId?: string;
       hookId?: number;
     },
-  ) {
+  ): Promise<void> {
     const meta = (trigger as any)?.meta ?? {};
-    const owner: string | undefined = meta.owner;
-    const repo: string | undefined = meta.repo;
-    const hookId: number | undefined = meta.hookId;
+    const owner: string | undefined = _params?.owner ?? meta.owner;
+    const repo: string | undefined = _params?.repo ?? meta.repo;
+    const hookId: number | undefined = _params?.hookId ?? meta.hookId;
 
     const userId =
+      _params?.userId ??
       (trigger as any)?.user_uuid ??
       (trigger as any)?.userId ??
       (trigger as any)?.user?.uuid;
@@ -155,15 +173,37 @@ export class GithubWebhookTriggerDriver implements TriggerDriver {
   }
 
   async fire(trigger: Trigger, payload?: Record<string, any>): Promise<void> {
-    const ghEvent = payload?.event as string | undefined;
-    const repo = payload?.repository as string | undefined;
-    const owner = payload?.owner as string | undefined;
+    const incomingEvent =
+      (payload?.event as string | undefined) ??
+      (payload?.headers?.['x-github-event'] as string | undefined) ??
+      null;
+
+    const expectedEvent =
+      (trigger as any)?.meta?.event ??
+      (trigger as any)?.input?.event ??
+      DEFAULT_EVENT;
+
+    const repository =
+      (payload?.repository as string | undefined) ??
+      payload?.payload?.repository?.name ??
+      null;
+
+    const owner =
+      (payload?.owner as string | undefined) ??
+      payload?.payload?.repository?.owner?.login ??
+      payload?.payload?.repository?.owner?.name ??
+      null;
 
     this.logger.debug(
-      `fire(): trigger=${trigger.uuid} event=${ghEvent ?? 'unknown'} repo=${
-        repo ?? 'unknown'
-      } owner=${owner ?? 'unknown'}`,
+      `fire(): trigger=${trigger.uuid} expected=${expectedEvent} incoming=${incomingEvent ?? 'unknown'} repo=${repository ?? 'unknown'} owner=${owner ?? 'unknown'}`,
     );
+
+    if (incomingEvent && incomingEvent !== expectedEvent) {
+      this.logger.debug(
+        `fire(): ignoring event "${incomingEvent}" because trigger expects "${expectedEvent}"`,
+      );
+      return;
+    }
 
     const areas = await this.findEnabledAreaByTriggerUUID(trigger.uuid);
     if (!areas?.length) {
@@ -173,9 +213,9 @@ export class GithubWebhookTriggerDriver implements TriggerDriver {
 
     const trigger_payload = {
       service: 'github',
-      event: ghEvent ?? (trigger as any)?.meta?.event ?? 'push',
-      repository: repo ?? payload?.payload?.repository?.name ?? null,
-      owner: owner ?? payload?.payload?.repository?.owner?.login ?? null,
+      event: expectedEvent,
+      repository,
+      owner,
       raw: payload?.payload ?? payload ?? null,
       trigger_uuid: trigger.uuid,
       trigger_name: trigger.name,
@@ -194,8 +234,12 @@ export class GithubWebhookTriggerDriver implements TriggerDriver {
         );
 
         if (!result.ok) {
+          const err =
+            typeof result.error === 'string'
+              ? result.error
+              : JSON.stringify(result.error, null, 2);
           this.logger.warn(
-            `fire(): response dispatch failed for area=${area.uuid} — ${result.error}`,
+            `fire(): response dispatch failed for area=${area.uuid} — ${err}`,
           );
         }
       } catch (err: any) {

@@ -66,14 +66,15 @@ export class OauthService {
     user_uuid: string,
     service_name: string,
   ): Promise<Oauth | null> {
-    const userOauths = (await this.userService.findByUUID(user_uuid))
-      .oauth_uuids;
-    for (const oauth of userOauths) {
-      if (oauth[0] === service_name) {
-        return this.oauthModel.findOne({ uuid: oauth[1] });
-      }
-    }
-    return null;
+    const user = await this.userService.findByUUID(user_uuid);
+
+    const wanted = service_name.toLowerCase();
+    const link = user.oauth_uuids.find(
+      (o) => o.service_name.toLowerCase() === wanted,
+    );
+    if (!link) return null;
+
+    return this.oauthModel.findOne({ uuid: link.token_uuid });
   }
 
   private async getGithubUserInfos(token: OauthDto) {

@@ -163,7 +163,29 @@ export class UserService {
     return deleted.deletedCount === 1;
   }
 
-  async updateUser(uuid: string, updateData: Partial<UserDto>): Promise<string> {
+  async getUserTokenByService(
+    user_uuid: string,
+    service: string,
+  ): Promise<Oauth> {
+    const user = await this.findByUUID(user_uuid);
+    if (!user) {
+      throw new NotFoundException(`No user with uuid ${user_uuid} found.`);
+    }
+
+    for (const oauth_uuid of user.oauth_uuids) {
+      const oauth = await this.OauthModel.findOne({ uuid: oauth_uuid });
+      if (oauth && oauth.service_name === service) {
+        return oauth;
+      }
+    }
+
+    throw new NotFoundException(`No OAuth token found for service ${service}.`);
+  }
+
+  async updateUser(
+    uuid: string,
+    updateData: Partial<UserDto>,
+  ): Promise<string> {
     const user: User | null = await this.userModel.findOne({ uuid });
     if (!user) {
       throw new NotFoundException(`No user with uuid ${uuid} found.`);
