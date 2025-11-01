@@ -50,7 +50,7 @@ class _DialogButtonState extends State<DialogButton> {
           },
           borderRadius: BorderRadius.circular(20.0),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
             child: Text(
               widget.text,
               style: TextStyle(
@@ -59,7 +59,8 @@ class _DialogButtonState extends State<DialogButton> {
                   : Colors.grey,
                 fontWeight: widget.style == DialogButtonStyle.primary
                   ? FontWeight.w600
-                  : FontWeight.w400
+                  : FontWeight.w400,
+                fontSize: 16
               ),
               textAlign: TextAlign.center,
             ),
