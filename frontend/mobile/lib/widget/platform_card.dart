@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:area/core/constant/constants.dart';
 import 'package:area/model/platform_model.dart';
 import 'package:area/model/user_model.dart';
 import 'package:area/widget/a_popup.dart';
@@ -27,7 +28,11 @@ class PlatformCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
-    final isLoggedIn = user.oauthUuids.containsKey(platform.name.toLowerCase());
+    bool isLoggedIn = user.oauthUuids.containsKey(platform.name.toLowerCase());
+
+    if (platform.name.toLowerCase() == Constants.appName.toLowerCase()) {
+      isLoggedIn = true;
+    }
 
     return ClickableFrame(
       padding: const EdgeInsets.all(20),
