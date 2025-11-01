@@ -120,7 +120,7 @@ class APopup extends StatelessWidget {
         DialogButton(
           style: DialogButtonStyle.primary,
           text: confirmButtonTitle,
-          onTap: onCancel != null
+          onTap: onConfirm != null
             ? () => onConfirm!()
             : () => _closePopup(context),
         )
