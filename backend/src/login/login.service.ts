@@ -9,31 +9,47 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { UserDto } from 'src/user/types/userDto';
-import { User } from 'src/user/schemas/user.schema';
-import { plainToInstance } from 'class-transformer';
 import { OauthService } from '../oauth/oauth.service';
 
-type OauthFunction = (code: string) => Promise<UserDto>;
+type OauthRegisterFunction = (code: string) => Promise<UserDto>;
+type OauthLoginFunction = (code: string) => Promise<{
+  uuid: string;
+  access_token: string;
+  refresh_token: string;
+}>;
 
 @Injectable()
 export class LoginService {
-  private readonly oauthServices = new Map<string, OauthFunction>();
+  private readonly oauthRegisterServices = new Map<
+    string,
+    OauthRegisterFunction
+  >();
+  private readonly oauthLoginServices = new Map<string, OauthLoginFunction>();
   constructor(
     private readonly userService: UserService,
     private readonly oauthService: OauthService,
     private jwtService: JwtService,
   ) {
-    this.oauthServices.set('github', (code) => {
+    this.oauthLoginServices.set('github', (code: string) => {
+      return this.oauthService.loginWithGithub(code);
+    });
+    this.oauthRegisterServices.set('github', (code) => {
       return this.oauthService.registerWithGithub(code);
     });
-    // this.oauthServices.set('twitch', (code) => {
+    // this.oauthRegisterServices.set('twitch', (code) => {
     //   return this.oauthService.registerWithTwitch(code);
     // });
   }
 
   async registerWith(code: string, service: string) {
-    const oauthCreator = this.oauthServices.get(service.toLowerCase());
+    const oauthCreator = this.oauthRegisterServices.get(service.toLowerCase());
     if (oauthCreator) return oauthCreator(code);
+    throw new NotFoundException(`Service ${service} not supported`);
+  }
+
+  async loginWith(code: string, service: string) {
+    const oauthLogin = this.oauthLoginServices.get(service.toLowerCase());
+    if (oauthLogin) return oauthLogin(code);
     throw new NotFoundException(`Service ${service} not supported`);
   }
 

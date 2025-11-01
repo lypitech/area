@@ -32,6 +32,10 @@ export class LoginController {
     return this.loginService.registerWith(code, service);
   }
 
+  @Post('login/:service')
+  loginOauth(@Body('code') code: string, @Param('service') service: string) {
+    return this.loginService.loginWith(code, service);
+  }
   @Post('login')
   @UsePipes(new ValidationPipe())
   async login(@Body() userData: LoginDto) {
