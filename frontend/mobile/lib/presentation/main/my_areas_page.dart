@@ -48,7 +48,8 @@ class MyAreasPage extends ConsumerWidget {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  (await ref.read(areaNotifierProvider(user).future)).syncAreas();
+                  final notifier = await ref.read(areaNotifierProvider(user).future);
+                  await notifier.syncAreas();
                 },
                 child: Text('Refresh (TMP)')
               ),
