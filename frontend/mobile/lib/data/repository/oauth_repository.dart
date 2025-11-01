@@ -17,7 +17,7 @@ class OauthRepository {
       code: code
     );
 
-    if (response == null || response.containsKey('error')) {
+    if (response == null || response.containsKey('error') || response.containsKey('message')) {
       throw Exception(response?['message'] ?? 'Unknown error.');
     }
   }

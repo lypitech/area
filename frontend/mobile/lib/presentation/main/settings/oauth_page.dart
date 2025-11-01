@@ -1,3 +1,4 @@
+import 'package:area/core/constant/constants.dart';
 import 'package:area/core/oauth/oauth_github.dart';
 import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/data/provider/oauth_provider.dart';
@@ -7,7 +8,9 @@ import 'package:area/presentation/dialog/error_dialog.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/areaction_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:go_router/go_router.dart';
 
 class OauthPage extends ConsumerWidget {
@@ -35,12 +38,18 @@ class OauthPage extends ConsumerWidget {
             final oauthRepository = await ref.watch(oauthRepositoryProvider.future);
             final code = await githubSignIn();
 
-            if (code == null) {
+            if (code.startsWith('AR3AERR:')) {
+              ErrorDialog.show(
+                context: context,
+                error: 'For some reasons, the link has failed.\n(${code.substring(8)})'
+              );
               return;
             }
 
+            print("CODE: $code");
+
             try {
-              oauthRepository.githubLogin(
+              await oauthRepository.githubLogin(
                 userUuid: user.uuid,
                 code: code
               );
@@ -49,10 +58,12 @@ class OauthPage extends ConsumerWidget {
               final authNotifier = await ref.read(authNotifierProvider.future);
               await authNotifier.checkAuth();
             } catch (exception) {
-              ErrorDialog.show(
-                context: context,
-                error: 'For some reasons, the link has failed.\n($exception)'
-              );
+              if (context.mounted) {
+                ErrorDialog.show(
+                  context: context,
+                  error: 'For some reasons, the link has failed.\n($exception)'
+                );
+              }
             }
           }
         ),
