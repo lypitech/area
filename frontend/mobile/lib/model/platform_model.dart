@@ -29,7 +29,7 @@ class PlatformModel {
       uuid: json['uuid'] as String,
       name: json['name'] as String,
       iconBase64: b64,
-      icon: b64 == null ? null : Image.memory(base64Decode(b64)),
+      icon: (b64 == null || b64.isEmpty) ? null : Image.memory(base64Decode(b64)),
       triggers: (json['actions'] as List<dynamic>?)
           ?.map((e) => TriggerModel.fromJson(JsonData.from(e)))
           .toList()
