@@ -18,7 +18,7 @@ export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Oauth.name) private oauthModel: Model<Oauth>,
-    // private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async findAll(): Promise<UserDto[]> {
@@ -32,28 +32,32 @@ export class UserService {
     );
   }
 
-  // async login(user: User) {
-  //   const payload = { sub: user.uuid, email: user.email };
-  //   const accessToken = this.jwtService.sign(payload, {
-  //     secret: process.env.JWT_ACCESS_SECRET,
-  //     expiresIn: process.env.JWT_ACCESS_EXPIRES || '15m',
-  //   });
-  //
-  //   const refreshToken = this.jwtService.sign(payload, {
-  //     secret: process.env.JWT_REFRESH_SECRET,
-  //     expiresIn: process.env.JWT_REFRESH_EXPIRES || '7d',
-  //   });
-  //
-  //   const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
-  //   await this.update(user.uuid, {
-  //     refreshToken: hashedRefreshToken,
-  //   });
-  //   return {
-  //     uuid: user.uuid,
-  //     access_token: accessToken,
-  //     refresh_token: refreshToken,
-  //   };
-  // }
+  async login(oauth_uuid: string) {
+    const user: User | null = await this.userModel.findOne({
+      'oauth_uuids.token_uuid': oauth_uuid,
+    });
+    if (!user) throw new BadRequestException('No user found.');
+    const payload = { sub: user.uuid, email: user.email };
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_ACCESS_SECRET,
+      expiresIn: process.env.JWT_ACCESS_EXPIRES || '15m',
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: process.env.JWT_REFRESH_EXPIRES || '7d',
+    });
+
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.update(user.uuid, {
+      refreshToken: hashedRefreshToken,
+    });
+    return {
+      uuid: user.uuid,
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
+  }
 
   async findByUUID(uuid: string): Promise<UserDto> {
     const user: User | null = await this.userModel.findOne({ uuid });
