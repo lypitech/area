@@ -1,9 +1,9 @@
 import { IsNotEmpty } from 'class-validator';
 
 export class TwitchOauthCreationDto {
-    @IsNotEmpty()
-    code: string;
+  @IsNotEmpty()
+  code: string;
 
-    @IsNotEmpty()
-    uuid: string;
+  @IsNotEmpty()
+  uuid: string;
 }
