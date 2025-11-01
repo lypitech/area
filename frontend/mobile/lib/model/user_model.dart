@@ -17,14 +17,12 @@ class UserModel {
   });
 
   factory UserModel.fromJson(JsonData data) {
-    final rawOauthUuids = data['oauth_uuids'];
-    final oauthUuids = <String, String>{};
-
-    for (final element in rawOauthUuids) {
-      if (element is Map) {
-        oauthUuids.addAll(element.map((name, token) => MapEntry('$name', '$token')));
-      }
-    }
+    final oauthList = data['oauth_uuids'] as List? ?? [];
+    final oauthUuids = {
+      for (final e in oauthList)
+        if (e is Map && e['service_name'] != null && e['token_uuid'] != null)
+          e['service_name'] as String: e['token_uuid'] as String
+    };
 
     return UserModel(
       uuid: data['uuid'],
@@ -41,7 +39,12 @@ class UserModel {
       'username': username,
       'nickname': nickname,
       'email': email,
-      'oauth_uuids': oauthUuids.entries.map((e) => {e.key: e.value}).toList()
+      'oauth_uuids': oauthUuids.entries
+        .map((e) => {
+          'service_name': e.key,
+          'token_uuid': e.value,
+        })
+        .toList()
     };
   }
 
