@@ -33,12 +33,15 @@ export class LoginService {
     this.oauthLoginServices.set('github', (code: string) => {
       return this.oauthService.loginWithGithub(code);
     });
+    this.oauthLoginServices.set('twitch', (code: string) => {
+      return this.oauthService.loginWithTwitch(code);
+    });
     this.oauthRegisterServices.set('github', (code) => {
       return this.oauthService.registerWithGithub(code);
     });
-    // this.oauthRegisterServices.set('twitch', (code) => {
-    //   return this.oauthService.registerWithTwitch(code);
-    // });
+    this.oauthRegisterServices.set('twitch', (code) => {
+      return this.oauthService.registerWithTwitch(code);
+    });
   }
 
   async registerWith(code: string, service: string) {
