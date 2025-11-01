@@ -1,4 +1,5 @@
 import 'package:area/core/utils.dart';
+import 'package:area/data/provider/platforms_icons_provider.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/area_history_entry.dart';
 import 'package:area/model/area_model.dart';
@@ -9,9 +10,10 @@ import 'package:area/widget/popup_menu_button.dart';
 import 'package:area/widget/popup_menu_single_item.dart';
 import 'package:area/widget/when_then_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class AreaDetailsPage extends StatelessWidget {
+class AreaDetailsPage extends ConsumerWidget {
 
   final AreaModel area;
 
@@ -21,9 +23,10 @@ class AreaDetailsPage extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
+    final iconsMap = ref.watch(platformsImageProvider);
 
     final int areaRuns = area.history.length;
     final AreaHistoryEntry? lastHistoryEntry = areaRuns == 0 ? null : area.history.last;
@@ -66,11 +69,13 @@ class AreaDetailsPage extends StatelessWidget {
         AreactionCard(
           title: area.trigger.name,
           subtitle: area.actionPlatform.name,
+          icon: iconsMap[area.actionPlatform.name.toLowerCase()],
         ),
         WhenThenDo(),
         AreactionCard(
           title: area.action.name,
           subtitle: area.reactionPlatform.name,
+          icon: iconsMap[area.reactionPlatform.name.toLowerCase()],
         ),
         ClickableFrame(
           padding: const EdgeInsets.symmetric(vertical: 10),
