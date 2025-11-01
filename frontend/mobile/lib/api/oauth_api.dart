@@ -18,7 +18,8 @@ class OauthApi {
         '/oauth/github',
         data: {
           'uuid': userUuid,
-          'code': code
+          'code': code,
+          'front': false // Telling the API we're mobile client.
         }
       );
       return response as JsonData;
