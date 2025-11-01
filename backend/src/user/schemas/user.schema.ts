@@ -10,22 +10,22 @@ export class User extends Document {
   @Prop({ required: true, unique: true, default: uuid_v4 })
   uuid!: string;
 
-  @Prop({ required: true })
+  @Prop()
   nickname!: string;
 
-  @Prop({ required: true })
+  @Prop()
   username!: string;
 
-  @Prop({ required: true })
+  @Prop()
   password!: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ sparse: true })
   email!: string;
 
-  @Prop({ required: false, default: '' })
+  @Prop()
   profilePicture?: string;
 
-  @Prop({ required: false, default: null })
+  @Prop()
   refreshToken?: string;
 
   @Prop({ required: true, default: [] })
@@ -33,3 +33,11 @@ export class User extends Document {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.index(
+  { email: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { email: { $exists: true, $ne: null } },
+  },
+);
