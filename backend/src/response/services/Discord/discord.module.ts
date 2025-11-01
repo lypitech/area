@@ -3,9 +3,10 @@ import { DiscordReactionService } from './discord.service';
 import { DiscordResponseDriver } from './discord.driver';
 import { HttpModule } from '@nestjs/axios';
 import { ServiceModule } from '../../../list/service.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [HttpModule, ServiceModule],
+  imports: [JwtModule, HttpModule, ServiceModule],
   providers: [DiscordReactionService, DiscordResponseDriver],
   exports: [DiscordReactionService, DiscordResponseDriver],
 })
