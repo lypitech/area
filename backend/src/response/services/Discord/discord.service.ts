@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { ReactionInstance } from 'src/response/schemas/response.schema';
 import { DispatchReturn } from 'src/response/types/dispatchFunction';
 import { catchError, firstValueFrom, map, Observable, of } from 'rxjs';
+import { UtilsService } from '../../utils.service';
 
 @Injectable()
 export class DiscordReactionService {
@@ -12,7 +13,10 @@ export class DiscordReactionService {
     'Content-Type': 'application/json',
     Authorization: `Bot ${this.botToken}`,
   };
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly utils: UtilsService,
+  ) {}
 
   async getGuildId(channelId: string): Promise<string> {
     const guildResponse = this.httpService
@@ -125,9 +129,9 @@ export class DiscordReactionService {
     action_payload: Record<string, any>,
   ) {
     const url = `${this._base_url}/channels/${response.resource_ids.channel_id}/messages`;
-    const message = JSON.stringify(action_payload); // create helper function to retrieve the infos
+    const template = response.payload ?? 'Error';
     const payload = {
-      content: message,
+      content: this.utils.getResult(template, action_payload),
       tts: false,
     };
     return await this.sendPostRequest(url, payload);
