@@ -49,7 +49,7 @@
     "parameters": [
       {
         "name": "owner",
-        "type":  "string",
+        "type": "string",
         "description": "The owner of the repository"
       },
       {
@@ -71,7 +71,7 @@
     "parameters": [
       {
         "name": "owner",
-        "type":  "string",
+        "type": "string",
         "description": "The owner of the repository"
       },
       {
@@ -93,7 +93,7 @@
     "parameters": [
       {
         "name": "owner",
-        "type":  "string",
+        "type": "string",
         "description": "The owner of the repository"
       },
       {
@@ -119,13 +119,12 @@
         "description": "the interval in minutes (default is 5)"
       }
     ],
-    "trigger_types": ["Polling"]
+    "trigger_types": ["interval"]
   },
   {
     "service_name": "Twitch",
     "name": "Stream started",
     "description": "notify when you start a stream",
-
 
     "parameters": [
       {
