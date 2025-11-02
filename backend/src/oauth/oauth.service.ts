@@ -65,6 +65,29 @@ export class OauthService {
     });
   }
 
+  private async createJwtFromUser(uuid: string, email: string) {
+    const payload = { sub: uuid, email: email };
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_ACCESS_SECRET,
+      expiresIn: process.env.JWT_ACCESS_EXPIRES || '15m',
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: process.env.JWT_REFRESH_EXPIRES || '7d',
+    });
+
+    await this.userModel.findOneAndUpdate(
+      { uuid: uuid },
+      { refreshToken: await bcrypt.hash(refreshToken, 10) },
+    );
+    return {
+      uuid: uuid,
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
+  }
+
   private async createJwt(oauth_uuid: string) {
     const user: User | null = await this.userModel.findOne({
       'oauth_uuids.token_uuid': oauth_uuid,
@@ -179,7 +202,7 @@ export class OauthService {
     try {
       const token = await this.getGithubToken(code, front);
       const newData = await this.getGithubUserInfos(<OauthDto>token);
-      let oauth: Oauth | null = await this.findByMetaMember(
+      const oauth: Oauth | null = await this.findByMetaMember(
         'github_id',
         newData.id,
       );
@@ -193,7 +216,7 @@ export class OauthService {
           expires_at: token.expires_at,
           meta: token.meta,
         });
-        await this.createUser(
+        const user = await this.createUser(
           newData.email,
           '',
           newData.name,
@@ -201,7 +224,7 @@ export class OauthService {
           await this.fetchImageAsBase64(newData.avatar_url),
           [{ service_name: created.service_name, token_uuid: created.uuid }],
         );
-        return this.createJwt(created.uuid);
+        return this.createJwtFromUser(user.uuid, user.email);
       }
       return this.createJwt(oauth.uuid);
     } catch (e: any) {
