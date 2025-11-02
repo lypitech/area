@@ -1,39 +1,46 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { v4 as uuid_v4 } from 'uuid';
-//import { OAuth } from 'src/database/schemas/oauth.schema';
+
+export type UserOauthLink = { service_name: string; token_uuid: string };
 
 @Schema()
 export class User extends Document {
   @Prop({ required: true, unique: true, default: uuid_v4 })
   uuid!: string;
 
-  @Prop({ required: true })
+  @Prop()
   nickname!: string;
 
-  @Prop({ required: true })
+  @Prop()
   username!: string;
 
-  @Prop({ required: true })
+  @Prop()
   password!: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ sparse: true })
   email!: string;
 
-  @Prop({ required: false, default: '' })
+  @Prop()
   profilePicture?: string;
 
-  @Prop({ required: false, default: null })
+  @Prop()
   refreshToken?: string;
 
-  @Prop({ required : false, default: null })
-  githubToken?: string;
-
-  /*  @Prop({
-      type: [{ type: mongoose_schema.Types.ObjectId, ref: 'Oauth' }],
-      default: [],
-    })
-    OAuth_ids?: OAuth[];*/
+  @Prop({
+    required: true,
+    default: [],
+    type: [{ service_name: String, token_uuid: String }],
+  })
+  oauth_uuids!: UserOauthLink[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.index(
+  { email: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { email: { $exists: true, $ne: null } },
+  },
+);

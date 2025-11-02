@@ -61,7 +61,8 @@ class AuthService {
     _refreshCompleter = Completer<void>();
     try {
       final data = await api.refresh(refreshToken: refreshToken);
-      final newAccess = data['access_token'] as String?;
+
+      final newAccess = data?['access_token'] as String?;
 
       if (newAccess != null) {
         await saveTokens(

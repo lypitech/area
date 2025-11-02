@@ -36,6 +36,55 @@ class _ChooseTriggerActionPageState extends ConsumerState<ChooseTriggerActionPag
     super.dispose();
   }
 
+  Future<void> _handleTriggerSelection(dynamic triggerOrAction) async {
+    final modal = ref.read(areaModalProvider.notifier);
+    final isTrigger = widget.mode == ChoosePlatformPageMode.triggers;
+
+    if (triggerOrAction.requiredParams.isNotEmpty) {
+      final result = await context.pushNamed(
+        'parameter_input',
+        pathParameters: {
+          'mode': widget.mode == ChoosePlatformPageMode.triggers
+            ? 'action'
+            : 'reaction',
+        },
+        extra: {
+          'parameters': triggerOrAction.requiredParams,
+          'name': triggerOrAction.name,
+          'isAction': !isTrigger,
+          'requiresPayload': !isTrigger && triggerOrAction.isPayloadRequired,
+        },
+      );
+
+      if (result != null && result is Map<String, dynamic>) {
+        if (isTrigger) {
+          modal.setTrigger(triggerOrAction);
+          modal.setTriggerParameters(result);
+        } else {
+          final payload = result['payload'];
+          result.remove('payload');
+
+          modal.setAction(triggerOrAction);
+          modal.setActionParameters(result);
+          modal.setActionPayload(payload);
+        }
+
+        if (mounted) {
+          context.goNamed('new_area');
+        }
+      }
+    } else {
+      if (isTrigger) {
+        modal.setTrigger(triggerOrAction);
+        modal.setTriggerParameters({});
+      } else {
+        modal.setAction(triggerOrAction);
+        modal.setActionParameters({});
+      }
+      context.goNamed('new_area');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -63,21 +112,17 @@ class _ChooseTriggerActionPageState extends ConsumerState<ChooseTriggerActionPag
             .map((e) => TriggerActionCard(
               title: e.name,
               description: e.description,
-              onTap: () {
-                ref.read(areaModalProvider.notifier).setTrigger(e);
-                context.goNamed('new_area');
-              }
+              parametersAmount: e.requiredParams.isEmpty ? null : e.requiredParams.length,
+              onTap: () => _handleTriggerSelection(e),
             ))
         } else ... {
           ...widget.platform.actions
             .map((e) => TriggerActionCard(
-            title: e.name,
-            description: e.description,
-            onTap: () {
-              ref.read(areaModalProvider.notifier).setAction(e);
-              context.goNamed('new_area');
-            }
-          ))
+              title: e.name,
+              description: e.description,
+              parametersAmount: e.requiredParams.isEmpty ? null : e.requiredParams.length,
+              onTap: () => _handleTriggerSelection(e),
+            ))
         }
       ]
     );
@@ -89,11 +134,13 @@ class TriggerActionCard extends StatelessWidget {
 
   final String title;
   final String description;
+  final int? parametersAmount;
   final VoidCallback onTap;
 
   const TriggerActionCard({
     required this.title,
     required this.description,
+    this.parametersAmount,
     required this.onTap,
     super.key
   });
@@ -119,7 +166,27 @@ class TriggerActionCard extends StatelessWidget {
           Text(
             description,
             style: textTheme.bodyMedium,
-          )
+          ),
+          if (parametersAmount != null) ... {
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.settings,
+                  size: 14,
+                  color: Colors.blue,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '$parametersAmount param${parametersAmount! > 1 ? 's' : ''}',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            )
+          }
         ],
       )
     );

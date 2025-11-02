@@ -1,6 +1,6 @@
 import 'package:area/modal/register_modal.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
-final registerModalProvider = Provider<RegisterModal>((_) {
+final registerModalProvider = StateProvider<RegisterModal>((_) {
   return RegisterModal();
 });

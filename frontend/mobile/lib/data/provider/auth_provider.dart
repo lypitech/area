@@ -2,21 +2,31 @@ import 'dart:async';
 
 import 'package:area/api/auth_api.dart';
 import 'package:area/core/constant/constants.dart';
+import 'package:area/data/provider/app_settings_provider.dart';
+import 'package:area/data/provider/main_page_route_provider.dart';
 import 'package:area/model/user_model.dart';
 import 'package:area/service/auth_service.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:go_router/go_router.dart';
 
-final authDioProvider = Provider<Dio>((ref) {
-  final apiUrl = '${dotenv.env['API_URL']!}:${dotenv.env['API_PORT']!}';
+final authDioProvider = FutureProvider<Dio>((ref) async {
+  final appSettings = await ref.watch(appSettingsProvider.future);
+
   final dio = Dio(
     BaseOptions(
-      baseUrl: apiUrl
+      baseUrl: appSettings.fullUrl
     ),
   );
+
+  ref.onDispose(() {
+    try {
+      dio.close(force: true);
+    } catch (_) {}
+  });
 
   return dio;
 });
@@ -32,7 +42,7 @@ class AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     try {
-      final authService = ref.read(authServiceProvider);
+      final authService = await ref.watch(authServiceProvider.future);
       final access = await authService.getAccessToken();
 
       if (access != null) {
@@ -50,7 +60,7 @@ class AuthInterceptor extends Interceptor {
     // If 401, try to refresh
     if (err.response?.statusCode == 401 && requestOptions.extra['retried'] != true) {
       try {
-        final authService = ref.read(authServiceProvider);
+        final authService = await ref.watch(authServiceProvider.future);
         final refreshed = await authService.refreshIfNeeded();
 
         if (refreshed) {
@@ -70,7 +80,7 @@ class AuthInterceptor extends Interceptor {
             },
           );
 
-          final dio = ref.read(authDioProvider);
+          final dio = await ref.watch(authDioProvider.future);
           final response = await dio.request(
             requestOptions.path,
             data: requestOptions.data,
@@ -88,8 +98,8 @@ class AuthInterceptor extends Interceptor {
 
 }
 
-final authApiProvider = Provider<AuthApi>((ref) {
-  final dio = ref.read(authDioProvider);
+final authApiProvider = FutureProvider<AuthApi>((ref) async {
+  final dio = await ref.watch(authDioProvider.future);
   return AuthApi(dio: dio);
 });
 
@@ -97,14 +107,16 @@ final tokenStorageProvider = Provider<FlutterSecureStorage>((ref) {
   return FlutterSecureStorage();
 });
 
-final authServiceProvider = Provider<AuthService>((ref) {
-  final authService = AuthService(
-    api: ref.read(authApiProvider),
-    tokenStorage: ref.read(tokenStorageProvider)
+final authServiceProvider = FutureProvider<AuthService>((ref) async {
+  final api = await ref.watch(authApiProvider.future);
+  final storage = ref.watch(tokenStorageProvider);
+  final service = AuthService(
+    api: api,
+    tokenStorage: storage
   );
 
-  authService.init();
-  return authService;
+  await service.init();
+  return service;
 });
 
 enum AuthStatus {
@@ -147,13 +159,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String password
   }) async {
     try {
-      final tokens = await api.login(
+      final loginResponse = await api.login(
         email: email,
         password: password
       );
 
-      final access = tokens['access_token'] as String?;
-      final refresh = tokens['refresh_token'] as String?;
+      if (loginResponse == null || loginResponse.containsKey('error')) {
+        throw Exception('Login failed. ${loginResponse?['message']}');
+      }
+
+      final access = loginResponse['access_token'] as String?;
+      final refresh = loginResponse['refresh_token'] as String?;
 
       if (access == null || refresh == null) {
         state = AuthState.unauthenticated();
@@ -169,6 +185,34 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> oauthLogin(String oauthService, String code) async {
+    try {
+      final loginResponse = await api.oauthLogin(
+        service: 'github',
+        code: code
+      );
+
+      if (loginResponse == null) {
+        throw Exception('Null response from backend');
+      }
+
+      final access = loginResponse['access_token'] as String?;
+      final refresh = loginResponse['refresh_token'] as String?;
+
+      if (access == null || refresh == null) {
+        throw Exception('Invalid login response (missing tokens)');
+      }
+
+      await service.saveTokens(accessToken: access, refreshToken: refresh);
+
+      final user = await api.getUser(refreshToken: refresh);
+      state = AuthState.authenticated(user);
+    } catch (e) {
+      state = AuthState.unauthenticated();
+      rethrow;
+    }
+  }
+
   Future<void> register({
     required String email,
     required String password,
@@ -176,28 +220,56 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String username,
   }) async {
     try {
-      await api.register(
+      final registerResponse = await api.register(
         email: email,
         password: password,
         nickname: nickname,
         username: username,
       );
 
+      if (registerResponse == null || registerResponse.containsKey('error')) {
+        throw Exception('Registration failed. ${registerResponse?['message']}');
+      }
+
       final loginResponse = await api.login(
         email: email,
         password: password,
       );
+
+      if (loginResponse == null || loginResponse.containsKey('error')) {
+        throw Exception('Login failed. ${loginResponse?['message']}');
+      }
 
       final access = loginResponse['access_token'] as String?;
       final refresh = loginResponse['refresh_token'] as String?;
 
       if (access != null && refresh != null) {
         await service.saveTokens(accessToken: access, refreshToken: refresh);
+
         final user = await api.getUser(refreshToken: refresh);
+
         state = AuthState.authenticated(user);
       } else {
         throw Exception('Invalid login response after register (register may have been unsuccessful)');
       }
+    } catch (e) {
+      state = AuthState.unauthenticated();
+      rethrow;
+    }
+  }
+
+  Future<void> oauthRegister(String oauthService, String code) async {
+    try {
+      final registerResponse = await api.oauthRegister(
+        service: oauthService,
+        code: code
+      );
+
+      if (registerResponse == null || registerResponse.containsKey('error')) {
+        throw Exception('Registration failed. ${registerResponse?['message']}');
+      }
+
+      await oauthLogin(oauthService, code);
     } catch (e) {
       state = AuthState.unauthenticated();
       rethrow;
@@ -229,41 +301,28 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final refresh = await service.getRefreshToken();
 
-      print("CHECKAUTH: refresh: $refresh");
       if (refresh == null) {
-        print("CHECKAUTH: null, unauthenticated");
         state = AuthState.unauthenticated();
         return;
       }
 
-      print("CHECKAUTH: not null, will try to get the user vro");
-
       try {
         final user = await api.getUser(refreshToken: refresh);
-        print("CHECKAUTH: user: $user");
 
         state = AuthState.authenticated(user);
         return;
       } catch (e) {
-        print("CHECKAUTH: ok error, maybe the tokens are invalidated");
-
         final refreshed = await service.refreshIfNeeded();
-        print("CHECKAUTH: refreshed tokens");
 
         if (refreshed) {
-          print("CHECKAUTH: nice the tokens are refreshed");
-
           final newRefreshToken = await service.getRefreshToken();
 
           if (newRefreshToken != null) {
-            print("CHECKAUTH: ok nice will authenticate");
-
             final user = await api.getUser(refreshToken: newRefreshToken);
             state = AuthState.authenticated(user);
             return;
           }
         }
-        print("CHECKAUTH: tokens are invalid now, unlogging");
 
         await service.clearTokens();
         state = AuthState.unauthenticated();
@@ -273,15 +332,41 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> deleteAccount() async {
+    final user = state.user;
+    if (user == null) {
+      throw Exception('No user logged in'); // basically impossible but yk
+    }
+
+    try {
+      await api.deleteUser(userUuid: user.uuid);
+      await logout();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   UserModel? getUser() {
     return state.user;
   }
 
 }
 
-final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(
-    api: ref.read(authApiProvider),
-    service: ref.read(authServiceProvider)
-  );
+final authNotifierProvider = FutureProvider<AuthNotifier>((ref) async {
+  final api = await ref.watch(authApiProvider.future);
+  final service = await ref.watch(authServiceProvider.future);
+  final notifier = AuthNotifier(api: api, service: service);
+
+  return notifier;
 });
+
+void authLogout(BuildContext context, WidgetRef ref) async {
+  final authNotifier = await ref.read(authNotifierProvider.future);
+
+  await authNotifier.logout();
+  ref.read(mainPageRouteProvider.notifier).state = 'myareas';
+
+  if (context.mounted) {
+    context.go('/login');
+  }
+}
