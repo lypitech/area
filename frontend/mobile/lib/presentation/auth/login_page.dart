@@ -64,7 +64,33 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Future<void> _githubLogin(BuildContext context, WidgetRef ref) async {
-    // ...
+    final code = await githubSignIn();
+
+    if (code.startsWith('AR3AERR:')) {
+      if (code.contains('CANCELED')) {
+        return;
+      }
+      if (context.mounted) {
+        ErrorDialog.show(
+          context: context,
+          error: "We couldn't log in with Github. (${code.substring(8)})"
+        );
+      }
+      return;
+    }
+
+    print("CODE: $code");
+
+    try {
+      final authNotifier = await ref.watch(authNotifierProvider.future);
+
+      await authNotifier.oauthLogin('github', code);
+    } catch (e) {
+      ErrorDialog.show(
+        context: context,
+        error: 'GitHub login failed: $e',
+      );
+    }
   }
 
   @override
