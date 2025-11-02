@@ -13,14 +13,14 @@ export default function News(props: SVGProps<SVGSVGElement>) {
       <path
         fill="currentColor"
         stroke="#000000"
-        strokeWidth="2"
+        stroke-width="2"
         stroke-miterlimit="10"
         d="M25,26H7c-1.7,0-3-1.3-3-3V6h18v7"
       />
       <path
         fill="currentColor"
         stroke="#000000"
-        strokeWidth="2"
+        stroke-width="2"
         stroke-miterlimit="10"
         d="M25,26L25,26c-1.7,0-3-1.3-3-3V13h6v10
 	C28,24.7,26.7,26,25,26z"
@@ -30,7 +30,7 @@ export default function News(props: SVGProps<SVGSVGElement>) {
         y="10"
         fill="currentColor"
         stroke="#000000"
-        strokeWidth="2"
+        stroke-width="2"
         stroke-miterlimit="10"
         width="10"
         height="3"
@@ -38,7 +38,7 @@ export default function News(props: SVGProps<SVGSVGElement>) {
       <line
         fill="currentColor"
         stroke="#000000"
-        strokeWidth="2"
+        stroke-width="2"
         stroke-miterlimit="10"
         x1="7"
         y1="16"
@@ -48,7 +48,7 @@ export default function News(props: SVGProps<SVGSVGElement>) {
       <line
         fill="currentColor"
         stroke="#000000"
-        strokeWidth="2"
+        stroke-width="2"
         stroke-miterlimit="10"
         x1="14"
         y1="16"
@@ -58,7 +58,7 @@ export default function News(props: SVGProps<SVGSVGElement>) {
       <line
         fill="currentColor"
         stroke="#000000"
-        strokeWidth="2"
+        stroke-width="2"
         stroke-miterlimit="10"
         x1="7"
         y1="19"
@@ -68,7 +68,7 @@ export default function News(props: SVGProps<SVGSVGElement>) {
       <line
         fill="currentColor"
         stroke="#000000"
-        strokeWidth="2"
+        stroke-width="2"
         stroke-miterlimit="10"
         x1="14"
         y1="19"
@@ -78,7 +78,7 @@ export default function News(props: SVGProps<SVGSVGElement>) {
       <line
         fill="currentColor"
         stroke="#000000"
-        strokeWidth="2"
+        stroke-width="2"
         stroke-miterlimit="10"
         x1="7"
         y1="22"
@@ -88,7 +88,7 @@ export default function News(props: SVGProps<SVGSVGElement>) {
       <line
         fill="currentColor"
         stroke="#000000"
-        strokeWidth="2"
+        stroke-width="2"
         stroke-miterlimit="10"
         x1="14"
         y1="22"

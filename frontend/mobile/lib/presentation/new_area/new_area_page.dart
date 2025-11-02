@@ -1,39 +1,21 @@
 import 'package:area/data/provider/area_modal_provider.dart';
-import 'package:area/data/provider/areas_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/area_model.dart';
-import 'package:area/widget/a_text_field.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/areaction_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 
-class NewAreaPage extends ConsumerStatefulWidget {
+class NewAreaPage extends ConsumerWidget {
 
   const NewAreaPage({
     super.key
   });
 
   @override
-  ConsumerState<NewAreaPage> createState() => _NewAreaPageState();
-
-}
-
-class _NewAreaPageState extends ConsumerState<NewAreaPage> {
-
-  final _titleController = TextEditingController();
-
-  @override
-  void initState() {
-    _titleController.text = ref.read(areaModalProvider).title ?? '';
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
     final areaModal = ref.watch(areaModalProvider);
     final l10n = AppLocalizations.of(context)!;
@@ -48,7 +30,6 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          ref.read(areaModalProvider.notifier).setTitle(_titleController.text);
           if (!areaModal.isComplete()) {
             // fixme: tmp
             showDialog(
@@ -79,10 +60,7 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
 
           final area = AreaModel.fromModal(areaModal);
 
-          ref.read(areasProvider).add(area);
-
-          Fluttertoast.showToast(msg: 'Successfully created AREA');
-          context.pop();
+          // todo: Create AREA
         },
         label: Text(
           l10n.create_area,
@@ -94,13 +72,6 @@ class _NewAreaPageState extends ConsumerState<NewAreaPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       children: [
-        ATextField(
-          title: 'Title',
-          controller: _titleController,
-          onChange: (String? value) {
-            ref.read(areaModalProvider.notifier).setTitle(value);
-          },
-        ),
         AreactionCard(
           title: areaModal.trigger != null
             ? areaModal.trigger!.name

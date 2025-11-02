@@ -1,4 +1,3 @@
-import 'package:area/data/provider/areas_provider.dart';
 import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
@@ -19,7 +18,6 @@ class ProfilePage extends ConsumerWidget {
     if (context.mounted) {
       context.go('/login');
     }
-    ref.read(areasProvider).clear();
   }
 
   @override

@@ -37,7 +37,6 @@ class AreaModal {
 
   bool isComplete() {
     return title != null
-      && title!.isNotEmpty
       && actionPlatform != null
       && trigger != null
       && reactionPlatform != null
