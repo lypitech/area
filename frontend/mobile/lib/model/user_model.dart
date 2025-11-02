@@ -31,7 +31,7 @@ class UserModel {
     };
     print("PARSED OAUTHLIST");
 
-    final rawImageBase64 = data['profilePicture'];
+    final rawImageBase64 = data['profilePicture'] as String?;
 
     print("PARSED RAWIMAGEBASE64: $rawImageBase64");
     return UserModel(
@@ -40,7 +40,7 @@ class UserModel {
       nickname: data['nickname'],
       email: data['email'],
       oauthUuids: oauthUuids,
-      profilePictureBase64: rawImageBase64 != null
+      profilePictureBase64: (rawImageBase64 != null && rawImageBase64.isNotEmpty)
         ? Image.memory(base64Decode(rawImageBase64))
         : null
     );
