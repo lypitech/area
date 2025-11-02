@@ -49,9 +49,26 @@ export class OauthService {
     username: string,
     profilePicture: string,
     oauthsLinks: UserOauthLink[],
+    token: Oauth
   ) {
-    if (await this.userModel.findOne({ email: email }))
-      throw new BadRequestException('Email already exists');
+    const existing: User | null = await this.userModel.findOne({
+      email: email,
+    });
+    if (existing) {
+      const oauth = existing.oauth_uuids.find(
+        (o) => o.service_name === token.service_name,
+      );
+      if (oauth) {
+        this.oauthModel.findOneAndUpdate(
+          { uuid: oauth.token_uuid },
+          { $set: { meta: token.meta } },
+        );
+        await this.remove(token.uuid);
+      }
+      return plainToInstance(UserDto, existing.toObject(), {
+        excludeExtraneousValues: true,
+      });
+    }
     const created = await new this.userModel({
       email: email,
       password: await bcrypt.hash(password, 10),
@@ -223,6 +240,7 @@ export class OauthService {
           newData.log,
           await this.fetchImageAsBase64(newData.avatar_url),
           [{ service_name: created.service_name, token_uuid: created.uuid }],
+          created,
         );
         return this.createJwtFromUser(user.uuid, user.email);
       }
@@ -257,6 +275,7 @@ export class OauthService {
         userData.log,
         await this.fetchImageAsBase64(userData.avatar_url),
         [{ service_name: created.service_name, token_uuid: created.uuid }],
+        created,
       );
     } catch (e: any) {
       throw new BadRequestException(`Error: ${e.message}`);
@@ -355,6 +374,7 @@ export class OauthService {
         token.meta?.twitch_login as string,
         await this.fetchImageAsBase64(token.meta?.profile_image_url as string),
         [{ service_name: created.service_name, token_uuid: created.uuid }],
+        created,
       );
     } catch (e: any) {
       throw new BadRequestException(`Error: ${e.message}`);
