@@ -201,9 +201,8 @@ export class OauthService {
           await this.fetchImageAsBase64(newData.avatar_url),
           [{ service_name: created.service_name, token_uuid: created.uuid }],
         );
+        return this.createJwt(created.uuid);
       }
-      oauth = await this.findByMetaMember('github_id', newData.id);
-      if (!oauth) throw new NotFoundException(`Fuck.`);
       return this.createJwt(oauth.uuid);
     } catch (e: any) {
       throw new BadRequestException(`Error: ${e.message}`);
