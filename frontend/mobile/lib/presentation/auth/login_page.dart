@@ -94,6 +94,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       final authState = await ref.read(authNotifierProvider.future);
       final notifier = await ref.read(areaNotifierProvider(authState.state.user!).future);
       await notifier.syncAreas();
+
+      if (context.mounted) {
+        context.go('/');
+      }
     } catch (e) {
       ErrorDialog.show(
         context: context,
