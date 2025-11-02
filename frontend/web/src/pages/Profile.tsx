@@ -1,8 +1,12 @@
 import React, { useEffect } from "react";
 import type { User } from "../types";
-import { logout } from "../services/authServices";
+import { logout } from "../services/authService";
 import { useNavigate } from "react-router-dom";
-import { getUser } from "../services/userServices";
+import { getUser } from "../services/userService";
+import Footer from "../components/Footer";
+// import { useState } from "react";
+// import EditProfileModal from "../components/EditProfile";
+// import { u } from "framer-motion/client";
 
 export default function Profile() {
   const [user, setUser] = React.useState<User | null>(null);
@@ -49,8 +53,24 @@ export default function Profile() {
     ? nickname[0].toUpperCase()
     : username[0].toUpperCase();
 
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // <EditProfileModal
+  //   isOpen={isModalOpen}
+  //   onClose={() => setIsModalOpen(false)}
+  //   initialData={{
+  //     nickname: user.nickname,
+  //     username: user.username,
+  //     email: user.email,
+  //     profile_picture: user.profile_picture,
+  //   }}
+  //   onSave={async (updated) => {
+  //     await updateUser(updated);
+  //   }}
+  // />;
+
   return (
-    <div className="flex flex-col items-center mt-10 p-4">
+    <div className="flex flex-col h-full items-center p-8 pb-0">
       {/* Profile Picture */}
       <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-300 shadow-md flex items-center justify-center bg-gray-300 text-4xl font-bold text-white">
         {profile_picture ? (
@@ -83,6 +103,7 @@ export default function Profile() {
           Logout
         </button>
       </div>
+      <Footer />
     </div>
   );
 }

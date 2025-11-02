@@ -13,9 +13,8 @@ export async function getUser(): Promise<User | string> {
     return "No refresh token";
   }
 
-  console.log("Refresh token:", refreshToken);
   try {
-    const res = await fetch(`${API_ROUTES.user.getUser}/${refreshToken}`, {
+    const res = await fetch(`${API_ROUTES.user.getUser(refreshToken)}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -29,9 +28,22 @@ export async function getUser(): Promise<User | string> {
     }
 
     const data: User = await res.json();
+
+    // Store the user's UUID in localStorage
+    localStorage.setItem("uuid", data.uuid);
+
     return data;
   } catch (err: any) {
     console.error("Error retrieving user:", err);
     return err.message || "Unexpected error";
   }
 }
+
+// export async function updateUser(user: User) {
+//   const res = await fetch(API_ROUTES.user.updateUser(user), {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify(user),
+//   });

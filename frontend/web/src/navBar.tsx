@@ -3,27 +3,36 @@ import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import Icon from "./components/icons/icons";
 import { Button } from "./components/Button";
 import { isLoggedIn } from "./utils/auth";
-import { refreshToken } from "./services/authServices";
-import { logout } from "./services/authServices";
+import { refreshToken } from "./services/authService";
+import { logout } from "./services/authService";
+import { useArea } from "./context/AreaContext";
 
 export default function NavBar() {
   const nav = useNavigate();
   const position = useLocation();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const { userUuid, setUserUuid } = useArea();
 
   // Redirect to login if not logged in
   useEffect(() => {
-    if (!isLoggedIn() && position.pathname !== "/register") {
+    if (
+      !isLoggedIn() &&
+      position.pathname !== "/register" &&
+      position.pathname !== "/callback"
+    ) {
       nav("/");
     }
   }, [nav]);
 
   // Refresh token
   useEffect(() => {
-    console.log("Refreshing token");
     try {
       refreshToken();
+      const uuid = localStorage.getItem("uuid");
+      if (!userUuid) {
+        setUserUuid(uuid || "");
+      }
     } catch (err: any) {
       console.error("Error refreshing token:", err);
     }
@@ -40,7 +49,6 @@ export default function NavBar() {
 
   const handleLogout = () => {
     logout();
-    nav("/");
   };
 
   const isActive = (path: string) => {
@@ -128,20 +136,6 @@ export default function NavBar() {
           {/* Bottom section */}
           <div className="flex flex-col items-start gap-2 py-4 px-3 ">
             <div className="w-full h-px bg-gray-200 my-2" />
-
-            <Button
-              onClick={() => nav("/settings")}
-              className={`flex items-center ${
-                open ? "justify-start gap-3 w-full" : "justify-center w-10 h-10"
-              } rounded-lg  hover:bg-gray-100 hover:scale-[101%] transition ${
-                isActive("/settings")
-                  ? "outline-black outline-2"
-                  : "outline outline-gray-200"
-              }`}
-            >
-              <Icon iconName="settings" iconClass="w-5 h-5" />
-              {open && <span>Settings</span>}
-            </Button>
 
             <Button
               onClick={() => nav("/profile")}

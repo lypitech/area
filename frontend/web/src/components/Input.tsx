@@ -1,6 +1,7 @@
 import Icon from "./icons/icons";
 
 const Input = ({
+  type,
   name,
   iconName,
   iconClass,
@@ -11,6 +12,7 @@ const Input = ({
   onChange,
   ...props
 }: {
+  type?: string;
   name?: string;
   iconName?: string;
   iconClass?: string;
@@ -24,6 +26,7 @@ const Input = ({
   return (
     <div className="relative">
       <input
+        type={type}
         name={name}
         className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black placeholder:opacity-50 ${inputClass}`}
         placeholder={placeholder}

@@ -1,33 +1,54 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getUser } from "../../userService";
 import { API_ROUTES } from "../../../config/api";
 
-export function githubLogin() {
-  const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
+export function twitchLogin() {
+  const clientId = import.meta.env.VITE_TWITCH_CLIENT_ID;
   const redirectUri = "http://localhost:8081/callback";
-  const scope = [
-    "repo",
-    "admin:repo_hook",
-    "delete_repo",
-    "admin:org_hook",
-    "admin:public_key",
-    "workflow",
-    "write:packages",
-    "delete:packages",
-    "read:org",
-    "user",
-  ].join(" ");
 
-  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+  const scopes = [
+    "user:read:email",
+    "user:read:subscriptions",
+    "user:read:follows",
+    "user:edit",
+    "user:edit:follows",
+    "clips:edit",
+    "channel:manage:broadcast",
+    "channel:manage:moderators",
+    "channel:manage:polls",
+    "channel:manage:predictions",
+    "channel:manage:redemptions",
+    "channel:manage:schedule",
+    "channel:manage:videos",
+    "channel:read:editors",
+    "channel:read:hype_train",
+    "channel:read:polls",
+    "channel:read:predictions",
+    "channel:read:redemptions",
+    "channel:read:subscriptions",
+    "moderation:read",
+    "moderator:manage:banned_users",
+    "moderator:read:chat_settings",
+    "moderator:manage:chat_settings",
+    "moderator:read:followers",
+    "moderator:read:shoutouts",
+    "moderator:manage:shoutouts",
+    "chat:read",
+    "chat:edit",
+    "whispers:read",
+    "whispers:edit",
+  ];
+
+  const twitchAuthUrl = `https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
     redirectUri
-  )}&scope=${encodeURIComponent(scope)}&state=github`;
+  )}&response_type=code&scope=${encodeURIComponent(scopes.join(" "))}&state=twitch`;
 
   localStorage.setItem("oauth_redirect_after", window.location.pathname);
-  window.location.href = githubAuthUrl;
+  window.location.href = twitchAuthUrl;
 }
 
-export function useGithubLogin() {
+export function useTwitchLogin() {
   const [params] = useSearchParams();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +60,7 @@ export function useGithubLogin() {
     const fetchToken = async () => {
       try {
         setLoading(true);
-        const res = await fetch(API_ROUTES.auth.oauth('github'), {
+        const res = await fetch(API_ROUTES.auth.oauth('twitch'), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ code, front: true }),
@@ -64,10 +85,11 @@ export function useGithubLogin() {
   return { loading, error };
 }
 
-export function useGitHubToken() {
-  const [params] = useSearchParams();
 
-  const [githubToken, setGithubToken] = useState<string | null>(null);
+
+export function useTwitchToken() {
+  const [params] = useSearchParams();
+  const [twitchToken, setTwitchToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [uuid, setUuid] = useState<string | null>(null);
@@ -105,7 +127,7 @@ export function useGitHubToken() {
       try {
         setLoading(true);
 
-        const res = await fetch("http://localhost:8080/oauth/github", {
+        const res = await fetch("http://localhost:8080/oauth/twitch", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ code, uuid }),
@@ -116,13 +138,13 @@ export function useGitHubToken() {
         const data = await res.json();
 
         if (data.token) {
-          setGithubToken(data.token);
-          localStorage.setItem("github_access_token", data.token);
+          setTwitchToken(data.token);
+          localStorage.setItem("twitch_access_token", data.token);
         } else {
           setError("No access token returned");
         }
       } catch (err: any) {
-        console.error("GitHub token error:", err);
+        console.error("Twitch token error:", err);
         setError(err.message || "Unexpected error");
       } finally {
         setLoading(false);
@@ -132,6 +154,5 @@ export function useGitHubToken() {
     fetchToken();
   }, [uuid, params]);
 
-  return { token:githubToken, loading, error };
+  return { token: twitchToken, loading, error };
 }
-
