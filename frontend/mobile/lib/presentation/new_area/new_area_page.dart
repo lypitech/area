@@ -14,7 +14,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class NewAreaPage extends ConsumerStatefulWidget {
+class NewAreaPage extends ConsumerWidget {
 
   const NewAreaPage({
     super.key

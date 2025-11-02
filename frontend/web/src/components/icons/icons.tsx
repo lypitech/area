@@ -12,13 +12,7 @@ import Logout from "./logout";
 import Admin from "./admin";
 import Lock from "./lock";
 import At from "./at";
-import Menu from "./menu";
 import Mail from "./mail";
-import Cross from "./cross";
-import YourSpace from "./yourSpace";
-import Settings from "./settings";
-import Plus from "./plus";
-import App from "./app";
 
 type IconName = string;
 
@@ -44,12 +38,6 @@ const iconComponents: { [name in IconName]: React.FC<{ className: string }> } =
     lock: Lock,
     at: At,
     mail: Mail,
-    menu: Menu,
-    cross: Cross,
-    yourSpace: YourSpace,
-    settings: Settings,
-    plus: Plus,
-    app: App,
     default: Home,
   };
 

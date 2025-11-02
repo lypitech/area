@@ -5,22 +5,45 @@ services:
       dockerfile: Dockerfile
     container_name: nestjs-backend
     ports:
-      - "8080:8080"
+      - '8080:8080'
     volumes:
       - .:/app
+      - /app/node_modules
     environment:
       - NODE_ENV=development
       - MONGO_URI=mongodb://mongo:27017/nestdb
-    command: npm run start:dev
+    entrypoint: ['/bin/sh', '-lc']
+    command: '/app/entrypoint.sh'
     depends_on:
-      - mongo
+      mongo:
+        condition: service_started
+      ngrok:
+        condition: service_healthy
+    env_file:
+      - .env.local
+
+  ngrok:
+    image: ngrok/ngrok:alpine
+    command:
+      - http
+      - nest-backend:8080
+    ports:
+      - '4040:4040'
+    env_file:
+      - .env.local
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4040/api/tunnels"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
 
   mongo:
     image: mongo:6
-    command: ["--quiet", "--logpath", "/data/db/mongo.log", "--logappend"]
+    command: ['--quiet', '--logpath', '/data/db/mongo.log', '--logappend']
     container_name: mongodb
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - mongo_data:/data/db
 
