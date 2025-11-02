@@ -4,6 +4,7 @@ class ATextField extends StatefulWidget {
 
   final String title;
   final String? hintText;
+  final String? errorText;
   final IconData? leadingIcon;
   final bool obscureToggle;
   final TextInputType keyboardType;
@@ -16,6 +17,7 @@ class ATextField extends StatefulWidget {
   const ATextField({
     required this.title,
     this.hintText,
+    this.errorText,
     this.leadingIcon,
     this.obscureToggle = false,
     this.keyboardType = TextInputType.text,
@@ -70,6 +72,7 @@ class _ATextFieldState extends State<ATextField> {
       decoration: InputDecoration(
         labelText: widget.title,
         hintText: widget.hintText,
+        errorText: widget.errorText,
         filled: true,
         fillColor: Colors.white,
         contentPadding: const EdgeInsets.all(20),

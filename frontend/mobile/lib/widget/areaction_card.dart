@@ -5,13 +5,14 @@ class AreactionCard extends StatelessWidget {
 
   final String title;
   final String subtitle;
-  // todo: icon
-  final VoidCallback onTap;
+  final Image? icon;
+  final VoidCallback? onTap;
 
   const AreactionCard({
     required this.title,
     required this.subtitle,
-    required this.onTap,
+    this.icon,
+    this.onTap,
     super.key
   });
 
@@ -31,7 +32,13 @@ class AreactionCard extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
             ),
-            child: Placeholder(), // TODO: Put platform icon
+            child: icon
+              ?? Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  shape: BoxShape.circle
+                ),
+              ),
           ),
           Expanded(
             child: Column(

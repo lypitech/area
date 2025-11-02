@@ -1,11 +1,17 @@
 import 'package:area/data/provider/area_modal_provider.dart';
+import 'package:area/data/provider/area_provider.dart';
+import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/main_page_layout.dart';
-import 'package:area/model/area_model.dart';
+import 'package:area/presentation/dialog/error_dialog.dart';
+import 'package:area/widget/a_text_field.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/areaction_card.dart';
+import 'package:area/widget/when_then_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class NewAreaPage extends ConsumerWidget {
@@ -15,110 +21,195 @@ class NewAreaPage extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NewAreaPage> createState() => _NewAreaPageState();
+
+}
+
+class _NewAreaPageState extends ConsumerState<NewAreaPage> {
+
+  final _titleController = TextEditingController();
+  bool _isCreating = false;
+
+  @override
+  void initState() {
+    _titleController.text = ref.read(areaModalProvider).title ?? '';
+    super.initState();
+  }
+
+  Future<void> _createArea() async {
+    final areaModal = ref.watch(areaModalProvider);
+    ref.read(areaModalProvider.notifier).setTitle(_titleController.text);
+
+    if (!areaModal.isComplete()) {
+      // fixme: tmp
+      showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: Text('Please fill everything up.'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('or consequences')
+              ]
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  context.pop();
+                },
+                child: Text('OK')
+              )
+            ],
+          );
+        }
+      );
+      return;
+    }
+
+    setState(() => _isCreating = true);
+
+    final authNotifierAsync = ref.watch(authNotifierProvider);
+
+    return authNotifierAsync.when(
+      data: (authNotifier) async {
+        final user = authNotifier.getUser();
+
+        if (user == null) {
+          return;
+        }
+
+        final res = await (await ref.read(areaNotifierProvider(user).future))
+          .createArea(area: areaModal);
+
+        setState(() => _isCreating = false);
+
+        if (res != null) {
+          if (context.mounted) {
+            ErrorDialog.show(
+              context: context,
+              error: 'For some reasons, your AREA could not be created.\n($res)'
+            );
+          }
+          return;
+        }
+
+        Fluttertoast.showToast(
+          msg: 'Successfully created AREA'
+        );
+
+        if (context.mounted) {
+          context.pop();
+        }
+      },
+      loading: () => null,
+      error: (err, stack) {
+        setState(() => _isCreating = false);
+        Fluttertoast.showToast(
+          msg: 'Failed to create AREA. Error: $err'
+        );
+        return null;
+      }
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final areaModal = ref.watch(areaModalProvider);
     final l10n = AppLocalizations.of(context)!;
 
-    return MainPageLayout(
-      title: l10n.new_area_title,
-      leading: AppbarButton(
-        icon: Icons.arrow_back_ios_rounded,
-        onTap: () {
-          context.pop();
+    final authNotifierAsync = ref.watch(authNotifierProvider);
+
+    return authNotifierAsync.when(
+      data: (authNotifier) {
+        final user = authNotifier.getUser();
+
+        if (user == null) {
+          context.go('/login');
+          return Container();
         }
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          if (!areaModal.isComplete()) {
-            // fixme: tmp
-            showDialog(
-              context: context,
-              builder: (_) {
-                return AlertDialog(
-                  title: Text('Please fill everything up.'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('or consequences')
-                    ]
-                  ),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () {
-                        context.pop();
-                      },
-                      child: Text('OK')
-                    )
-                  ],
+
+        return MainPageLayout(
+          title: l10n.new_area_title,
+          leading: AppbarButton(
+            icon: Icons.arrow_back_ios_rounded,
+            onTap: () {
+              context.pop();
+            }
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: _createArea,
+            label: Text(
+              l10n.create_area,
+              style: textTheme.titleLarge?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600
+              ),
+            ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          children: [
+            ATextField(
+              title: 'Title',
+              controller: _titleController,
+              onChange: (String? value) {
+                ref.read(areaModalProvider.notifier).setTitle(value);
+              },
+            ),
+            AreactionCard(
+                title: areaModal.trigger != null
+                  ? areaModal.trigger!.name
+                  : l10n.choose_trigger,
+                subtitle: areaModal.actionPlatform != null
+                  ? areaModal.actionPlatform!.name
+                  : l10n.choose_platform,
+                icon: areaModal.actionPlatform?.icon,
+                onTap: () {
+                  context.pushNamed(
+                    'choose_platform',
+                    pathParameters: {
+                      'mode': 'action'
+                    },
+                    extra: user
+                  );
+                }
+            ),
+            WhenThenDo(),
+            AreactionCard(
+              title: areaModal.action != null
+                ? areaModal.action!.name
+                : l10n.choose_action,
+              subtitle: areaModal.reactionPlatform != null
+                ? areaModal.reactionPlatform!.name
+                : l10n.choose_platform,
+              icon: areaModal.reactionPlatform?.icon,
+              onTap: () {
+                context.pushNamed(
+                  'choose_platform',
+                  pathParameters: {
+                    'mode': 'reaction'
+                  },
+                  extra: user
                 );
               }
-            );
-            return;
-          }
-
-          final area = AreaModel.fromModal(areaModal);
-
-          // todo: Create AREA
-        },
-        label: Text(
-          l10n.create_area,
-          style: textTheme.titleLarge?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w600
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      children: [
-        AreactionCard(
-          title: areaModal.trigger != null
-            ? areaModal.trigger!.name
-            : l10n.choose_trigger,
-          subtitle: areaModal.actionPlatform != null
-            ? '${areaModal.actionPlatform!.name} (${areaModal.actionPlatform!.uuid})'
-            : l10n.choose_platform,
-          onTap: () {
-            context.pushNamed('choose_platform', pathParameters: { 'mode': 'action' });
-          }
-        ),
-        Column(
-          spacing: 5,
-          children: [
-            Text(
-              l10n.new_area_when,
-              style: textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w500
-              ),
             ),
-            RotatedBox(
-              quarterTurns: 1,
-              child: Icon(
-                Icons.link,
-                size: 32,
-              ),
-            ),
-            Text(
-              l10n.new_area_then,
-              style: textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w500
-              ),
-            )
-          ],
-        ),
-        AreactionCard(
-          title: areaModal.action != null
-            ? areaModal.action!.name
-            : l10n.choose_action,
-          subtitle: areaModal.reactionPlatform != null
-            ? '${areaModal.reactionPlatform!.name} (${areaModal.reactionPlatform!.uuid})'
-            : l10n.choose_platform,
-          onTap: () {
-            context.pushNamed('choose_platform', pathParameters: { 'mode': 'reaction' });
-          }
-        ),
-      ]
+            if (_isCreating) ... {
+              Gap(10),
+              CircularProgressIndicator()
+            }
+          ]
+        );
+      },
+      error: (err, _) {
+        return Center(
+          child: Text('Error: $err')
+        );
+      },
+      loading: () {
+        return CircularProgressIndicator();
+      }
     );
   }
 

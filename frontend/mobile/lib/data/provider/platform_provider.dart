@@ -7,12 +7,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'hive_box_provider.dart';
 
-final platformApiProvider = Provider((ref) => PlatformApi(ref.read(dioProvider)));
+final platformApiProvider = FutureProvider((ref) async => PlatformApi(await ref.watch(dioProvider.future)));
 
 final platformLocalProvider = Provider((ref) => PlatformLocalDataSource(ref.read(hiveBoxProvider)));
 
-final platformRepositoryProvider = Provider((ref) => PlatformRepository(
-  api: ref.read(platformApiProvider),
+final platformRepositoryProvider = FutureProvider((ref) async => PlatformRepository(
+  api: await ref.watch(platformApiProvider.future),
   local: ref.read(platformLocalProvider),
 ));
 
@@ -22,7 +22,7 @@ class PlatformsNotifier extends AsyncNotifier<List<PlatformModel>> {
 
   @override
   Future<List<PlatformModel>> build() async {
-    _repo = ref.read(platformRepositoryProvider);
+    _repo = await ref.watch(platformRepositoryProvider.future);
     return _repo.getPlatforms();
   }
 

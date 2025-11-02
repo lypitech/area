@@ -34,6 +34,9 @@ class Theme {
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
         year2023: false
+      ),
+      cardTheme: CardThemeData(
+        elevation: 6,
       )
     );
   }

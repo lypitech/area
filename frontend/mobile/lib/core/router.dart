@@ -1,21 +1,28 @@
 import 'package:area/model/area_model.dart';
+import 'package:area/model/parameter_model.dart';
 import 'package:area/model/platform_model.dart';
+import 'package:area/model/user_model.dart';
 import 'package:area/presentation/auth/login_page.dart';
 import 'package:area/presentation/auth/registration/register_page.dart';
 import 'package:area/presentation/error_page.dart';
 import 'package:area/presentation/init_page.dart';
-import 'package:area/presentation/main/area_details_page.dart';
+import 'package:area/presentation/main/area/area_details_page.dart';
+import 'package:area/presentation/main/area/area_logs_page.dart';
+import 'package:area/presentation/main/settings/about_page.dart';
+import 'package:area/presentation/main/settings/oauth_page.dart';
+import 'package:area/presentation/main/settings/settings_page.dart';
 import 'package:area/presentation/main_page.dart';
 import 'package:area/presentation/new_area/choose_platform_page.dart';
 import 'package:area/presentation/new_area/choose_trigger_action_page.dart';
 import 'package:area/presentation/new_area/new_area_page.dart';
+import 'package:area/presentation/new_area/parameter_input_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/init',
-    errorBuilder: (_,__) => ErrorPage(),
+    errorBuilder: (_, __) => ErrorPage(),
     routes: [
       // ---------- INIT ----------
       GoRoute(
@@ -55,8 +62,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                     'reaction' => ChoosePlatformPageMode.actions,
                     _ => throw UnimplementedError(),
                   };
+                  final user = state.extra as UserModel;
 
-                  return ChoosePlatformPage(mode: mode);
+                  return ChoosePlatformPage(
+                    mode: mode,
+                    user: user
+                  );
                 },
                 routes: [
                   GoRoute(
@@ -74,6 +85,26 @@ final routerProvider = Provider<GoRouter>((ref) {
                         mode: mode,
                       );
                     },
+                    routes: [
+                      GoRoute(
+                        name: 'parameter_input',
+                        path: 'parameters',
+                        builder: (_, state) {
+                          final extra = state.extra as Map<String, dynamic>;
+                          final parameters = extra['parameters'] as List<ParameterModel>;
+                          final name = extra['name'] as String;
+                          final isAction = extra['isAction'] as bool;
+                          final requiresPayload = extra['requiresPayload'] as bool? ?? false;
+
+                          return ParameterInputPage(
+                            parameters: parameters,
+                            triggerOrActionName: name,
+                            isAction: isAction,
+                            requiresPayload: requiresPayload,
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -83,11 +114,52 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: 'area_details',
             path: 'area_details',
             builder: (_, state) {
+              final l = state.extra as List;
+
               return AreaDetailsPage(
-                area: state.extra as AreaModel
+                user: l[0] as UserModel,
+                area: l[1] as AreaModel
               );
             },
+            routes: [
+              GoRoute(
+                name: 'logs',
+                path: 'logs',
+                builder: (_, state) {
+                  return AreaLogsPage(
+                    area: state.extra as AreaModel
+                  );
+                }
+              )
+            ]
           ),
+          GoRoute(
+            name: 'settings',
+            path: 'settings',
+            builder: (_, state) {
+              return SettingsPage(
+                user: state.extra as UserModel
+              );
+            },
+            routes: [
+              GoRoute(
+                name: 'link',
+                path: 'link',
+                builder: (_, state) {
+                  return OauthPage(
+                    user: state.extra as UserModel
+                  );
+                }
+              ),
+              GoRoute(
+                name: 'about',
+                path: 'about',
+                builder: (_, __) {
+                  return AboutPage();
+                }
+              )
+            ]
+          )
         ],
       ),
     ],

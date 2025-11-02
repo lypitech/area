@@ -6,9 +6,11 @@ class AAppbar extends StatelessWidget implements PreferredSizeWidget {
   static const double size = 82;
 
   final AppbarButton? leading;
+  final List<Widget>? trailing;
 
   const AAppbar({
     this.leading,
+    this.trailing,
     super.key
   });
 
@@ -16,6 +18,7 @@ class AAppbar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       leading: leading,
+      actions: trailing,
       title: Padding(
         padding: const EdgeInsets.all(20),
         child: Container(

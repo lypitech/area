@@ -7,6 +7,7 @@ class MainPageLayout extends StatelessWidget {
   final String? title;
   final List<Widget> children;
   final AppbarButton? leading;
+  final List<Widget>? trailing;
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
 
@@ -14,6 +15,7 @@ class MainPageLayout extends StatelessWidget {
     this.title,
     required this.children,
     this.leading,
+    this.trailing,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
     super.key
@@ -26,8 +28,10 @@ class MainPageLayout extends StatelessWidget {
     return Scaffold(
       appBar: AAppbar(
         leading: leading,
+        trailing: trailing,
       ),
       body: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
