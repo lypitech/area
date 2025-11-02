@@ -1,6 +1,7 @@
 import 'package:area/core/constant/constants.dart';
 import 'package:area/core/constant/regexes.dart';
 import 'package:area/core/oauth/oauth_github.dart';
+import 'package:area/data/provider/area_provider.dart';
 import 'package:area/data/provider/auth_provider.dart';
 import 'package:area/data/provider/platforms_icons_provider.dart';
 import 'package:area/data/provider/register_modal_provider.dart';
@@ -49,6 +50,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         password: _passwordFieldController.text
       );
 
+      final authState = await ref.read(authNotifierProvider.future);
+      final notifier = await ref.read(areaNotifierProvider(authState.state.user!).future);
+      await notifier.syncAreas();
+
       if (context.mounted) {
         context.go('/');
       }
@@ -85,6 +90,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       final authNotifier = await ref.watch(authNotifierProvider.future);
 
       await authNotifier.oauthLogin('github', code);
+
+      final authState = await ref.read(authNotifierProvider.future);
+      final notifier = await ref.read(areaNotifierProvider(authState.state.user!).future);
+      await notifier.syncAreas();
     } catch (e) {
       ErrorDialog.show(
         context: context,
