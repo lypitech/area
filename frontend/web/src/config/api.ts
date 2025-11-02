@@ -6,6 +6,7 @@ export const API_ROUTES = {
     login: () => `${API_BASE_URL}/user/login`,
     refresh: () => `${API_BASE_URL}/user/refresh`,
     logout: () => `${API_BASE_URL}/user/logout`,
+    oauth: (service: string) => `${API_BASE_URL}/user/login/${service}`,
   },
 
   service: {

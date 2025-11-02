@@ -16,7 +16,11 @@ export default function NavBar() {
 
   // Redirect to login if not logged in
   useEffect(() => {
-    if (!isLoggedIn() && position.pathname !== "/register") {
+    if (
+      !isLoggedIn() &&
+      position.pathname !== "/register" &&
+      position.pathname !== "/callback"
+    ) {
       nav("/");
     }
   }, [nav]);

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getUser } from "../../userService";
+import { API_ROUTES } from "../../../config/api";
 
 export function githubLogin() {
   const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
@@ -24,6 +25,43 @@ export function githubLogin() {
 
   localStorage.setItem("oauth_redirect_after", window.location.pathname);
   window.location.href = githubAuthUrl;
+}
+
+export function useGithubLogin() {
+  const [params] = useSearchParams();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const code = params.get("code");
+    if (!code) return;
+
+    const fetchToken = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(API_ROUTES.auth.oauth('github'), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, front: true }),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.message || "OAuth login failed");
+        }
+        const data = await res.json();
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("refresh_token", data.refresh_token);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchToken();
+  }, [params]);
+
+  return { loading, error };
 }
 
 export function useGitHubToken() {

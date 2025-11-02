@@ -10,7 +10,7 @@ const features = [
   },
   {
     title: "View your Areas",
-    desc: "See all the areas you have created.",
+    desc: "See all the ares you have created.",
     destination: "/area",
   },
   {
