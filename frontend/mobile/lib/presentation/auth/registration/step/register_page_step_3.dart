@@ -1,12 +1,15 @@
 import 'package:area/core/constant/regexes.dart';
 import 'package:area/data/provider/register_modal_provider.dart';
+import 'package:area/data/provider/registration_provider.dart';
 import 'package:area/l10n/app_localizations.dart';
 import 'package:area/layout/register_page_layout.dart';
+import 'package:area/presentation/dialog/error_dialog.dart';
 import 'package:area/widget/a_text_field.dart';
 import 'package:area/widget/field_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterPageStep3 extends ConsumerStatefulWidget {
 
@@ -44,7 +47,6 @@ class _RegisterPage3State extends ConsumerState<RegisterPageStep3> {
 
   @override
   Widget build(BuildContext context) {
-    final registerModal = ref.watch(registerModalProvider);
     final l10n = AppLocalizations.of(context)!;
 
     return RegisterPageLayout(

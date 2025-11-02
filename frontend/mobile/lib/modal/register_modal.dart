@@ -7,5 +7,6 @@ class RegisterModal {
   // TODO: Profile picture
   int currentPage = 0;
   int totalPages = 5;
+  bool isCreatingAccount = false;
 
 }
