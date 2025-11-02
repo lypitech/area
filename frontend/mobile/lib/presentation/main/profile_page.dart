@@ -32,13 +32,6 @@ class ProfilePage extends ConsumerWidget {
           ),
           itemBuilder: (_) => [
             const PopupMenuItem(
-              value: 'edit_profile',
-              child: PopupMenuSingleItem(
-                text: 'Edit profile',
-                icon: Icons.edit_rounded
-              )
-            ),
-            const PopupMenuItem(
               value: 'settings',
               child: PopupMenuSingleItem(
                 text: 'Settings',
@@ -56,8 +49,6 @@ class ProfilePage extends ConsumerWidget {
           ],
           onSelected: (String? value) {
             switch (value) {
-              case 'edit_profile':
-                break;
               case 'settings':
                 context.push(
                   '/settings',
