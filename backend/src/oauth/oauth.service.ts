@@ -49,7 +49,7 @@ export class OauthService {
     username: string,
     profilePicture: string,
     oauthsLinks: UserOauthLink[],
-    token: Oauth
+    token: Oauth,
   ) {
     const existing: User | null = await this.userModel.findOne({
       email: email,
@@ -268,11 +268,12 @@ export class OauthService {
         expires_at: token.expires_at,
         meta: token.meta,
       });
+      console.log(userData);
       return this.createUser(
         userData.email,
         '',
         userData.name,
-        userData.log,
+        userData.login,
         await this.fetchImageAsBase64(userData.avatar_url),
         [{ service_name: created.service_name, token_uuid: created.uuid }],
         created,
