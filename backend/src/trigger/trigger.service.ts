@@ -53,7 +53,7 @@ export class TriggerService {
     const driver = this.getDriverFor(trigger);
     if (driver?.onRemove) await driver.onRemove(trigger);
     await this.triggerModel.deleteOne({ uuid });
-    return true;
+    return { message: 'Trigger Deleted successfully' };
   }
 
   async fire(uuid: string, payload?: Record<string, any>) {

@@ -289,11 +289,11 @@ export class OauthService {
     return user_uuid ? this.addToken(user_uuid, token) : token;
   }
 
-  async remove(uuid: string): Promise<boolean> {
+  async remove(uuid: string) {
     const deleted: DeleteResult = await this.oauthModel.deleteOne({ uuid });
     if (!deleted) {
       throw new NotFoundException(`No oauth with uuid ${uuid}.`);
     }
-    return deleted.deletedCount === 1;
+    return { message: 'Oauth deleted successfully.' };
   }
 }
