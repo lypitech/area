@@ -199,30 +199,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final access = loginResponse['access_token'] as String?;
       final refresh = loginResponse['refresh_token'] as String?;
 
-      print("access: $access, refresh: $refresh");
-      print("access: $access, refresh: $refresh");
-      print("access: $access, refresh: $refresh");
-      print("access: $access, refresh: $refresh");
-
       if (access == null || refresh == null) {
         throw Exception('Invalid login response (missing tokens)');
       }
 
-      print("before saving tokens");
       await service.saveTokens(accessToken: access, refreshToken: refresh);
 
-      print("after saving tokens");
-
-      print("before getting user");
       final user = await api.getUser(refreshToken: refresh);
-      print("after getting user");
-      print(user..remove('profilePicture'));
-
-      print(UserModel.fromJson(user));
-
-      print('after');
       state = AuthState.authenticated(user);
-      print("so here we're good ig");
     } catch (e) {
       state = AuthState.unauthenticated();
       rethrow;
