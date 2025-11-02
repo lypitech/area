@@ -10,6 +10,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.env.runtime
 
 # compiled output
 **/dist
@@ -32,6 +33,7 @@ lerna-debug.log*
 # Tests
 /coverage
 /.nyc_output
+request.http
 
 # IDEs and editors
 /.idea

@@ -1,32 +1,34 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "../components/Button";
+import logo from "../assets/logo.png";
+import Footer from "../components/Footer";
 
 const features = [
   {
     title: "Automate your tasks",
     desc: "Create workflows like Zapier/IFTTT.",
+    destination: "/create",
   },
-  { title: "Connect your apps", desc: "Slack, Discord, Gmail and more." },
   {
-    title: "Intuitive interface",
-    desc: "Drag-and-drop to build your scenario.",
+    title: "View your Areas",
+    desc: "See all the ares you have created.",
+    destination: "/area",
+  },
+  {
+    title: "Connect your apps",
+    desc: "Slack, Discord, Gmail and more.",
+    destination: "/apps",
   },
 ];
 
 export default function Home() {
   const nav = useNavigate();
 
-  const goToWorkflows = () => nav("/workflows");
-
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full flex flex-col justify-between">
       {/* Hero */}
-      <section className="text-white bg-black py-24">
+      <div className="text-white bg-black py-24">
         <div className="max-w-5xl mx-auto flex flex-col gap-6 px-4 text-center">
-          <img
-            src="/src/assets/logo.png"
-            className="rounded-xl shadow w-24 h-24 mx-auto"
-          />
+          <img src={logo} className="rounded-xl shadow w-24 h-24 mx-auto" />
           <div>
             <h1 className="text-4xl md:text-5xl font-extrabold">
               Welcome to AREA
@@ -34,18 +36,12 @@ export default function Home() {
             <p className="mt-4 text-lg md:text-xl opacity-90">
               Build and automate your own workflows.
             </p>
-            <Button
-              onClick={goToWorkflows}
-              className="mt-8 inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-semibold rounded-lg shadow hover:scale-105 transition"
-            >
-              Start
-            </Button>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Features */}
-      <section className="max-w-5xl mx-auto px-4 py-12">
+      <div className="max-w-5xl mx-auto px-4 py-12">
         <h2 className="text-2xl font-bold mb-6">Functionnalities</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((f) => (
@@ -53,11 +49,10 @@ export default function Home() {
               key={f.title}
               role="button"
               tabIndex={0}
-              onClick={goToWorkflows}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") goToWorkflows();
+              onClick={() => {
+                nav(f.destination);
               }}
-              className="p-6 bg-white rounded-2xl shadow-black shadow-md hover:shadow-xl hover:scale-105 cursor-pointer"
+              className="p-6 bg-white rounded-2xl shadow-black shadow-md transition-all duration-100 ease-in-out hover:shadow-xl hover:scale-105 cursor-pointer"
               aria-label={f.title}
             >
               <h3 className="text-lg font-semibold mb-2">{f.title}</h3>
@@ -65,7 +60,8 @@ export default function Home() {
             </article>
           ))}
         </div>
-      </section>
+      </div>
+      <Footer />
     </div>
   );
 }

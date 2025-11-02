@@ -17,7 +17,7 @@ publish_to: 'none'
 version: 0.0.1
 
 environment:
-  sdk: ^3.10.0-201.0.dev
+  sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -40,6 +40,12 @@ dependencies:
   flutter_riverpod: ^3.0.0
   flutter_launcher_icons: ^0.14.4
   fluttertoast: ^9.0.0
+  flutter_dotenv: ^6.0.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  flutter_web_auth_2: ^4.1.0
+  http: ^1.5.0
+  restart_app: ^1.3.2
 
 dev_dependencies:
   flutter_test:
@@ -52,7 +58,9 @@ flutter:
   generate: true
 
   assets:
+    - .env
     - assets/image/AREA_1024.png
+    - assets/image/default_profile_picture.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -128,3 +136,6 @@ flutter:
         - asset: assets/font/Kanit-BlackItalic.ttf
           weight: 900
           style: italic
+    - family: AreaIcons
+      fonts:
+        - asset: assets/icon/AreaIcons.ttf

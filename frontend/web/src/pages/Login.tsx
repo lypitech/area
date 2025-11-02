@@ -1,55 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
+import { login } from "../services/authService";
+import { isLoggedIn } from "../utils/auth";
+import logo from "../assets/logo.png";
+import Icon from "../components/icons/icons";
+import github from "../assets/logos/github_240.png";
+import twitch from "../assets/logos/twitch_96.png";
+import { githubLogin } from "../services/OAuth/OAuths/githubServices";
+import { twitchLogin } from "../services/OAuth/OAuths/twitchServices";
 
 export default function Login() {
-  // Check if user is already logged in
-  if (localStorage.getItem("token")) {
-    window.location.href = "/home";
-  }
-
   const navigate = useNavigate();
+  useEffect(() => {
+    if (isLoggedIn()) {
+      navigate("/home");
+    }
+  }, [navigate]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const payload = {
-      email,
-      password,
-    };
-
     try {
-      const response = await fetch("http://localhost:3000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const data = await login(email, password);
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Login success:", data);
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
 
-        localStorage.setItem("token", data.token);
-
-        navigate("/home");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Login failed");
-        console.error("Login failed:", errorData);
-      }
-    } catch (err) {
-      console.error("Network error:", err);
-      setError("Unable to connect to the server.");
+      navigate("/home");
+    } catch (err: any) {
+      setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -59,7 +48,7 @@ export default function Login() {
     <div className="relative flex items-center justify-center min-h-screen">
       {/* Logo */}
       <div className="absolute flex flex-row items-center gap-4 inset-4 w-12 h-12">
-        <img src="/src/assets/logo.png" className="rounded-xl shadow" />
+        <img src={logo} className="rounded-xl shadow" />
         <p className="text-3xl font-bold">Area</p>
       </div>
 
@@ -90,7 +79,7 @@ export default function Login() {
             />
           </div>
 
-          {/* Password */}
+          {/* Password with toggle */}
           <div>
             <label
               htmlFor="password"
@@ -98,31 +87,66 @@ export default function Login() {
             >
               Password
             </label>
-            <Input
-              name="password"
-              placeholder="Your password"
-              iconName="lock"
-              required
-              value={password}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setPassword(e.target.value)
-              }
-            />
+
+            <div className="relative">
+              <Input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                inputClass="w-full pr-12 rounded-lg border text-black focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-black"
+                placeholder="Your password"
+                aria-label="Password"
+              />
+
+              <Button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 bg-transparent shadow-none"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  /* eye-off icon */
+                  <Icon iconName="eyeOff" iconClass="w-6 h-6" />
+                ) : (
+                  /* eye icon */
+                  <Icon iconName="eye" iconClass="w-6 h-6" />
+                )}
+              </Button>
+            </div>
           </div>
 
           {/* Error message */}
-          {error && (
-            <p className="text-red-500 text-sm text-center">Login failed</p>
-          )}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           {/* Submit button */}
           <Button
+            type="submit"
             className="w-full bg-black text-white font-semibold hover:opacity-90 transition"
             disabled={loading}
           >
-            Sign in
+            {loading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
+
+        {/* OAuth buttons */}
+        <div className=" text-center text-md text-gray-600 mt-4 gap-3 pt-4 border-t border-gray-300">
+          Sign in with
+        </div>
+        <div className="flex flex-row justify-center gap-3 p-2">
+          <img
+            src={github}
+            className="w-12 h-12 rounded-xl bg-gray-100 p-1 hover:bg-gray-200 cursor-pointer"
+            onClick={githubLogin}
+          />
+
+          <img
+            src={twitch}
+            className="w-12 h-12 rounded-xl bg-gray-100 p-1 hover:bg-gray-200 cursor-pointer"
+            onClick={twitchLogin}
+          />
+        </div>
 
         <p className="text-center text-sm text-gray-600 mt-4">
           Don’t have an account?{" "}

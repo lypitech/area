@@ -1,0 +1,15 @@
+.git/
+.github/
+.idea/
+.vscode/
+*.iml
+.gradle/
+build/
+.dart_tool/
+.packages
+.pub/
+output/
+*.apk
+*.aab
+
+!.env

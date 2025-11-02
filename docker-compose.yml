@@ -1,0 +1,87 @@
+version: "3.9"
+
+services:
+  # --- Server (NestJS + MongoDB) ---
+  server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: server
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/nestdb
+    entrypoint: ["/bin/sh", "-lc"]
+    command: "/app/entrypoint.sh"
+    depends_on:
+      mongo:
+        condition: service_started
+      ngrok:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:6
+    container_name: mongodb
+    command: ["--quiet", "--logpath", "/data/db/mongo.log", "--logappend"]
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+  ngrok:
+    image: ngrok/ngrok:alpine
+    command:
+      - http
+      - server:8080
+    ports:
+      - "4040:4040"
+    env_file:
+      - ./backend/.env.local  # or wherever your ngrok token is
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4040/api/tunnels"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  # --- Mobile client (Flutter builder) ---
+  client_mobile:
+    build:
+      context: ./frontend/mobile
+      dockerfile: Dockerfile
+      args:
+        - DEFAULT_API_URL=http://localhost:8080
+        - DEFAULT_API_KEY=${API_KEY:-default_key}
+    container_name: flutter_apk_builder
+    volumes:
+      - shared_output:/output
+    network_mode: "host"
+
+  # --- Web client (React frontend) ---
+  client_web:
+    build:
+      context: ./frontend/web
+      dockerfile: Dockerfile
+    container_name: react_frontend
+    ports:
+      - "8081:8081"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      # shared volume where the Flutter APK will be copied
+      - shared_output:/app/public
+    depends_on:
+      - server
+      - client_mobile
+      
+    stdin_open: true
+    tty: true
+
+volumes:
+  mongo_data:
+  shared_output:

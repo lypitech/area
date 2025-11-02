@@ -1,24 +1,63 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UsePipes,
+  ValidationPipe,
+  Param,
+} from '@nestjs/common';
 import { LoginService } from './login.service';
+import { LoginDto } from './types/loginDto';
+import { CreateUserDto } from './types/createUserDto';
+import { RefreshTokenDto } from './types/tokenDto';
+import { GithubOauthCreationDto } from '../oauth/types/githubOauthCreationDto';
+import { OauthConnectionDto } from '../oauth/types/oauthConnectionDto';
 
-@Controller('login')
+@Controller('user')
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
   @Post('register')
-  register(
-    @Body('email') email: string,
-    @Body('password') password: string,
-    @Body('name') name: string,
-  ) {
-    return this.loginService.register(email, password, name);
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  register(@Body() userData: CreateUserDto) {
+    return this.loginService.register(
+      userData.email,
+      userData.password,
+      userData.nickname,
+      userData.username,
+      userData.profilePicture ?? '',
+    );
   }
 
-  @Post()
-  async login(
-    @Body('email') email: string,
-    @Body('password') password: string,
+  @Post('register/:service')
+  registerOauth(
+    @Body() data: OauthConnectionDto,
+    @Param('service') service: string,
   ) {
-    return this.loginService.login(email, password);
+    return this.loginService.registerWith(data.code, data.front, service);
+  }
+
+  @Post('login/:service')
+  loginOauth(
+    @Body() data: OauthConnectionDto,
+    @Param('service') service: string,
+  ) {
+    return this.loginService.loginWith(data.code, data.front, service);
+  }
+  @Post('login')
+  @UsePipes(new ValidationPipe())
+  async login(@Body() userData: LoginDto) {
+    return this.loginService.login(userData.email, userData.password);
+  }
+
+  @Post('refresh')
+  @UsePipes(new ValidationPipe())
+  async refresh(@Body() data: RefreshTokenDto) {
+    return this.loginService.refreshToken(data.refresh_token);
+  }
+
+  @Post('logout')
+  async logout(@Body('uuid') uuid: string) {
+    return this.loginService.logout(uuid);
   }
 }

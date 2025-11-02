@@ -1,89 +1,108 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import Input from "../components/Input";
 import { useNavigate } from "react-router-dom";
+import { register } from "../services/authService";
+import { isLoggedIn } from "../utils/auth";
+import logo from "../assets/logo.png";
+import Icon from "../components/icons/icons";
+import { fileToBase64 } from "../utils/fileToBase64";
 
 export default function Register() {
-  // Check if user is already logged in
-  if (localStorage.getItem("token")) {
-    window.location.href = "/home";
-  }
-
   const navigate = useNavigate();
-  const [preview, setPreview] = useState<string | null>(null);
+  const [profile_picture, setProfile_picture] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [password, setPassword] = useState("");
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (isLoggedIn()) navigate("/home");
+  }, [navigate]);
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    const base64 = await fileToBase64(file);
+    setProfile_picture(base64);
   };
-  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
 
-    // Récupération des champs depuis le formulaire
+  // Updated: special char = any char that is NOT a letter or digit
+  const validatePassword = (pwd: string) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+    return regex.test(pwd);
+  };
+
+  const getPasswordErrors = (pwd: string) => {
+    const errors: string[] = [];
+    if (pwd.length < 8) errors.push("at least 8 characters");
+    if (!/[A-Z]/.test(pwd)) errors.push("one uppercase letter");
+    if (!/[a-z]/.test(pwd)) errors.push("one lowercase letter");
+    if (!/\d/.test(pwd)) errors.push("one number");
+    if (!/[^A-Za-z0-9]/.test(pwd))
+      errors.push("one special character (non alphanumeric, e.g. _ or !)");
+    return errors;
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
     const formData = new FormData(e.currentTarget);
-    const payload = {
-      email: formData.get("email"),
-      password: formData.get("password"),
-      name: formData.get("nickname"), // ou "username" selon ton back
-    };
+    const email = formData.get("email") as string;
+    const pwd = formData.get("password") as string;
+    const confirmPassword = formData.get("confirm-password") as string;
+    const nickname = formData.get("nickname") as string;
+    const username = formData.get("username") as string;
+
+    if (pwd !== confirmPassword) {
+      setError("Passwords do not match.");
+      setLoading(false);
+      return;
+    }
+
+    const passwordErrors = getPasswordErrors(pwd);
+    if (passwordErrors.length > 0) {
+      setError(`Password must include: ${passwordErrors.join(", ")}.`);
+      setLoading(false);
+      return;
+    }
 
     try {
-      const response = await fetch("http://localhost:3000/login/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Register success:", data);
-        // Redirige vers le login
-        navigate("/login");
-      } else {
-        const error = await response.json();
-        console.error("Register failed:", error);
-        alert(error.message || "Registration failed");
-      }
-    } catch (err) {
-      console.error("Network error:", err);
-      alert("Unable to connect to the server.");
+      await register(email, pwd, nickname, username, profile_picture);
+      navigate("/login");
+    } catch {
+      setError("Registration failed.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="relative flex items-center justify-center min-h-screen">
-      {/* Header logo + title */}
       <div className="absolute flex flex-row items-center gap-4 inset-4 w-12 h-12">
-        <img src="/src/assets/logo.png" className="rounded-xl shadow" />
+        <img src={logo} className="rounded-xl shadow" />
         <p className="text-3xl font-bold">Area</p>
       </div>
 
-      {/* Card */}
       <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8">
         <h1 className="flex flex-col justify-center items-center gap-4 text-3xl font-bold text-center text-black mb-6">
-          <p>Register your account</p>
+          Register your account
         </h1>
 
-        <form className="space-y-4" onSubmit={handleRegister}>
-          {/* Profile picture */}
+        <form className="space-y-4" onSubmit={onSubmit}>
           <div className="flex flex-col items-center">
             <label
               htmlFor="profile-picture"
               className="relative cursor-pointer"
             >
               <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300 shadow-sm flex items-center justify-center bg-gray-100">
-                {preview ? (
+                {profile_picture ? (
                   <img
-                    src={preview}
-                    alt="Profile preview"
+                    src={profile_picture}
+                    alt="profile_picture"
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -91,6 +110,7 @@ export default function Register() {
                 )}
               </div>
               <input
+                name="profile-picture"
                 type="file"
                 id="profile-picture"
                 accept="image/*"
@@ -103,7 +123,6 @@ export default function Register() {
             </p>
           </div>
 
-          {/* Nickname */}
           <div>
             <label
               htmlFor="nickname"
@@ -111,10 +130,14 @@ export default function Register() {
             >
               Nickname
             </label>
-            <Input placeholder="John Doe" iconName="login" required />
+            <Input
+              name="nickname"
+              placeholder="John Doe"
+              iconName="login"
+              required
+            />
           </div>
 
-          {/* Username */}
           <div>
             <label
               htmlFor="username"
@@ -122,13 +145,17 @@ export default function Register() {
             >
               Username <span className="text-red-500">*</span>
             </label>
-            <Input placeholder="username123" iconName="at" required />
+            <Input
+              name="username"
+              placeholder="username123"
+              iconName="at"
+              required
+            />
             <p className="text-xs text-gray-500 mt-1">
               Only lowercase letters, digits and underscores are allowed.
             </p>
           </div>
 
-          {/* Email */}
           <div>
             <label
               htmlFor="email"
@@ -136,10 +163,15 @@ export default function Register() {
             >
               Email
             </label>
-            <Input placeholder="you@example.com" iconName="mail" required />
+            <Input
+              name="email"
+              placeholder="you@example.com"
+              iconName="mail"
+              required
+              type="email"
+            />
           </div>
 
-          {/* Password */}
           <div>
             <label
               htmlFor="password"
@@ -147,10 +179,39 @@ export default function Register() {
             >
               Password
             </label>
-            <Input placeholder="Your password" iconName="lock" required />
+            <div className="relative">
+              <Input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Your password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                inputClass="w-full pr-12 rounded-lg border text-black focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-black"
+              />
+              <Button
+                type="button"
+                onClick={() => setShowPassword((s) => !s)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 shadow-none"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <Icon iconName="eyeOff" iconClass="w-6 h-6" />
+                ) : (
+                  <Icon iconName="eye" iconClass="w-6 h-6" />
+                )}
+              </Button>
+            </div>
+
+            {!validatePassword(password) && password.length > 0 && (
+              <ul className="text-xs text-red-500 mt-2 list-disc list-inside">
+                {getPasswordErrors(password).map((err) => (
+                  <li key={err}>{err}</li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          {/* Confirm Password */}
           <div>
             <label
               htmlFor="confirm-password"
@@ -158,17 +219,40 @@ export default function Register() {
             >
               Confirm Password
             </label>
-            <Input
-              placeholder="Confirm your password"
-              iconName="lock"
-              required
-            />
+            <div className="relative">
+              <Input
+                name="confirm-password"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm your password"
+                required
+                inputClass="w-full pr-12 rounded-lg border text-black focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-black"
+              />
+              <Button
+                type="button"
+                onClick={() => setShowConfirmPassword((s) => !s)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 shadow-none"
+                aria-label={
+                  showConfirmPassword ? "Hide password" : "Show password"
+                }
+              >
+                {showConfirmPassword ? (
+                  <Icon iconName="eyeOff" iconClass="w-6 h-6" />
+                ) : (
+                  <Icon iconName="eye" iconClass="w-6 h-6" />
+                )}
+              </Button>
+            </div>
           </div>
 
-          {/* Submit button */}
-          <Button className="w-full bg-black text-white font-semibold hover:opacity-90 transition">
-            Sign Up
+          <Button
+            type="submit"
+            className="w-full bg-black text-white font-semibold hover:opacity-90 transition"
+            disabled={loading}
+          >
+            {loading ? "Signing up..." : "Sign Up"}
           </Button>
+
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         </form>
 
         <p className="text-center text-sm text-gray-600 mt-4">

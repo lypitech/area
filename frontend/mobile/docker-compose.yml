@@ -1,0 +1,12 @@
+services:
+  flutter-build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - DEFAULT_API_URL=http://10.56.82.29
+        - DEFAULT_API_KEY=${API_KEY:-default_key}
+    volumes:
+      - ./output:/output
+    container_name: flutter_apk_builder
+    network_mode: "host"
