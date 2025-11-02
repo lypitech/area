@@ -20,6 +20,17 @@ class TriggerModel {
   factory TriggerModel.fromJson(JsonData json) {
     final requiredParams = (json['parameters'] ?? []) as List<dynamic>;
 
+    String triggerType = json['trigger_type'] ?? '';
+
+    if (triggerType.isEmpty) {
+      final List rawTriggerTypes = json['trigger_types'] ?? [];
+      if (rawTriggerTypes.isEmpty) {
+        triggerType = 'webhook';
+      }
+      triggerType = rawTriggerTypes[0];
+      triggerType = triggerType.toLowerCase();
+    }
+
     return TriggerModel(
       uuid: json['uuid'] as String,
       name: json['name'] as String,
@@ -27,7 +38,7 @@ class TriggerModel {
       requiredParams: requiredParams
         .map((e) => ParameterModel.fromJson(JsonData.from(e)))
         .toList(),
-      type: json['trigger_type'] ?? 'webhook'
+      type: triggerType
     );
   }
 
