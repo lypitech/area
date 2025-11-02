@@ -11,14 +11,15 @@ import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { UserDto } from './types/userDto';
 import { Oauth } from 'src/oauth/schema/Oauth.schema';
-import { JwtService } from '@nestjs/jwt';
+import { AreaService } from 'src/area/area.service';
+import { Area } from '../area/schemas/area.schema';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Oauth.name) private oauthModel: Model<Oauth>,
-    private readonly jwtService: JwtService,
+    private readonly areaService: AreaService,
   ) {}
 
   async findAll(): Promise<UserDto[]> {
@@ -30,33 +31,6 @@ export class UserService {
       }),
       { excludeExtraneousValues: true },
     );
-  }
-
-  async login(oauth_uuid: string) {
-    const user: User | null = await this.userModel.findOne({
-      'oauth_uuids.token_uuid': oauth_uuid,
-    });
-    if (!user) throw new BadRequestException('No user found.');
-    const payload = { sub: user.uuid, email: user.email };
-    const accessToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_ACCESS_SECRET,
-      expiresIn: process.env.JWT_ACCESS_EXPIRES || '15m',
-    });
-
-    const refreshToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_REFRESH_SECRET,
-      expiresIn: process.env.JWT_REFRESH_EXPIRES || '7d',
-    });
-
-    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
-    await this.update(user.uuid, {
-      refreshToken: hashedRefreshToken,
-    });
-    return {
-      uuid: user.uuid,
-      access_token: accessToken,
-      refresh_token: refreshToken,
-    };
   }
 
   async findByUUID(uuid: string): Promise<UserDto> {
@@ -92,22 +66,6 @@ export class UserService {
     throw new NotFoundException('No user found with this refresh token');
   }
 
-  async addOauthToken(
-    user_uuid: string,
-    token_uuid: string,
-    service_name: string,
-  ): Promise<User> {
-    const updated: User | null = await this.userModel.findOneAndUpdate(
-      { uuid: user_uuid },
-      { $push: { oauth_uuids: { service_name, token_uuid } } },
-      { new: true },
-    );
-    if (!updated) {
-      throw new NotFoundException('Invalid user uuid');
-    }
-    return updated;
-  }
-
   async create(
     email: string,
     password: string,
@@ -133,7 +91,7 @@ export class UserService {
 
   async removeOauthTokenByUUID(oauth_token_uuid: string): Promise<User> {
     const updated: User | null = await this.userModel.findOneAndUpdate(
-      { 'oauth_uuids.tokens': oauth_token_uuid },
+      { 'oauth_uuids.token_uuid': oauth_token_uuid },
       { $pull: { oauth_uuids: { oauth_token_uuid } } },
     );
     await this.oauthModel.findOneAndDelete({ uuid: oauth_token_uuid });
@@ -141,6 +99,22 @@ export class UserService {
       throw new NotFoundException(`No user with oauth ${oauth_token_uuid}`);
     }
     return updated;
+  }
+
+  async removeOauthTokenByService(
+    uuid: string,
+    service: string,
+  ): Promise<User> {
+    const user: UserDto = await this.findByUUID(uuid);
+    if (!user) {
+      throw new NotFoundException(`No user with uuid ${uuid} found.`);
+    }
+    for (const oauth of user.oauth_uuids) {
+      if (oauth.service_name === service) {
+        return this.removeOauthTokenByUUID(oauth.token_uuid);
+      }
+    }
+    throw new BadRequestException(`User is not connected to ${service}.`);
   }
 
   async update(uuid: string, updateData: Partial<User>): Promise<User> {
@@ -155,12 +129,23 @@ export class UserService {
     return updatedUser;
   }
 
-  async remove(uuid: string): Promise<boolean> {
+  async remove(uuid: string) {
+    const user = await this.userModel.findOne({ uuid: uuid });
+    if (!user) {
+      throw new NotFoundException(`No user with uuid ${uuid}`);
+    }
+    for (const oauth of user.oauth_uuids) {
+      await this.removeOauthTokenByUUID(oauth.token_uuid);
+    }
+    const areas: Area[] = await this.areaService.findAll(uuid);
+    for (const area of areas) {
+      await this.areaService.remove(area.uuid);
+    }
     const deleted: DeleteResult = await this.userModel.deleteOne({ uuid });
     if (!deleted) {
       throw new NotFoundException(`No oauth with uuid ${uuid}.`);
     }
-    return deleted.deletedCount === 1;
+    return { message: 'User deleted successfully' };
   }
 
   async getUserTokenByService(

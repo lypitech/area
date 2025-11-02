@@ -11,17 +11,90 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { InjectModel } from '@nestjs/mongoose';
 import { OauthDto } from './types/oauthDto';
+import { User, UserOauthLink } from '../user/schemas/user.schema';
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 import { UserDto } from '../user/types/userDto';
-import { User } from '../user/schemas/user.schema';
-import { rethrow } from '@nestjs/core/helpers/rethrow';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class OauthService {
   constructor(
-    private readonly userService: UserService,
     private readonly httpService: HttpService,
+    private readonly jwtService: JwtService,
+    @InjectModel(User.name) private readonly userModel: Model<User>,
     @InjectModel(Oauth.name) private readonly oauthModel: Model<Oauth>,
   ) {}
+
+  private async addToUser(
+    user_uuid: string,
+    token_uuid: string,
+    service_name: string,
+  ): Promise<User> {
+    const updated: User | null = await this.userModel.findOneAndUpdate(
+      { uuid: user_uuid },
+      { $push: { oauth_uuids: { service_name, token_uuid } } },
+      { new: true },
+    );
+    if (!updated) {
+      throw new NotFoundException('Invalid user uuid');
+    }
+    return updated;
+  }
+
+  private async createUser(
+    email: string,
+    password: string,
+    nickname: string,
+    username: string,
+    profilePicture: string,
+    oauthsLinks: UserOauthLink[],
+  ) {
+    const created = await new this.userModel({
+      email: email,
+      password: await bcrypt.hash(password, 10),
+      nickname: nickname,
+      username: username,
+      profilePicture: profilePicture,
+      oauth_uuids: oauthsLinks,
+    }).save();
+    return plainToInstance(UserDto, created.toObject(), {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  private async createJwt(oauth_uuid: string) {
+    const user: User | null = await this.userModel.findOne({
+      'oauth_uuids.token_uuid': oauth_uuid,
+    });
+    if (!user) throw new BadRequestException('No user found.');
+    const payload = { sub: user.uuid, email: user.email };
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_ACCESS_SECRET,
+      expiresIn: process.env.JWT_ACCESS_EXPIRES || '15m',
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: process.env.JWT_REFRESH_EXPIRES || '7d',
+    });
+
+    await this.userModel.findOneAndUpdate(
+      { uuid: user.uuid },
+      { refreshToken: await bcrypt.hash(refreshToken, 10) },
+    );
+    return {
+      uuid: user.uuid,
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
+  }
+
+  private async getTokensFromUser(uuid: string) {
+    const user: User | null = await this.userModel.findOne({ uuid });
+    if (!user) throw new BadRequestException('No user found.');
+    return user.oauth_uuids;
+  }
 
   async findByUUID(uuid: string): Promise<Oauth> {
     const oauth: Oauth | null = await this.oauthModel.findOne({ uuid: uuid });
@@ -50,17 +123,13 @@ export class OauthService {
       expires_at: data.expires_at,
       meta: data.meta,
     });
-    await this.userService.addOauthToken(
-      user_uuid,
-      token.uuid,
-      data.service_name,
-    );
+    await this.addToUser(user_uuid, token.uuid, data.service_name);
     return token;
   }
 
   private async updateToken(user_uuid: string, data: OauthDto) {
-    const user = await this.userService.findByUUID(user_uuid);
-    for (const oauth of user.oauth_uuids) {
+    const tokens = await this.getTokensFromUser(user_uuid);
+    for (const oauth of tokens) {
       if (oauth.service_name === data.service_name) {
         this.oauthModel.findOneAndUpdate({ uuid: oauth[1] }, { data });
       }
@@ -76,12 +145,10 @@ export class OauthService {
     user_uuid: string,
     service_name: string,
   ): Promise<Oauth | null> {
-    const user = await this.userService.findByUUID(user_uuid);
+    const tokens = await this.getTokensFromUser(user_uuid);
 
     const wanted = service_name.toLowerCase();
-    const link = user.oauth_uuids.find(
-      (o) => o.service_name.toLowerCase() === wanted,
-    );
+    const link = tokens.find((o) => o.service_name.toLowerCase() === wanted);
     if (!link) return null;
 
     return this.oauthModel.findOne({ uuid: link.token_uuid });
@@ -113,12 +180,7 @@ export class OauthService {
       );
       if (!oauth)
         throw new BadRequestException('User has never connected with Github');
-      const login = await this.userService.login(oauth.uuid);
-      if (login) {
-        await this.updateToken(login.uuid, <OauthDto>token);
-        return login;
-      }
-      throw new BadRequestException('Wrong credentials.');
+      return this.createJwt(oauth.uuid);
     } catch (e: any) {
       throw new BadRequestException(`Error: ${e.message}`);
     }
@@ -133,16 +195,23 @@ export class OauthService {
         userData.id,
       );
       if (oauth) throw new BadRequestException('User has already registered');
-      const user = await this.userService.create(
+      token.meta = { github_id: userData.id, ...token.meta };
+      const created: Oauth = await this.oauthModel.create({
+        service_name: token.service_name,
+        token: token.token,
+        refresh_token: token.refresh_token,
+        token_type: token.token_type,
+        expires_at: token.expires_at,
+        meta: token.meta,
+      });
+      return this.createUser(
         userData.email,
         '',
         userData.name,
         userData.log,
         await this.fetchImageAsBase64(userData.avatar_url),
+        [{ service_name: created.service_name, token_uuid: created.uuid }],
       );
-      token.meta = { github_id: userData.id };
-      await this.addToken(user.uuid, <OauthDto>token);
-      return this.userService.findByUUID(user.uuid);
     } catch (e: any) {
       throw new BadRequestException(`Error: ${e.message}`);
     }
@@ -194,16 +263,11 @@ export class OauthService {
       const token = await this.getTwitchToken(code);
       const oauth: Oauth | null = await this.findByMetaMember(
         'twitch_user_id',
-        token.meta.twitch_user_id as string,
+        token.meta?.twitch_user_id as string,
       );
       if (!oauth)
         throw new BadRequestException('User has never connected with twitch');
-      const login = await this.userService.login(oauth.uuid);
-      if (login) {
-        await this.updateToken(login.uuid, <OauthDto>token);
-        return login;
-      }
-      throw new BadRequestException('Wrong credentials.');
+      return this.createJwt(oauth.uuid);
     } catch (e: any) {
       throw new BadRequestException(`Error: ${e.message}`);
     }
@@ -214,18 +278,25 @@ export class OauthService {
       const token = await this.getTwitchToken(code);
       const oauth: Oauth | null = await this.findByMetaMember(
         'twitch_user_id',
-        token.meta.twitch_user_id as string,
+        token.meta?.twitch_user_id as string,
       );
       if (oauth) throw new BadRequestException('User has already registered');
-      const user = await this.userService.create(
-        token.meta.twitch_email as string,
+      const created: Oauth = await this.oauthModel.create({
+        service_name: token.service_name,
+        token: token.token,
+        refresh_token: token.refresh_token,
+        token_type: token.token_type,
+        expires_at: token.expires_at,
+        meta: token.meta,
+      });
+      return this.createUser(
+        token.meta?.twitch_email as string,
         '',
-        token.meta.twitch_display_name as string,
-        token.meta.twitch_login as string,
-        await this.fetchImageAsBase64(token.meta.profile_image_url as string),
+        token.meta?.twitch_display_name as string,
+        token.meta?.twitch_login as string,
+        await this.fetchImageAsBase64(token.meta?.profile_image_url as string),
+        [{ service_name: created.service_name, token_uuid: created.uuid }],
       );
-      await this.addToken(user.uuid, <OauthDto>token);
-      return this.userService.findByUUID(user.uuid);
     } catch (e: any) {
       throw new BadRequestException(`Error: ${e.message}`);
     }
@@ -271,7 +342,7 @@ export class OauthService {
     if (!twitchUser) {
       throw new Error('Twitch OAuth failed: could not fetch user info');
     }
-    const token = {
+    const token: OauthDto = {
       service_name: 'twitch',
       token: accessToken,
       refresh_token: tokenData.refreshToken,

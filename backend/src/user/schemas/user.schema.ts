@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { v4 as uuid_v4 } from 'uuid';
 
-type UserOauthLink = { service_name: string; token_uuid: string };
+export type UserOauthLink = { service_name: string; token_uuid: string };
 
 @Schema()
 export class User extends Document {
