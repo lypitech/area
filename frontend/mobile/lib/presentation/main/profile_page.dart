@@ -77,14 +77,15 @@ class ProfilePage extends ConsumerWidget {
       children: [
         Column(
           children: [
-            Container(
-              height: 128,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  fit: BoxFit.contain,
-                  image: AssetImage('assets/image/default_profile_picture.jpg')
-                ),
+            ClipOval(
+              child: SizedBox(
+                height: 128,
+                width: 128,
+                child: user.profilePictureBase64
+                  ?? Image.asset(
+                    'assets/image/default_profile_picture.jpg',
+                    fit: BoxFit.cover
+                  ),
               ),
             ),
             Gap(10),
@@ -112,8 +113,9 @@ class ProfilePage extends ConsumerWidget {
         ),
         Text(
           'Account UUID:\n${user.uuid}',
-          style: textTheme.bodyMedium?.copyWith(
-            color: Colors.grey.shade400
+          style: textTheme.bodySmall?.copyWith(
+            color: Colors.grey.shade400,
+            fontWeight: FontWeight.w300
           ),
           textAlign: TextAlign.center,
         )
