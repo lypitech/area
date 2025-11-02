@@ -1,6 +1,8 @@
 import 'package:area/core/constant/constants.dart';
 import 'package:area/core/constant/regexes.dart';
+import 'package:area/core/oauth/oauth_github.dart';
 import 'package:area/data/provider/auth_provider.dart';
+import 'package:area/data/provider/platforms_icons_provider.dart';
 import 'package:area/data/provider/register_modal_provider.dart';
 import 'package:area/modal/register_modal.dart';
 import 'package:area/presentation/dialog/app_settings_dialog.dart';
@@ -14,18 +16,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginPage extends ConsumerWidget {
+class LoginPage extends ConsumerStatefulWidget {
 
+  const LoginPage({
+    super.key
+  });
+
+  @override
+  ConsumerState<LoginPage> createState() => _LoginPageState();
+
+}
+
+class _LoginPageState extends ConsumerState<LoginPage> {
+
+  bool _isLoading = false;
   final _authFormKey = GlobalKey<FormState>();
 
   final _emailFieldController = TextEditingController();
   final _passwordFieldController = TextEditingController();
 
-  LoginPage({
-    super.key
-  });
-
-  void _login(BuildContext context, WidgetRef ref) async {
+  Future<void> _login(BuildContext context, WidgetRef ref) async {
     if (_authFormKey.currentState != null &&
         !_authFormKey.currentState!.validate()) {
       return;
@@ -53,10 +63,15 @@ class LoginPage extends ConsumerWidget {
     }
   }
 
+  Future<void> _githubLogin(BuildContext context, WidgetRef ref) async {
+    // ...
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
+    final imageMap = ref.watch(platformsImageProvider);
 
     return Form(
       key: _authFormKey,
@@ -112,29 +127,46 @@ class LoginPage extends ConsumerWidget {
                             return null;
                           },
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                // ...
-                              },
-                              child: Text(
-                                l10n.forgot_password,
-                                textAlign: TextAlign.right,
-                                style: textTheme.bodyMedium?.copyWith(
-                                  decoration: TextDecoration.underline
-                                ),
-                              )
-                            )
-                          ],
-                        ),
+                        /// Keeping this just in case, but this is gonna gonna be done.
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.end,
+                        //   children: [
+                        //     TextButton(
+                        //       onPressed: () {
+                        //         // ...
+                        //       },
+                        //       child: Text(
+                        //         l10n.forgot_password,
+                        //         textAlign: TextAlign.right,
+                        //         style: textTheme.bodyMedium?.copyWith(
+                        //           decoration: TextDecoration.underline
+                        //         ),
+                        //       )
+                        //     )
+                        //   ],
+                        // ),
                         Gap(40),
                         ClickableFrame(
-                          onTap: () => _login(context, ref),
+                          onTap: () async {
+                            setState(() {
+                              _isLoading = true;
+                            });
+
+                            await _login(context, ref);
+
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          },
                           child: Padding(
                             padding: const EdgeInsets.all(20),
-                            child: Icon(Icons.arrow_forward_ios_rounded),
+                            child: Container(
+                              width: 24,
+                              height: 24,
+                              child: _isLoading
+                                ? CircularProgressIndicator()
+                                : Icon(Icons.arrow_forward_ios_rounded),
+                            ),
                           ),
                         ),
                         Gap(40),
@@ -164,22 +196,37 @@ class LoginPage extends ConsumerWidget {
                           spacing: 20,
                           children: [
                             ClickableFrame(
-                              child: Placeholder(
-                                fallbackWidth: 56,
-                                fallbackHeight: 56,
-                              ),
-                            ),
-                            ClickableFrame(
-                              child: Placeholder(
-                                fallbackWidth: 56,
-                                fallbackHeight: 56,
-                              ),
-                            ),
-                            ClickableFrame(
-                              child: Placeholder(
-                                fallbackWidth: 56,
-                                fallbackHeight: 56,
-                              ),
+                              padding: const EdgeInsets.all(10),
+                              onTap: () async {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+
+                                await _githubLogin(context, ref);
+
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              },
+                              child: Row(
+                                spacing: 5,
+                                children: [
+                                  Container(
+                                    width: 28,
+                                    height: 28,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle
+                                    ),
+                                    child: imageMap['github'] ?? Container(color: Colors.grey),
+                                  ),
+                                  Text(
+                                    'Login with Github',
+                                    style: textTheme.titleMedium?.copyWith(
+                                      height: 1.1
+                                    ),
+                                  )
+                                ],
+                              )
                             ),
                           ],
                         ),
@@ -190,20 +237,20 @@ class LoginPage extends ConsumerWidget {
                             Text(
                               l10n.register_prompt,
                               style: textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w300
+                                  fontWeight: FontWeight.w300
                               ),
                             ),
                             TextButton(
-                              onPressed: () {
-                                ref.read(registerModalProvider.notifier).update((_) {
-                                  return RegisterModal();
-                                });
-                                context.push('/register');
-                              },
-                              child: Text(
-                                l10n.sign_up,
-                                style: textTheme.titleSmall,
-                              )
+                                onPressed: () {
+                                  ref.read(registerModalProvider.notifier).update((_) {
+                                    return RegisterModal();
+                                  });
+                                  context.push('/register');
+                                },
+                                child: Text(
+                                  l10n.sign_up,
+                                  style: textTheme.titleSmall,
+                                )
                             )
                           ],
                         )
