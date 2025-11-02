@@ -21,7 +21,8 @@ class ErrorDialog extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return ErrorDialog(
-          error: error
+          error: error,
+          onConfirm: onConfirm,
         );
       }
     );
