@@ -13,13 +13,25 @@ export default function AppDetails() {
   return (
     <div className="p-8 bg-accent min-h-screen ">
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-6">
-        <div className="flex items-center gap-4 pb-6">
-          <img
-            src={`data:image/png;base64,${appData.icon}`}
-            alt={appData.name}
-            className="w-16 h-16"
-          />
-          <h1 className="text-3xl font-bold">{appData.name}</h1>
+        <div className="flex-row flex justify-between items-center gap-4 pb-6">
+          <div className="flex flex-row gap-4 items-center">
+            <img
+              src={`data:image/png;base64,${appData.icon}`}
+              alt={appData.name}
+              className="w-16 h-16"
+            />
+            <h1 className="text-3xl font-bold">{appData.name}</h1>
+          </div>
+          {appData.name == "Discord" && (
+            <Button
+              className="mb-6 w-fit bg-black text-white font-semibold"
+              onClick={() => {
+                window.location.href = appData.endpoints?.app!;
+              }}
+            >
+              <p className="font-medium">Download app</p>
+            </Button>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

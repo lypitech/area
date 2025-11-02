@@ -5,7 +5,8 @@ import { API_ROUTES } from "../../../config/api";
 
 export function twitchLogin() {
   const clientId = import.meta.env.VITE_TWITCH_CLIENT_ID;
-  const redirectUri = "http://localhost:8081/callback";
+  const base_url = import.meta.env.VITE_DEFAULT_WEB_URL;
+  const redirectUri = base_url + "/callback";
 
   const scopes = [
     "user:read:email",
@@ -127,10 +128,10 @@ export function useTwitchToken() {
       try {
         setLoading(true);
 
-        const res = await fetch("http://localhost:8080/oauth/twitch", {
+        const res = await fetch(API_ROUTES.oauth.twitch(), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code, uuid }),
+          body: JSON.stringify({ code, uuid, front: true }),
         });
 
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);

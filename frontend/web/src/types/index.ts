@@ -13,6 +13,7 @@ interface Service {
   uuid: string;
   name: string;
   icon: string; // Base64
+  endpoints?: Record<string, string>;
   actions: Action[];
   reactions: Reaction[];
 }
