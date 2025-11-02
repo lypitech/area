@@ -17,7 +17,6 @@
     ],
     "trigger_types": ["webhook"]
   },
-
   {
     "service_name": "Discord",
     "name": "New reaction",
@@ -41,7 +40,162 @@
     ],
     "trigger_types": ["webhook"]
   },
-
+  {
+    "service_name": "Discord",
+    "name": "Message Update",
+    "description": "Triggers when a message is edited in a server",
+    "parameters": [
+      {
+        "name": "guild_id",
+        "type": "string",
+        "description": "The id of the Server to watch"
+      },
+      {
+        "name": "channel_id",
+        "type": "string",
+        "description": "The id of the channel to watch (optional)"
+      },
+      {
+        "name": "message_id",
+        "type": "string",
+        "description": "The id of the message to watch (optional)"
+      }
+    ],
+    "trigger_types": ["webhook"]
+  },
+  {
+    "service_name": "Discord",
+    "name": "Message Delete",
+    "description": "Triggers when a message is deleted in a server",
+    "parameters": [
+      {
+        "name": "guild_id",
+        "type": "string",
+        "description": "The id of the Server to watch"
+      },
+      {
+        "name": "channel_id",
+        "type": "string",
+        "description": "The id of the channel to watch (optional)"
+      },
+      {
+        "name": "message_id",
+        "type": "string",
+        "description": "The id of the message to watch (optional)"
+      }
+    ],
+    "trigger_types": ["webhook"]
+  },
+  {
+    "service_name": "Discord",
+    "name": "Message Delete Bulk",
+    "description": "Triggers when multiple messages are deleted at once",
+    "parameters": [
+      {
+        "name": "guild_id",
+        "type": "string",
+        "description": "The id of the Server to watch"
+      },
+      {
+        "name": "channel_id",
+        "type": "string",
+        "description": "The id of the channel to watch (optional)"
+      },
+      {
+        "name": "message_id",
+        "type": "string",
+        "description": "The id of the message to watch (optional)"
+      }
+    ],
+    "trigger_types": ["webhook"]
+  },
+  {
+    "service_name": "Discord",
+    "name": "Message Reaction Remove",
+    "description": "Triggers when a reaction is removed from a message",
+    "parameters": [
+      {
+        "name": "guild_id",
+        "type": "string",
+        "description": "The id of the Server to watch"
+      },
+      {
+        "name": "channel_id",
+        "type": "string",
+        "description": "The id of the channel to watch (optional)"
+      },
+      {
+        "name": "message_id",
+        "type": "string",
+        "description": "The id of the message to watch (optional)"
+      }
+    ],
+    "trigger_types": ["webhook"]
+  },
+  {
+    "service_name": "Discord",
+    "name": "Message Reaction Remove All",
+    "description": "Triggers when all reactions are removed from a message",
+    "parameters": [
+      {
+        "name": "guild_id",
+        "type": "string",
+        "description": "The id of the Server to watch"
+      },
+      {
+        "name": "channel_id",
+        "type": "string",
+        "description": "The id of the channel to watch (optional)"
+      },
+      {
+        "name": "message_id",
+        "type": "string",
+        "description": "The id of the message to watch (optional)"
+      }
+    ],
+    "trigger_types": ["webhook"]
+  },
+  {
+    "service_name": "Discord",
+    "name": "Message Reaction Remove Emoji",
+    "description": "Triggers when all reactions of a specific emoji are removed from a message",
+    "parameters": [
+      {
+        "name": "guild_id",
+        "type": "string",
+        "description": "The id of the Server to watch"
+      },
+      {
+        "name": "channel_id",
+        "type": "string",
+        "description": "The id of the channel to watch (optional)"
+      },
+      {
+        "name": "message_id",
+        "type": "string",
+        "description": "The id of the message to watch (optional)"
+      }
+    ],
+    "trigger_types": ["webhook"]
+  },
+  {
+    "service_name": "Discord",
+    "name": "Guild Ban Add",
+    "description": "Triggers when a member is banned from a server",
+    "parameters": [
+      { "name": "guild_id", "type": "string", "description": "The id of the Server to watch" }
+    ],
+    "trigger_types": ["webhook"]
+  },
+  {
+    "service_name": "Discord",
+    "name": "Guild Ban Remove",
+    "description": "Triggers when a member is unbanned from a server",
+    "parameters": [
+      { "name": "guild_id", "type": "string", "description": "The id of the Server to watch" }
+    ],
+    "trigger_types": ["webhook"]
+  },
   {
     "service_name": "Github",
     "name": "Push on repository",

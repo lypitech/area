@@ -107,7 +107,28 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
         await this.handle_reaction('New reaction', data);
         break;
       default:
+        await this.handle_basic_trigger(event as string, data);
         break;
+    }
+  }
+
+  private async handle_basic_trigger(event_name: string, payload) {
+    let name = event_name.replace(/_/g, ' ');
+    name = name.toLowerCase();
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+    if (name.startsWith('Message')) return this.handle_message(name, payload);
+    console.log(name);
+    const triggers: Trigger[] = await this.triggerModel.find({
+      name: name,
+    });
+    for (const trigger of triggers) {
+      if (trigger.input?.guild_id !== payload.guild_id) continue;
+      if (!trigger.input?.channel_id) {
+        await this.fire(trigger, payload);
+        continue;
+      }
+      if (trigger.input?.channel_id === payload.channel_id)
+        await this.fire(trigger, payload);
     }
   }
 
