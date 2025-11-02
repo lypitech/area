@@ -149,7 +149,7 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
 
   private async findEnabledAreaByTriggerUUID(
     trigger_uuid: string,
-  ): Promise<Area> {
+  ): Promise<Area | null> {
     const now = new Date();
     const area: Area | null = await this.areaModel.findOne({
       trigger_uuid,
@@ -159,7 +159,7 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
     if (area) {
       return area;
     }
-    throw new NotFoundException("This shouldn't happen lol");
+    return null;
   }
 
   async onCreate(
@@ -173,6 +173,9 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
 
   async fire(trigger: Trigger, payload?: Record<string, any>): Promise<void> {
     const area = await this.findEnabledAreaByTriggerUUID(trigger.uuid);
+    if (!area) {
+      return;
+    }
     const response = await this.responseService.findByUUID(
       area.response_uuid,
     );

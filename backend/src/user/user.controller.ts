@@ -7,6 +7,7 @@ import {
   ValidationPipe,
   Patch,
   Body,
+  Post,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AreaService } from '../area/area.service';
@@ -47,6 +48,16 @@ export class UserController {
   @Delete(':uuid/areas/:area_uuid')
   removeArea(@Param('area_uuid') area_uuid: string) {
     return this.areaService.remove(area_uuid);
+  }
+
+  @Post(':uuid/areas/:area_uuid/enable')
+  enable(@Param('area_uuid') area_uuid: string) {
+    return this.areaService.enable(area_uuid);
+  }
+
+  @Post(':uuid/areas/:area_uuid/disable')
+  disable(@Param('area_uuid') area_uuid: string) {
+    return this.areaService.disable(area_uuid);
   }
 
   @Get(':uuid/areas/:area_uuid/trigger')

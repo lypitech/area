@@ -128,6 +128,28 @@ export class AreaService {
     );
   }
 
+  async enable(uuid: string) {
+    const before: Area | null = await this.areaModel.findOneAndUpdate(
+      { uuid },
+      { $set: { enabled: true } },
+    );
+    if (!before) {
+      throw new NotFoundException('No area found.');
+    }
+    return this.findByUUID(before.uuid);
+  }
+
+  async disable(uuid: string) {
+    const before: Area | null = await this.areaModel.findOneAndUpdate(
+      { uuid },
+      { $set: { enabled: false } },
+    );
+    if (!before) {
+      throw new NotFoundException('No area found.');
+    }
+    return this.findByUUID(before.uuid);
+  }
+
   async remove(uuid: string) {
     const found = await this.findByUUID(uuid);
     if (found) {
