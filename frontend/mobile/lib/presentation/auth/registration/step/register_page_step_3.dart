@@ -115,6 +115,11 @@ class _RegisterPage3State extends ConsumerState<RegisterPageStep3> {
                   rule: Regexes.oneSpecialCharacter,
                   strToTest: _passwordFieldController.text
                 ),
+                FieldValidator(
+                  title: 'One number',
+                  rule: Regexes.oneNumber,
+                  strToTest: _passwordFieldController.text
+                ),
               ],
             ),
           ],
