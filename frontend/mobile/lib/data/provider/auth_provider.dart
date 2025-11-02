@@ -301,41 +301,28 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final refresh = await service.getRefreshToken();
 
-      print("CHECKAUTH: refresh: $refresh");
       if (refresh == null) {
-        print("CHECKAUTH: null, unauthenticated");
         state = AuthState.unauthenticated();
         return;
       }
 
-      print("CHECKAUTH: not null, will try to get the user vro");
-
       try {
         final user = await api.getUser(refreshToken: refresh);
-        print("CHECKAUTH: user: $user");
 
         state = AuthState.authenticated(user);
         return;
       } catch (e) {
-        print("CHECKAUTH: ok error, maybe the tokens are invalidated");
-
         final refreshed = await service.refreshIfNeeded();
-        print("CHECKAUTH: refreshed tokens");
 
         if (refreshed) {
-          print("CHECKAUTH: nice the tokens are refreshed");
-
           final newRefreshToken = await service.getRefreshToken();
 
           if (newRefreshToken != null) {
-            print("CHECKAUTH: ok nice will authenticate");
-
             final user = await api.getUser(refreshToken: newRefreshToken);
             state = AuthState.authenticated(user);
             return;
           }
         }
-        print("CHECKAUTH: tokens are invalid now, unlogging");
 
         await service.clearTokens();
         state = AuthState.unauthenticated();

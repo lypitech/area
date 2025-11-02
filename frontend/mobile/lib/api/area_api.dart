@@ -24,8 +24,6 @@ class AreaApi {
     required String userUuid,
     required AreaModal area
   }) async {
-    print('AREA_CREATE: Creating...');
-
     try {
       final response = await dio.post(
         '/areas',
@@ -50,9 +48,6 @@ class AreaApi {
           'enabled': 'true',
         },
       );
-
-      print('AREA_CREATE: Created! Here is the response');
-      print(response.data);
 
       return response.data as JsonData;
     } on DioException catch (exception) {

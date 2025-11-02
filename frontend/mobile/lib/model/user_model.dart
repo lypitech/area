@@ -22,18 +22,15 @@ class UserModel {
   });
 
   factory UserModel.fromJson(JsonData data) {
-    print("FROMJSON CALLED");
     final oauthList = data['oauth_uuids'] as List? ?? [];
     final oauthUuids = {
       for (final e in oauthList)
         if (e is Map && e['service_name'] != null && e['token_uuid'] != null)
           e['service_name'] as String: e['token_uuid'] as String
     };
-    print("PARSED OAUTHLIST");
 
     final rawImageBase64 = data['profilePicture'] as String?;
 
-    print("PARSED RAWIMAGEBASE64: $rawImageBase64");
     return UserModel(
       uuid: data['uuid'],
       username: data['username'] as String? ?? '',

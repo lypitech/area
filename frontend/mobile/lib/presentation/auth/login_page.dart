@@ -84,8 +84,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       return;
     }
 
-    print("CODE: $code");
-
     try {
       final authNotifier = await ref.watch(authNotifierProvider.future);
 

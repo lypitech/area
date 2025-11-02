@@ -55,8 +55,6 @@ class OauthPage extends ConsumerWidget {
               return;
             }
 
-            print("CODE: $code");
-
             try {
               await oauthRepository.githubLogin(
                 userUuid: user.uuid,
@@ -96,8 +94,6 @@ class OauthPage extends ConsumerWidget {
               }
               return;
             }
-
-            print("CODE: $code");
 
             try {
               await oauthRepository.twitchLogin(
