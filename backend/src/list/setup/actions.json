@@ -119,7 +119,7 @@
         "description": "the interval in minutes (default is 5)"
       }
     ],
-    "trigger_types": ["Polling"]
+    "trigger_types": ["interval"]
   },
   {
     "service_name": "Twitch",
