@@ -6,15 +6,18 @@ import { User, UserSchema } from './schemas/user.schema';
 import { Oauth, OauthSchema } from '../oauth/schema/Oauth.schema';
 import { AreaModule } from '../area/area.module';
 import { JwtModule } from '@nestjs/jwt';
+import { AreaService } from '../area/area.service';
+import { Area, AreaSchema } from '../area/schemas/area.schema';
 
 @Module({
   imports: [
     JwtModule,
+    AreaModule,
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
+      { name: Area.name, schema: AreaSchema },
       { name: Oauth.name, schema: OauthSchema },
     ]),
-    AreaModule,
   ],
   controllers: [UserController],
   providers: [UserService],

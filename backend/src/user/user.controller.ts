@@ -44,6 +44,11 @@ export class UserController {
     return this.areaService.findByUUID(area_uuid, uuid);
   }
 
+  @Delete(':uuid/areas/:area_uuid')
+  removeArea(@Param('area_uuid') area_uuid: string) {
+    return this.areaService.remove(area_uuid);
+  }
+
   @Get(':uuid/areas/:area_uuid/trigger')
   getTriggerFromArea(
     @Param('uuid') uuid: string,
@@ -72,6 +77,14 @@ export class UserController {
     @Body() userDto: Partial<UserDto>,
   ): Promise<string> {
     return this.userService.updateUser(uuid, userDto);
+  }
+
+  @Delete(':uuid/:service')
+  removeOauthToken(
+    @Param('uuid') uuid: string,
+    @Param('service') service: string,
+  ) {
+    return this.userService.removeOauthTokenByService(uuid, service);
   }
 
   @Delete(':uuid')
