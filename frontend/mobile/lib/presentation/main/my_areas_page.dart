@@ -5,9 +5,10 @@ import 'package:area/model/user_model.dart';
 import 'package:area/widget/area_card.dart';
 import 'package:area/widget/clickable_frame.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class MyAreasPage extends StatelessWidget {
+class MyAreasPage extends ConsumerWidget {
 
   final UserModel user;
 
@@ -17,7 +18,7 @@ class MyAreasPage extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
 

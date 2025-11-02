@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HistoryDto } from 'src/area/types/historyDto';
 import { v4 as uuid_v4 } from 'uuid';
 
 @Schema({ timestamps: true, versionKey: false })
@@ -8,10 +7,10 @@ export class Area {
   uuid!: string;
 
   @Prop({ required: true, index: true })
-  trigger_uuid!: string;
+  action_uuid!: string;
 
   @Prop({ required: true, index: true })
-  response_uuid!: string;
+  reaction_uuid!: string;
 
   @Prop({ required: true, index: true })
   user_uuid!: string;
@@ -22,14 +21,17 @@ export class Area {
   @Prop()
   description?: string;
 
+  @Prop({ required: true })
+  creation_date!: string;
+
   @Prop({ required: true, default: true })
-  enabled!: boolean;
+  enable!: boolean;
 
   @Prop({ type: Date, default: null })
   disabled_until?: Date | null;
 
-  @Prop({ default: [] })
-  history!: HistoryDto[];
+  @Prop({ type: [{ timestamp: String, status: String }], default: [] })
+  history!: { timestamp: string; status: string }[];
 }
 
 export const AreaSchema = SchemaFactory.createForClass(Area);

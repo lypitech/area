@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { HookController } from './hook.controller';
 import { HookService } from './hook.service';
-import { TriggerModule } from 'src/trigger/trigger.module';
+import { ActionModule } from '../action/action.module';
 
 @Module({
-  imports: [TriggerModule],
+  imports: [ActionModule],
   controllers: [HookController],
   providers: [HookService],
   exports: [HookService],

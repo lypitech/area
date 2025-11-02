@@ -4,49 +4,48 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import { OauthModule } from './oauth/oauth.module';
+import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { LoginModule } from './login/login.module';
-import { ResponseModule } from './response/response.module';
-import { SeederService } from './list/setup/seeder.service';
+import { ReactionModule } from './reaction/reaction.module';
+import { ListSeederService } from './list/setup/List.seeder.service';
 import { AreaModule } from './area/area.module';
-import { TriggerModule } from './trigger/trigger.module';
-import { Reaction, ReactionSchema } from './list/schemas/reaction.schema';
-import { Action, ActionSchema } from './list/schemas/action.schema';
+import { ActionModule } from './action/action.module';
+import {
+  ReactionList,
+  ReactionListSchema,
+} from './list/schemas/reactionList.schema';
+import { ActionList, ActionListSchema } from './list/schemas/actionList.schema';
 import { HookModule } from './hook/hook.module';
-import { ActionModule } from './list/action/action.module';
-import { ReactionModule } from './list/reaction/reaction.module';
-import { ServiceModule } from './list/service.module';
-import { Service, ServiceSchema } from './list/schemas/service.schema';
+import { ListModule } from './list/list.module';
+import {
+  ServiceList,
+  ServiceListSchema,
+} from './list/schemas/serviceList.schema';
 import { ScheduleModule } from '@nestjs/schedule';
-import { UtilsService } from './response/utils.service';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://mongo:27017/nestdb'),
     ScheduleModule.forRoot(),
     MongooseModule.forFeature([
-      { name: Reaction.name, schema: ReactionSchema },
-      { name: Action.name, schema: ActionSchema },
-      { name: Service.name, schema: ServiceSchema },
+      { name: ReactionList.name, schema: ReactionListSchema },
+      { name: ActionList.name, schema: ActionListSchema },
+      { name: ServiceList.name, schema: ServiceListSchema },
     ]),
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: ['.env', '.env.local'],
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
-    OauthModule,
+    AuthModule,
     CommonModule,
+    //backend,
     LoginModule,
-    ResponseModule,
-    AreaModule,
-    TriggerModule,
-    HookModule,
-    ServiceModule,
-    ActionModule,
     ReactionModule,
+    AreaModule,
+    ActionModule,
+    HookModule,
+    ListModule,
   ],
   controllers: [AppController],
-  providers: [UtilsService, AppService, SeederService],
+  providers: [AppService, ListSeederService],
 })
 export class AppModule {}
