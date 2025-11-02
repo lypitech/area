@@ -55,7 +55,25 @@ The application will offer the following functionalities:
 <a name="installation"></a>
 ## Installation
 
-...
+1. Clone the project
+```sh
+git clone git:github.com@lypitech/area.git area
+```
+
+2. Go in the cloned project
+```sh
+cd area/
+```
+
+3. Run the project
+```sh
+docker-compose up --build
+```
+
+> [!CAUTION]
+> You must have [Docker](https://www.docker.com/) installed on your machine.
+
+Now the API is exposed on port `8080`, website is exposed on port `8081` and APK installation file can be found at route `/client.apk`.
 
 <a name="team"></a>
 ## Team
