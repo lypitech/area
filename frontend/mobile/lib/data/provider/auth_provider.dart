@@ -185,6 +185,50 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> oauthLogin(String oauthService, String code) async {
+    try {
+      final loginResponse = await api.oauthLogin(
+        service: 'github',
+        code: code
+      );
+
+      if (loginResponse == null) {
+        throw Exception('Null response from backend');
+      }
+
+      final access = loginResponse['access_token'] as String?;
+      final refresh = loginResponse['refresh_token'] as String?;
+
+      print("access: $access, refresh: $refresh");
+      print("access: $access, refresh: $refresh");
+      print("access: $access, refresh: $refresh");
+      print("access: $access, refresh: $refresh");
+
+      if (access == null || refresh == null) {
+        throw Exception('Invalid login response (missing tokens)');
+      }
+
+      print("before saving tokens");
+      await service.saveTokens(accessToken: access, refreshToken: refresh);
+
+      print("after saving tokens");
+
+      print("before getting user");
+      final user = await api.getUser(refreshToken: refresh);
+      print("after getting user");
+      print(user..remove('profilePicture'));
+
+      print(UserModel.fromJson(user));
+
+      print('after');
+      state = AuthState.authenticated(user);
+      print("so here we're good ig");
+    } catch (e) {
+      state = AuthState.unauthenticated();
+      rethrow;
+    }
+  }
+
   Future<void> register({
     required String email,
     required String password,
@@ -224,6 +268,24 @@ class AuthNotifier extends StateNotifier<AuthState> {
       } else {
         throw Exception('Invalid login response after register (register may have been unsuccessful)');
       }
+    } catch (e) {
+      state = AuthState.unauthenticated();
+      rethrow;
+    }
+  }
+
+  Future<void> oauthRegister(String oauthService, String code) async {
+    try {
+      final registerResponse = await api.oauthRegister(
+        service: oauthService,
+        code: code
+      );
+
+      if (registerResponse == null || registerResponse.containsKey('error')) {
+        throw Exception('Registration failed. ${registerResponse?['message']}');
+      }
+
+      await oauthLogin(oauthService, code);
     } catch (e) {
       state = AuthState.unauthenticated();
       rethrow;
