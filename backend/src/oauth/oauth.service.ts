@@ -346,8 +346,25 @@ export class OauthService {
         'twitch_user_id',
         token.meta?.twitch_user_id as string,
       );
-      if (!oauth)
-        throw new BadRequestException('User has never connected with twitch');
+      if (!oauth) {
+        const created: Oauth = await this.oauthModel.create({
+          service_name: token.service_name,
+          token: token.token,
+          refresh_token: token.refresh_token,
+          token_type: token.token_type,
+          expires_at: token.expires_at,
+          meta: token.meta,
+        });
+        return this.createUser(
+          token.meta?.twitch_email as string,
+          '',
+          token.meta?.twitch_display_name as string,
+          token.meta?.twitch_login as string,
+          await this.fetchImageAsBase64(token.meta?.profile_image_url as string),
+          [{ service_name: created.service_name, token_uuid: created.uuid }],
+          created,
+        );
+      }
       return this.createJwt(oauth.uuid);
     } catch (e: any) {
       throw new BadRequestException(`Error: ${e.message}`);
