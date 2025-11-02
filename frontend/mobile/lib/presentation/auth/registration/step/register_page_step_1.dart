@@ -27,11 +27,12 @@ class _RegisterPage1State extends ConsumerState<RegisterPageStep1> {
   final _usernameFieldController = TextEditingController();
 
   bool _onConfirm() {
-    final registerModal = ref.read(registerModalProvider);
-
-    registerModal.nickname = _nicknameFieldController.text;
-    registerModal.username = _usernameFieldController.text;
-    registerModal.currentPage++;
+    ref.read(registerModalProvider.notifier).update((state) {
+      state.nickname = _nicknameFieldController.text;
+      state.username = _usernameFieldController.text;
+      state.currentPage++;
+      return state;
+    });
     return true;
   }
 
