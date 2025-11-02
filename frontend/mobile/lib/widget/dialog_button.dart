@@ -50,7 +50,7 @@ class _DialogButtonState extends State<DialogButton> {
           },
           borderRadius: BorderRadius.circular(20.0),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
             child: Text(
               widget.text,
               style: TextStyle(
