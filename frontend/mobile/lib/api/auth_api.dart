@@ -65,6 +65,42 @@ class AuthApi {
     }
   }
 
+  Future<JsonData?> oauthLogin({
+    required String service,
+    required String code
+  }) async {
+    try {
+      final response = await dio.post(
+        '/user/login/$service',
+        data: {
+          'code': code,
+          'front': false,
+        },
+      );
+      return response.data as JsonData;
+    } on DioException catch (e) {
+      return e.response?.data as JsonData?;
+    }
+  }
+
+  Future<JsonData?> oauthRegister({
+    required String service,
+    required String code
+  }) async {
+    try {
+      final response = await dio.post(
+        '/user/register/$service',
+        data: {
+          'code': code,
+          'front': false,
+        },
+      );
+      return response.data as JsonData;
+    } on DioException catch (e) {
+      return e.response?.data as JsonData?;
+    }
+  }
+
   Future<void> logout({
     required String refreshToken
   }) async {
@@ -87,7 +123,8 @@ class AuthApi {
     required String userUuid
   }) async {
     final response = await dio.delete('/users/$userUuid');
-    return response.data as JsonData;
+    final data = response.data as JsonData;
+    return data;
   }
 
 }
