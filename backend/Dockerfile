@@ -6,6 +6,7 @@ RUN apk add --no-cache curl
 COPY package*.json ./
 COPY tsconfig*.json ./
 RUN npm ci --include=dev
+RUN npm install ts-node tsconfig-paths --save-dev
 
 COPY . .
 
