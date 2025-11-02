@@ -12,7 +12,10 @@ import { UserDto } from 'src/user/types/userDto';
 import { OauthService } from '../oauth/oauth.service';
 
 type OauthRegisterFunction = (code: string, front: boolean) => Promise<UserDto>;
-type OauthLoginFunction = (code: string, front: boolean) => Promise<{
+type OauthLoginFunction = (
+  code: string,
+  front: boolean,
+) => Promise<{
   uuid: string;
   access_token: string;
   refresh_token: string;
