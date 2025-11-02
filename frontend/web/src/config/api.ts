@@ -1,4 +1,4 @@
-export const API_BASE_URL = "http://localhost:8080";
+export const API_BASE_URL = import.meta.env.VITE_DEFAULT_API_URL;
 
 export const API_ROUTES = {
   auth: {
@@ -41,5 +41,10 @@ export const API_ROUTES = {
 
   responses: {
     get: (uuid: string, area_uuid: string) => `${API_BASE_URL}/users/${uuid}/areas/${area_uuid}/response`,
+  },
+
+  oauth: {
+    github: () => `${API_BASE_URL}/oauth/github`,
+    twitch: () => `${API_BASE_URL}/oauth/twitch`,
   },
 };
