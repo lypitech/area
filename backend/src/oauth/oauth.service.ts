@@ -355,7 +355,7 @@ export class OauthService {
           expires_at: token.expires_at,
           meta: token.meta,
         });
-        return this.createUser(
+        const user = await this.createUser(
           token.meta?.twitch_email as string,
           '',
           token.meta?.twitch_display_name as string,
@@ -364,6 +364,7 @@ export class OauthService {
           [{ service_name: created.service_name, token_uuid: created.uuid }],
           created,
         );
+        return this.createJwtFromUser(user.uuid, user.email);
       }
       return this.createJwt(oauth.uuid);
     } catch (e: any) {
