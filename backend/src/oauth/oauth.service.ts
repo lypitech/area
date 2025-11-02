@@ -51,7 +51,7 @@ export class OauthService {
     oauthsLinks: UserOauthLink[],
     token: Oauth,
   ) {
-    const existing: User | null = await this.userModel.findOne({
+    let existing: User | null = await this.userModel.findOne({
       email: email,
     });
     if (existing) {
@@ -64,8 +64,11 @@ export class OauthService {
           { $set: { meta: token.meta } },
         );
         await this.remove(token.uuid);
+      } else {
+        await this.addToUser(existing.uuid, token.uuid, token.service_name);
+        existing = await this.userModel.findOne({ uuid: existing.uuid });
       }
-      return plainToInstance(UserDto, existing.toObject(), {
+      return plainToInstance(UserDto, existing?.toObject(), {
         excludeExtraneousValues: true,
       });
     }
@@ -268,7 +271,6 @@ export class OauthService {
         expires_at: token.expires_at,
         meta: token.meta,
       });
-      console.log(userData);
       return this.createUser(
         userData.email,
         '',

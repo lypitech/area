@@ -117,7 +117,6 @@ export class DiscordTriggerDriver implements TriggerDriver, OnModuleInit {
     name = name.toLowerCase();
     name = name.charAt(0).toUpperCase() + name.slice(1);
     if (name.startsWith('Message')) return this.handle_message(name, payload);
-    console.log(name);
     const triggers: Trigger[] = await this.triggerModel.find({
       name: name,
     });
