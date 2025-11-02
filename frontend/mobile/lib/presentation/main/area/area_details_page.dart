@@ -5,6 +5,7 @@ import 'package:area/layout/main_page_layout.dart';
 import 'package:area/model/area_history_entry.dart';
 import 'package:area/model/area_model.dart';
 import 'package:area/model/user_model.dart';
+import 'package:area/presentation/dialog/error_dialog.dart';
 import 'package:area/widget/appbar_button.dart';
 import 'package:area/widget/areaction_card.dart';
 import 'package:area/widget/clickable_frame.dart';
@@ -33,6 +34,7 @@ class AreaDetailsPage extends ConsumerStatefulWidget {
 class _AreaDetailsPageState extends ConsumerState<AreaDetailsPage> {
 
   late AreaModel area;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -86,7 +88,7 @@ class _AreaDetailsPageState extends ConsumerState<AreaDetailsPage> {
                 )
               )
             ],
-            onSelected: (String? value) {
+            onSelected: (String? value) async {
               switch (value) {
                 case 'logs':
                   context.pushNamed(
@@ -95,6 +97,29 @@ class _AreaDetailsPageState extends ConsumerState<AreaDetailsPage> {
                   );
                   break;
                 case 'delete':
+                  setState(() {
+                    _isLoading = true;
+                  });
+
+                  final areaNotifier = await ref.watch(areaNotifierProvider(widget.user).future);
+                  final response = await areaNotifier.deleteArea(area.uuid!);
+
+                  setState(() {
+                    _isLoading = false;
+                  });
+
+                  if (response != null) {
+                    if (context.mounted) {
+                      ErrorDialog.show(
+                        context: context,
+                        error: response
+                      );
+                    }
+                  } else {
+                    if (context.mounted) {
+                      context.pop();
+                    }
+                  }
                   break;
                 default:
                   break;
@@ -104,6 +129,9 @@ class _AreaDetailsPageState extends ConsumerState<AreaDetailsPage> {
           )
         ],
         children: [
+          if (_isLoading) ... {
+            CircularProgressIndicator()
+          },
           AreactionCard(
             title: area.trigger.name,
             subtitle: area.actionPlatform.name,

@@ -92,7 +92,11 @@ class AreaRepository {
     required UserModel user,
     required String areaUuid
   }) async {
-    await api.deleteArea(user.uuid, areaUuid);
+    final res = await api.deleteArea(user.uuid, areaUuid);
+
+    if (res == null || res.containsKey('error')) {
+      throw Exception(res?['message'] ?? 'Unknown error');
+    }
   }
 
   Future<AreaModel> refreshArea({

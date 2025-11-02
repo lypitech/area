@@ -61,8 +61,13 @@ class AreaApi {
 
   }
 
-  Future<void> deleteArea(String userUuid, String areaUuid) async {
-    await dio.delete('/users/$userUuid/areas/$areaUuid');
+  Future<JsonData?> deleteArea(String userUuid, String areaUuid) async {
+    try {
+      await dio.delete('/users/$userUuid/areas/$areaUuid');
+      return null;
+    } on DioException catch (exception) {
+      return (exception.response?.data ?? {'error': 'UNKNOWN'}) as JsonData;
+    }
   }
 
   Future<JsonData> getAreaTriggers(String userUuid, String areaUuid) async {

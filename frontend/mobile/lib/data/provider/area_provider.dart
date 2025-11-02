@@ -105,7 +105,7 @@ class AreaNotifier extends StateNotifier<AreaState> {
     }
   }
 
-  Future<void> deleteArea(String uuid) async {
+  Future<String?> deleteArea(String uuid) async {
     try {
       await repository.deleteArea(
         user: user,
@@ -115,10 +115,12 @@ class AreaNotifier extends StateNotifier<AreaState> {
       state = state.copyWith(
         areas: state.areas.where((a) => a.uuid != uuid).toList(),
       );
+      return null;
     } catch (e) {
       state = state.copyWith(
         error: e.toString()
       );
+      return e.toString();
     }
   }
 
