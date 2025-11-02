@@ -47,7 +47,8 @@ class AreaRepository {
         isSyncing: false,
         history: (areaJson['history'] as List<dynamic>)
           .map((e) => AreaHistoryEntry.fromJson(e))
-          .toList()
+          .toList(),
+        isEnabled: areaJson['enabled'] as bool
       );
     }).toList();
 
@@ -84,7 +85,8 @@ class AreaRepository {
       isSyncing: false,
       history: (response['history'] as List<dynamic>)
         .map((e) => AreaHistoryEntry.fromJson(e))
-        .toList()
+        .toList(),
+      isEnabled: response['enabled'] as bool
     );
   }
 
@@ -94,8 +96,12 @@ class AreaRepository {
   }) async {
     final res = await api.deleteArea(user.uuid, areaUuid);
 
-    if (res == null || res.containsKey('error')) {
-      throw Exception(res?['message'] ?? 'Unknown error');
+    if (res == null) {
+      return;
+    }
+
+    if (res.containsKey('error')) {
+      throw Exception(res['message'] ?? 'Unknown error');
     }
   }
 
@@ -119,8 +125,23 @@ class AreaRepository {
       isSyncing: false,
       history: (data['history'] as List<dynamic>)
         .map((e) => AreaHistoryEntry.fromJson(e))
-        .toList()
+        .toList(),
+      isEnabled: data['enabled'] as bool
     );
+  }
+
+  Future<void> enableArea({
+    required UserModel user,
+    required String areaUuid
+  }) async {
+    await api.enableArea(user.uuid, areaUuid);
+  }
+
+  Future<void> disableArea({
+    required UserModel user,
+    required String areaUuid
+  }) async {
+    await api.disableArea(user.uuid, areaUuid);
   }
 
 }

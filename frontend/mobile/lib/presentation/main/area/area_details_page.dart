@@ -42,6 +42,12 @@ class _AreaDetailsPageState extends ConsumerState<AreaDetailsPage> {
     area = widget.area;
   }
 
+  Future<void> _refreshArea() async {
+    final repo = await ref.read(areaRepositoryProvider.future);
+    area = await repo.refreshArea(user: widget.user, areaUuid: area.uuid!);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -54,9 +60,7 @@ class _AreaDetailsPageState extends ConsumerState<AreaDetailsPage> {
 
     return RefreshIndicator(
       onRefresh: () async {
-        final repo = await ref.read(areaRepositoryProvider.future);
-        area = await repo.refreshArea(user: widget.user, areaUuid: area.uuid!);
-        setState(() {});
+        await _refreshArea();
       },
       child: MainPageLayout(
         title: area.name,
@@ -145,13 +149,29 @@ class _AreaDetailsPageState extends ConsumerState<AreaDetailsPage> {
           ),
           ClickableFrame(
             padding: const EdgeInsets.symmetric(vertical: 10),
-            color: Colors.red,
-            onTap: () {
-              // ...
+            color: area.isEnabled ? Colors.red : Colors.green,
+            onTap: () async {
+              setState(() {
+                _isLoading = true;
+              });
+
+              final repo = await ref.watch(areaRepositoryProvider.future);
+
+              if (area.isEnabled) {
+                await repo.disableArea(user: widget.user, areaUuid: area.uuid!);
+              } else {
+                await repo.enableArea(user: widget.user, areaUuid: area.uuid!);
+              }
+
+              await _refreshArea();
+
+              setState(() {
+                _isLoading = false;
+              });
             },
             child: Center(
               child: Text(
-                'Disable',
+                area.isEnabled ? 'Disable' : 'Enable',
                 style: textTheme.titleMedium?.copyWith(
                   color: Colors.white,
                   fontSize: 20

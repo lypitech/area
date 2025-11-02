@@ -66,7 +66,7 @@ class AreaApi {
       await dio.delete('/users/$userUuid/areas/$areaUuid');
       return null;
     } on DioException catch (exception) {
-      return (exception.response?.data ?? {'error': 'UNKNOWN'}) as JsonData;
+      return (exception.response?.data ?? {'error': 'UNKNOWN', 'message': 'UNKNOWN'}) as JsonData;
     }
   }
 
@@ -77,6 +77,16 @@ class AreaApi {
 
   Future<JsonData> getAreaActions(String userUuid, String areaUuid) async {
     final response = await dio.get('/users/$userUuid/areas/$areaUuid/response');
+    return response.data as JsonData;
+  }
+
+  Future<JsonData> enableArea(String userUuid, String areaUuid) async {
+    final response = await dio.post('/users/$userUuid/areas/$areaUuid/enable');
+    return response.data as JsonData;
+  }
+
+  Future<JsonData> disableArea(String userUuid, String areaUuid) async {
+    final response = await dio.post('/users/$userUuid/areas/$areaUuid/disable');
     return response.data as JsonData;
   }
 

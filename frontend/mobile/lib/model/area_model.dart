@@ -17,6 +17,7 @@ class AreaModel {
   final DateTime? updatedAt;
   final bool isSyncing;
   final List<AreaHistoryEntry> history;
+  final bool isEnabled;
 
   AreaModel({
     this.uuid,
@@ -28,7 +29,8 @@ class AreaModel {
     this.createdAt,
     this.updatedAt,
     this.isSyncing = false,
-    this.history = const []
+    this.history = const [],
+    this.isEnabled = true,
   });
 
   factory AreaModel.fromModal(AreaModal modal) {
@@ -61,7 +63,8 @@ class AreaModel {
         : null,
       history: (data['history'] as List<dynamic>)
         .map((e) => AreaHistoryEntry.fromJson(e))
-        .toList()
+        .toList(),
+      isEnabled: data['enabled'] as bool
     );
   }
 
@@ -75,7 +78,8 @@ class AreaModel {
       'action': action.toJson(),
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
-      'history': history
+      'history': history,
+      'enabled': isEnabled
     };
   }
 
@@ -89,7 +93,8 @@ class AreaModel {
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isSyncing,
-    List<AreaHistoryEntry>? history
+    List<AreaHistoryEntry>? history,
+    bool? isEnabled
   }) {
     return AreaModel(
       uuid: uuid ?? this.uuid,
@@ -101,7 +106,8 @@ class AreaModel {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isSyncing: isSyncing ?? this.isSyncing,
-      history: history ?? this.history
+      history: history ?? this.history,
+      isEnabled: isEnabled ?? this.isEnabled
     );
   }
 
