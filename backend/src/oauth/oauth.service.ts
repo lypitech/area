@@ -50,6 +50,8 @@ export class OauthService {
     profilePicture: string,
     oauthsLinks: UserOauthLink[],
   ) {
+    if (await this.userModel.findOne({ email: email }))
+      throw new BadRequestException('Email already exists');
     const created = await new this.userModel({
       email: email,
       password: await bcrypt.hash(password, 10),
@@ -165,7 +167,10 @@ export class OauthService {
         this.httpService.get('https://api.github.com/user/emails', { headers }),
       );
       const emails = emailResponse.data;
-      userData.email = emails.find((e) => e.primary && e.verified)?.email ?? emails[0]?.email ?? null;
+      userData.email =
+        emails.find((e) => e.primary && e.verified)?.email ??
+        emails[0]?.email ??
+        null;
     }
     return userData as Record<string, string>;
   }
@@ -174,12 +179,31 @@ export class OauthService {
     try {
       const token = await this.getGithubToken(code, front);
       const newData = await this.getGithubUserInfos(<OauthDto>token);
-      const oauth: Oauth | null = await this.findByMetaMember(
+      let oauth: Oauth | null = await this.findByMetaMember(
         'github_id',
         newData.id,
       );
-      if (!oauth)
-        throw new BadRequestException('User has never connected with Github');
+      if (!oauth) {
+        token.meta = { github_id: newData.id, ...token.meta };
+        const created: Oauth = await this.oauthModel.create({
+          service_name: token.service_name,
+          token: token.token,
+          refresh_token: token.refresh_token,
+          token_type: token.token_type,
+          expires_at: token.expires_at,
+          meta: token.meta,
+        });
+        await this.createUser(
+          newData.email,
+          '',
+          newData.name,
+          newData.log,
+          await this.fetchImageAsBase64(newData.avatar_url),
+          [{ service_name: created.service_name, token_uuid: created.uuid }],
+        );
+      }
+      oauth = await this.findByMetaMember('github_id', newData.id);
+      if (!oauth) throw new NotFoundException(`Fuck.`);
       return this.createJwt(oauth.uuid);
     } catch (e: any) {
       throw new BadRequestException(`Error: ${e.message}`);
@@ -218,13 +242,12 @@ export class OauthService {
   }
 
   async getGithubToken(code: string, front: boolean, user_uuid: string = '') {
-
     const clientId: string = front
-      ? process.env.GITHUB_CLIENT_ID ?? ''
-      : process.env.GITHUB_MOBILE_CLIENT_ID ?? '';
+      ? (process.env.GITHUB_CLIENT_ID ?? '')
+      : (process.env.GITHUB_MOBILE_CLIENT_ID ?? '');
     const clientSecret: string = front
-      ? process.env.GITHUB_CLIENT_SECRET ?? ''
-      : process.env.GITHUB_MOBILE_CLIENT_SECRET ?? '';
+      ? (process.env.GITHUB_CLIENT_SECRET ?? '')
+      : (process.env.GITHUB_MOBILE_CLIENT_SECRET ?? '');
 
     try {
       const tokenResponse = await firstValueFrom(
