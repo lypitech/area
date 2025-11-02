@@ -51,7 +51,7 @@ export async function createArea(
       name: selectedAction.name,
       description: selectedAction.description,
       input: input,
-      trigger_type: selectedAction.trigger_type,
+      trigger_type: selectedAction.trigger_types.toString(),
     },
     response: {
       service_name: selectedReactionService.name,
@@ -67,6 +67,7 @@ export async function createArea(
     disabled_until: null,
   };
 
+  console.log("Creating Area...", payload);
   const res = await fetch(API_ROUTES.area.create(), {
     method: "POST",
     headers: { "Content-Type": "application/json" },

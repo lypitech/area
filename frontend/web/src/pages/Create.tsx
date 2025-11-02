@@ -21,6 +21,7 @@ export default function Create() {
       try {
         const data = await getServices();
         setServices(data);
+        console.log(data);
       } catch (error) {
         console.error("Error fetching services:", error);
       }

@@ -120,78 +120,37 @@ export default function AreaDetails() {
       </div>
       <Modal isOpen={isEditOpen} onClose={() => setIsEditOpen(false)}>
         <h2 className="text-2xl font-semibold mb-4">Edit Area</h2>
-        <form className="flex flex-col gap-4">
-          <label className="flex flex-col">
-            <span className="font-semibold text-sm mb-1">Name</span>
-            <input
-              type="text"
-              defaultValue={area.name}
-              className="border rounded p-2"
-            />
-          </label>
+        <span className="text-gray-600">Coming soon!</span>
 
-          <label className="flex flex-col">
-            <span className="font-semibold text-sm mb-1">Description</span>
-            <textarea
-              defaultValue={area.description}
-              className="border rounded p-2"
-              rows={3}
-            />
-          </label>
+        <div className="flex justify-between items-center mt-6">
+          <Button
+            type="button"
+            className="bg-red-600 text-white px-4 py-2 rounded-md"
+            onClick={() => {
+              deleteArea(area.uuid);
+              navigate("/area");
+            }}
+          >
+            Delete
+          </Button>
 
-          <label className="flex items-center gap-2 mt-2">
-            <input
-              type="checkbox"
-              defaultChecked={area.enabled}
-              className="w-4 h-4"
-            />
-            <span className="font-semibold text-sm">Enabled</span>
-          </label>
-
-          {!area.enabled && (
-            <label className="flex flex-col">
-              <span className="font-semibold text-sm mb-1">Disabled until</span>
-              <input
-                type="datetime-local"
-                defaultValue={
-                  area.disabled_until
-                    ? new Date(area.disabled_until).toISOString().slice(0, 16)
-                    : ""
-                }
-                className="border rounded p-2"
-              />
-            </label>
-          )}
-
-          <div className="flex justify-between items-center mt-6">
+          <div className="flex gap-2">
             <Button
               type="button"
-              className="bg-red-600 text-white px-4 py-2 rounded-md"
-              onClick={() => {
-                deleteArea(area.uuid);
-                navigate("/area");
-              }}
+              className="bg-gray-300 text-black px-4 py-2 rounded-md"
+              onClick={() => setIsEditOpen(false)}
             >
-              Delete
+              Cancel
             </Button>
-
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                className="bg-gray-300 text-black px-4 py-2 rounded-md"
-                onClick={() => setIsEditOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="bg-black text-white px-4 py-2 rounded-md"
-              >
-                Save
-              </Button>
-            </div>
+            <Button
+              type="submit"
+              disabled
+              className="bg-black text-white px-4 py-2 rounded-md"
+            >
+              Save
+            </Button>
           </div>
-        </form>
+        </div>
       </Modal>
     </div>
   );

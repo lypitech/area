@@ -2,8 +2,14 @@ import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 
-import { useGitHubToken } from "../services/OAuth/OAuths/githubServices";
-import { useTwitchToken } from "../services/OAuth/OAuths/twitchServices";
+import {
+  useGithubLogin,
+  useGitHubToken,
+} from "../services/OAuth/OAuths/githubServices";
+import {
+  useTwitchLogin,
+  useTwitchToken,
+} from "../services/OAuth/OAuths/twitchServices";
 
 export default function Callback() {
   const [params] = useSearchParams();
@@ -15,6 +21,11 @@ export default function Callback() {
     twitch: useTwitchToken,
   };
 
+  const loginHooks = {
+    github: useGithubLogin,
+    twitch: useTwitchLogin,
+  };
+
   const useProviderHook = hooks[provider as keyof typeof hooks];
   if (!useProviderHook)
     return (
@@ -22,6 +33,19 @@ export default function Callback() {
         <p className="text-2xl font-bold">Invalid OAuth provider</p>
       </div>
     );
+
+  console.log(localStorage.getItem(`oauth_redirect_after`));
+  if (localStorage.getItem(`oauth_redirect_after`) === "/") {
+    loginHooks[provider as keyof typeof loginHooks]();
+    useEffect(() => {
+      nav("/home");
+    }, [localStorage.getItem(`access_token`)]);
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <Loader />
+      </div>
+    );
+  }
 
   const { token, loading, error } = useProviderHook();
 

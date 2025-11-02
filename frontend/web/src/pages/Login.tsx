@@ -6,6 +6,10 @@ import { login } from "../services/authService";
 import { isLoggedIn } from "../utils/auth";
 import logo from "../assets/logo.png";
 import Icon from "../components/icons/icons";
+import github from "../assets/logos/github_240.png";
+import twitch from "../assets/logos/twitch_96.png";
+import { githubLogin } from "../services/OAuth/OAuths/githubServices";
+import { twitchLogin } from "../services/OAuth/OAuths/twitchServices";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -125,6 +129,24 @@ export default function Login() {
             {loading ? "Signing in..." : "Sign in"}
           </Button>
         </form>
+
+        {/* OAuth buttons */}
+        <div className=" text-center text-md text-gray-600 mt-4 gap-3 pt-4 border-t border-gray-300">
+          Sign in with
+        </div>
+        <div className="flex flex-row justify-center gap-3 p-2">
+          <img
+            src={github}
+            className="w-12 h-12 rounded-xl bg-gray-100 p-1 hover:bg-gray-200 cursor-pointer"
+            onClick={githubLogin}
+          />
+
+          <img
+            src={twitch}
+            className="w-12 h-12 rounded-xl bg-gray-100 p-1 hover:bg-gray-200 cursor-pointer"
+            onClick={twitchLogin}
+          />
+        </div>
 
         <p className="text-center text-sm text-gray-600 mt-4">
           Don’t have an account?{" "}
