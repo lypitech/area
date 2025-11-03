@@ -2,7 +2,7 @@
 
 # DEV-500 ‒ `AREA` ‒ How to contribute
 
-# Ajouter un nouveau service (Trigger Driver)
+# Ajouter un nouveau service
 
 ## Principe
 
@@ -150,7 +150,7 @@ export class TriggerModule {}
 
 ## 6. Exemple de création et d'utilisation
 
-### Modèle Trigger (extrait)
+### Modèle Trigger
 
 ```tsx
 @Prop({ type: MongooseSchema.Types.Mixed, default: {} })
@@ -184,7 +184,7 @@ await triggerService.create({
 
 ---
 
-## 7. (Optionnel) Contrôleur webhook
+## 7. Contrôleur webhook
 
 Si votre service reçoit des webhooks externes :
 
@@ -283,7 +283,7 @@ export class DiscordModule {}
     export class MyServiceModule {}
     ```
     
-- **Controller (optionnel)**
+- **Controller)**
     
     ```tsx
     // trigger/services/myservice/myservice.controller.ts
