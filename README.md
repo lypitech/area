@@ -65,6 +65,10 @@ git clone git:github.com@lypitech/area.git area
 cd area/
 ```
 
+> [!IMPORTANT]
+> Before running the project, set the `.env` files. More informations [here](https://github.com/lypitech/area/wiki/Installation)
+
+
 3. Run the project
 ```sh
 docker-compose up --build

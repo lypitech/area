@@ -35,14 +35,14 @@ trigger/
 
 Tous les drivers doivent implémenter l'interface `TriggerDriver` :
 
-```tsx
+```ts
 // trigger/contracts/trigger-driver.ts
 export interface TriggerDriver {
   readonly key: string;                     // ex: 'discord:webhook'
   supports(trigger: Trigger): boolean;      // si ce driver gère ce trigger
-  onCreate?(t: Trigger, params?: any): Promise&lt;void&gt;;
-  onRemove?(t: Trigger): Promise&lt;void&gt;;
-  fire?(t: Trigger, payload?: any): Promise&lt;void&gt;;
+  onCreate?(t: Trigger, params?: any): Promise<void>;
+  onRemove?(t: Trigger): Promise<void>;
+  fire?(t: Trigger, payload?: any): Promise<void>;
 }
 ```
 
@@ -302,5 +302,170 @@ export class DiscordModule {}
     ```
     
 
+---
+
+# Ajouter un nouveau service (Response Driver)
+
+## Principe
+
+Chaque service apporte un **driver** qui implémente un contrat. Par la suite vous devez ajouter votre driver à la liste and le `constructor` du service `response` que vous pouvez trouver dans le fichier `response.service.ts`.
+
+Le core (`ResponseService` et `ResponseModule`) ne doivent avoir aucune dépendance directe vers vos services.
+
+**Structure des fichiers :**
+
+```
+response/
+  schemas/response.schema.ts
+  services/
+	  contracts/response-driver.ts
+	  <Service>/
+		  <service>.driver.ts
+		  <service>.module.ts
+		  <service>.service.ts
+```
+
+---
+
+## 1. Contrat à implémenter
+
+Tous les drivers doivent implémenter l'interface `ResponseDriver` :
+
+```typescript
+// response/services/contracts/response-driver.ts
+export interface ResponseDriver {  
+  readonly key: string; // the name of your service
+  supports(response: ResponseCreationDto): boolean;  
+  onCreate?(response: ResponseCreationDto): Promise<void>;  
+  onRemove?(response: ReactionInstance): Promise<void>;  
+}
+```
+
+---
+
+## 2. Créer votre driver
+
+### Exemple : Twitch
+
+```typescript
+// trigger/services/discord/discord.driver.ts
+
+@Injectable()
+export class TwitchResponseDriver implements TriggerDriver {
+	readonly key = 'Discord';  
+	responses: string[] = [];  
+	readonly responseValidator = new Map<  
+	  string,  
+	  (response: ResponseCreationDto) => Promise<boolean>  
+>	();  
+	private readonly dispatchers = new Map<string, DispatchFunction>();  
+	constructor(  
+	  private readonly serviceService: ServiceService,  
+	  private readonly <Service>: <Service>,  
+	) {}
+
+	supports(response: ResponseCreationDto): boolean {  
+	  if (response.service_name != this.key) return false;  
+	  for (const res of this.responses) {  
+	    if (response.name === res) return true;  
+	  }  
+	  return false;  
+	}
+
+	async onModuleInit(): Promise<any> {  // Recommandé pour récupérer automatiquement une nouvelle response
+		const tmp = await this.serviceService.getReactionsByServiceName(this.key);  
+		for (const res of tmp) {  
+			this.responses.push(res);
+		}  
+	}
+	
+	async onCreate(response: ResponseCreationDto) {
+		// Ensure that the demanded response will be able to be fired.
+		// Throw an exception if not
+	}
+	
+	async onRemove(t: Trigger) {
+		// Optionnel
+	}
+}
+```
+---
+
+## 3. Créer le module du service
+
+```tsx
+import { Module } from '@nestjs/common';  
+import { <Service> } from './<service>.service';  
+import { <Service>Driver } from './<service>.driver';
+import { ServiceModule } from 'src/list/service.module';  
+
+@Module({  
+  imports: [ServiceModule],  
+  providers: [<Service>, <Service>Driver],  
+  exports: [<Service>, <Service>Driver],  
+})  
+export class <Service>Module {}
+```
+
+---
+
+## 4. Brancher le module dans le core
+
+```tsx
+// response.module.ts
+import { Module } from '@nestjs/common';  
+import { HttpModule } from '@nestjs/axios';  
+import { ResponseService } from './response.service';  
+import { ReactionInstance, ResponseSchema } from './schemas/response.schema';  
+import { MongooseModule } from '@nestjs/mongoose';  
+import { ServiceService } from '../list/service.service';  
+import { Service, ServiceSchema } from '../list/schemas/service.schema';  
+import { DiscordModule } from './services/Discord/discord.module';  
+  
+@Module({  
+  imports: [  
+    HttpModule,  
+    MongooseModule.forFeature([  
+      { name: ReactionInstance.name, schema: ResponseSchema },  
+      { name: Service.name, schema: ServiceSchema },  
+    ]),  
+    DiscordModule,
+    // Ajouter ici
+  ],  
+  providers: [ResponseService, ServiceService],  
+  exports: [ResponseService],  
+})  
+export class ResponseModule {}
+```
+
+---
+
+## 5. Mettre à jour le `reaction.json`
+
+```json
+{  
+  "service_name": "Service",  
+  "name": "Nom de la response",  
+  "description": "Courte description",  
+  "requires_payload": true, // un booléun pour savoir si la response crée necessitera un payload  
+  "parameters": [  
+    {  
+      "name": "nom_de_param1",  
+      "type": "type du paramètre",  
+      "description": "Courte description du param"  
+    }  
+  ]  
+},
+```
+---
+
+## 8. Checklist rapide
+
+| **Vérification** | **Description**                                       |  
+|------------------|-------------------------------------------------------|  
+| `supports()`     | Retourne true/false selon service_name et trigger_type |  
+| `onCreate()`     | Configure la ressource externe (verifie la possiblité) |  
+| `onModuleInit()` | Prépare le module pour son exécution future           |  
+| `onRemove()`     | Supprime la ressource distante proprement             |
 ---
 
