@@ -66,7 +66,7 @@ cd area/
 ```
 
 > [!IMPORTANT]
-> Before running the project, set the `.env` files. More informations [here](https://github.com/lypitech/area/wiki/Installation)
+> Before running the project, make sure you properly set up the environment variables. More informations [here](https://github.com/lypitech/area/wiki/Installation).
 
 
 3. Run the project
