@@ -77,7 +77,7 @@ docker-compose up --build
 > [!CAUTION]
 > You must have [Docker](https://www.docker.com/) installed on your machine.
 
-Now the API is exposed on port `8080`, website is exposed on port `8081` and APK installation file can be found at route `/client.apk`.
+Now, APK installation file can be found at route `${FRONT_URL}/client.apk`.
 
 <a name="team"></a>
 ## Team
