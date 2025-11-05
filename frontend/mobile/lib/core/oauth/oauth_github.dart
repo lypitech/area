@@ -11,7 +11,7 @@ Future<String> githubSignIn() async {
     queryParameters: {
       'client_id': dotenv.env['GITHUB_CLIENT_ID']!,
       'redirect_uri': redirectUri,
-      'scope': 'read:user user:email',
+      'scope': 'repo admin:repo_hook admin:org_hook admin:public_key workflow write:packages delete:packages read:user read:org user:email user',
     },
   ).toString();
 
