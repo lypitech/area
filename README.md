@@ -57,7 +57,7 @@ The application will offer the following functionalities:
 
 1. Clone the project
 ```sh
-git clone git:github.com@lypitech/area.git area
+git clone git@github.com:lypitech/area.git area
 ```
 
 2. Go in the cloned project
